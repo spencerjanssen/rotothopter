@@ -1,0 +1,7 @@
+<h1>Submit your cube list here
+
+<div #form>
+    <form method=post action=@{NewCubeListR} enctype=#{formEnctype}>
+        ^{formWidget}
+        <button .btm .btn-primary type="submit">
+            Submit list

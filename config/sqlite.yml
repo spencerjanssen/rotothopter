@@ -1,0 +1,20 @@
+Default: &defaults
+  database: rotothopter.sqlite3
+  poolsize: 10
+
+Development:
+  <<: *defaults
+
+Testing:
+  database: rotothopter_test.sqlite3
+  <<: *defaults
+
+Staging:
+  database: rotothopter_staging.sqlite3
+  poolsize: 100
+  <<: *defaults
+
+Production:
+  database: rotothopter_production.sqlite3
+  poolsize: 100
+  <<: *defaults
