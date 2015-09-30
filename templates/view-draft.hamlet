@@ -1,18 +1,11 @@
-<p>
+<h2>
     Drafting: #{cubename}
-<ol>
-    $forall participant <- participants
-        <li>
-            #{participant}
+
 $maybe nextdrafter <- mnextdrafter
     $maybe uid <- muid
         $if uid == nextdrafter
             <p>
                 <a href=@{MakeDraftPickR draftId}>Your turn to draft!
-<ol>
-    $forall (person, pick) <- picks
-        <li>
-            #{person} drafted #{draftPickCard pick}
 <table .table .table-striped>
     <tr>
         $forall participant <- participants
