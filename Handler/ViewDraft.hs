@@ -1,6 +1,7 @@
 module Handler.ViewDraft where
 
 import Import
+import Common
 
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
@@ -10,11 +11,7 @@ getViewDraftR draftId = do
     let dpdata dp = do
         Just u <- runDB $ get (draftPickDrafter dp)
         return (userIdent u, dp)
-    picks <- mapM dpdata =<< getPicks draftId
+    picks <- mapM dpdata =<< getDraftPicks draftId
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")
-
-getPicks :: DraftId -> Handler [DraftPick]
-getPicks draftId = runDB $ do
-    map entityVal <$> selectList [DraftPickDraftId ==. draftId] [Asc DraftPickPickNumber]

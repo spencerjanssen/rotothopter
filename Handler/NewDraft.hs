@@ -16,9 +16,8 @@ postNewDraftR :: Handler Html
 postNewDraftR = do
     uid <- requireAuthId
     ((FormSuccess newDraft, _), _) <- runFormPost $ draftForm uid
-    cid <- runDB $ insert newDraft
-    -- todo, redirect to cube view when it is implemented
-    fail "redirect not implemented yet"
+    did <- runDB $ insert newDraft
+    redirect (ViewDraftR did)
 
 draftForm :: Key User -> Form Draft
 draftForm uid = renderBootstrap3 BootstrapBasicForm $ Draft uid

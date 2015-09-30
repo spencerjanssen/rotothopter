@@ -1,0 +1,7 @@
+<h1>Make a draft pick!
+
+<div #form>
+    <form method=post action=@{MakeDraftPickR draftId} enctype=#{formEnctype}>
+        ^{formWidget}
+        <button .btn .btn-primary type="submit">
+            Submit pick

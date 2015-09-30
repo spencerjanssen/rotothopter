@@ -18,6 +18,7 @@ library
                      Import
                      Import.NoFoundation
                      Model
+                     Common
                      Settings
                      Settings.StaticFiles
                      Handler.Common
@@ -26,6 +27,7 @@ library
                      Handler.UpdateMtgJson
                      Handler.NewDraft
                      Handler.ViewDraft
+                     Handler.MakeDraftPick
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
