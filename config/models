@@ -19,5 +19,14 @@ Card
     -- not super types like legendary or subtypes like human
     cardTypes [Text]
     CardName cardName
+Draft
+    cubeId CubeId
+    participants [UserId]
+DraftPick
+    draftId DraftId
+    pickNumber Int -- starts at 0, ascends for each pick
+    card Text -- invariant: one of the cards in the associated cube list
+    drafter UserId
+    UniqueDraftPick draftId pickNumber
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

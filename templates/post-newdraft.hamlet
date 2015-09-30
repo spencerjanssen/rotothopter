@@ -1,0 +1,7 @@
+<h1>Start a new draft here
+
+<div #form>
+    <form method=post action=@{NewDraftR} enctype=#{formEnctype}>
+        ^{formWidget}
+        <button .btn .btn-primary type="submit">
+            Start draft
