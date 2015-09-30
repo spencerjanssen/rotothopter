@@ -5,6 +5,6 @@
         <li>
             #{participant}
 <ol>
-    $forall pick <- picks
+    $forall (person, pick) <- picks
         <li>
-            #{draftPickCard pick}
+            #{person} drafted #{draftPickCard pick}

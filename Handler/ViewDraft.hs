@@ -7,7 +7,10 @@ getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
     Just participants <- (fmap (map userIdent) . sequence) <$> (runDB $ mapM get $ draftParticipants draft)
     Just (Cube cubename _) <- runDB $ get $ draftCubeId draft
-    picks <- getPicks draftId
+    let dpdata dp = do
+        Just u <- runDB $ get (draftPickDrafter dp)
+        return (userIdent u, dp)
+    picks <- mapM dpdata =<< getPicks draftId
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")
