@@ -1,0 +1,10 @@
+<p>
+    Drafting: #{cubename}
+<ol>
+    $forall participant <- participants
+        <li>
+            #{participant}
+<ol>
+    $forall pick <- picks
+        <li>
+            #{draftPickCard pick}

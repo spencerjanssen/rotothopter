@@ -25,6 +25,7 @@ library
                      Handler.CubeList
                      Handler.UpdateMtgJson
                      Handler.NewDraft
+                     Handler.ViewDraft
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

@@ -9,3 +9,4 @@
 /cubelist/view/#CubeId ViewCubeListR GET
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /draft/new NewDraftR GET POST
+/draft/view/#DraftId ViewDraftR GET
