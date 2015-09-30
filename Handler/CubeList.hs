@@ -2,6 +2,7 @@ module Handler.CubeList where
 
 import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
+import Data.Text (strip)
 
 getNewCubeListR :: Handler Html
 getNewCubeListR = do
@@ -19,7 +20,7 @@ postNewCubeListR = do
 cubeForm :: Form Cube
 cubeForm = renderBootstrap3 BootstrapBasicForm $ Cube
     <$> areq textField "Cube name" Nothing
-    <*> ((lines . unTextarea) <$> areq textareaField "The cube list" Nothing)
+    <*> ((map strip . lines . unTextarea) <$> areq textareaField "The cube list" Nothing)
 
 getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
