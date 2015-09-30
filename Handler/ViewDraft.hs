@@ -11,8 +11,11 @@ getViewDraftR draftId = do
     let dpdata dp = do
         Just u <- runDB $ get (draftPickDrafter dp)
         return (userIdent u, dp)
-    picks <- mapM dpdata =<< getDraftPicks draftId
+    rawpicks <- getDraftPicks draftId
+    picks <- mapM dpdata rawpicks
+    muid <- maybeAuthId
     let snaked = snakeTable (length participants) False (map (draftPickCard . snd) picks) :: [[Maybe Text]]
+        mnextdrafter = getNextDrafter draft rawpicks
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")

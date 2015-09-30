@@ -4,6 +4,11 @@
     $forall participant <- participants
         <li>
             #{participant}
+$maybe nextdrafter <- mnextdrafter
+    $maybe uid <- muid
+        $if uid == nextdrafter
+            <p>
+                <a href=@{MakeDraftPickR draftId}>Your turn to draft!
 <ol>
     $forall (person, pick) <- picks
         <li>
