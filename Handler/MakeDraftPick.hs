@@ -42,7 +42,7 @@ getPickAllowedCards did draft = do
 
 actualPostMakeDraftPickR draftId uid picks draft = do
     cubeCards <- getCubeCards (draftCubeId draft)
-    let allowedCards = Set.toList (Set.fromList cubeCards Set.\\ Set.fromList picks)
+    allowedCards <- getPickAllowedCards draftId draft
     ((FormSuccess newDraftPick, __), _) <- runFormPost $ draftPickForm draftId (length picks) uid allowedCards
     dpid <- runDB $ insert newDraftPick
     redirect (ViewDraftR draftId)
