@@ -1,12 +1,8 @@
 User
     ident Text
     UniqueUser ident
+    admin Bool
     deriving Typeable
-Email
-    email Text
-    user UserId Maybe
-    verkey Text Maybe
-    UniqueEmail email
 Cube
     cubeName Text
     cubeList [Text]

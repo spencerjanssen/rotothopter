@@ -1,3 +1,9 @@
+$maybe User ident admin <- muinfo
+    <p>
+        Welcome back #
+        $if admin
+            administrator #
+        #{ident}
 $maybe msg <- mmsg
   <div #message>#{msg}
 ^{widget}

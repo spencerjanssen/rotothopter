@@ -1,4 +1,3 @@
--- IMPORTANT TODO: restrict access to this page to admins only
 module Handler.UpdateMtgJson where
 
 import Import

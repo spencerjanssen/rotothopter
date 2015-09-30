@@ -6,7 +6,6 @@ import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
 import Yesod.Auth.BrowserId (authBrowserId)
 import Yesod.Auth.Dummy     (authDummy)
-import Yesod.Auth.Message   (AuthMessage (InvalidLogin))
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
@@ -58,6 +57,7 @@ instance Yesod App where
     defaultLayout widget = do
         master <- getYesod
         mmsg <- getMessage
+        muinfo <- getUserInfo
 
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and
@@ -77,6 +77,7 @@ instance Yesod App where
     isAuthorized (AuthR _) _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
+    isAuthorized UpdateMtgJsonR _ = isAdmin
     -- Default to Authorized for now.
     isAuthorized _ _ = return Authorized
 
@@ -108,6 +109,21 @@ instance Yesod App where
 
     makeLogger = return . appLogger
 
+getUserInfo :: Handler (Maybe User)
+getUserInfo = do
+    mu <- maybeAuthId
+    case mu of
+        Nothing -> return Nothing
+        Just uid -> runDB $ get uid
+
+isAdmin :: Handler AuthResult
+isAdmin = do
+    muser <- getUserInfo
+    case muser of
+        Nothing -> return AuthenticationRequired
+        Just (User {userAdmin = True}) -> return Authorized
+        _ -> return $ Unauthorized "you are not a site admin"
+
 -- How to run database actions.
 instance YesodPersist App where
     type YesodPersistBackend App = SqlBackend
@@ -131,7 +147,7 @@ instance YesodAuth App where
         x <- getBy $ UniqueUser $ credsIdent creds
         uid <- case x of
             Just (Entity uid _) -> return uid
-            Nothing -> insert $ User $ credsIdent creds
+            Nothing -> insert $ User (credsIdent creds) False
         return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
