@@ -23,6 +23,7 @@ library
                      Handler.Common
                      Handler.Home
                      Handler.CubeList
+                     Handler.UpdateMtgJson
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

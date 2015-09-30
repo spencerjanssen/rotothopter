@@ -12,5 +12,12 @@ Cube
     cubeName Text
     cubeList [Text]
     UniqueCubeName cubeName
+Card
+    cardName Text
+    cardColors [Text]
+    -- ie instant, land
+    -- not super types like legendary or subtypes like human
+    cardTypes [Text]
+    UniqueCardName cardName
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
