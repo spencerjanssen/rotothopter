@@ -6,16 +6,22 @@ import Data.Text (strip)
 
 getNewDraftR :: Handler Html
 getNewDraftR = do
-    (formWidget, formEnctype) <- generateFormPost draftForm
+    uid <- requireAuthId
+    (formWidget, formEnctype) <- generateFormPost $ draftForm uid
     defaultLayout $ do
         setTitle "Start a new draft"
         $(widgetFile "post-newdraft")
 
 postNewDraftR :: Handler Html
-postNewDraftR = error "Not yet implemented: postNewDraftR"
+postNewDraftR = do
+    uid <- requireAuthId
+    ((FormSuccess newDraft, _), _) <- runFormPost $ draftForm uid
+    cid <- runDB $ insert newDraft
+    -- todo, redirect to cube view when it is implemented
+    fail "redirect not implemented yet"
 
-draftForm :: Form Draft
-draftForm = renderBootstrap3 BootstrapBasicForm $ Draft
+draftForm :: Key User -> Form Draft
+draftForm uid = renderBootstrap3 BootstrapBasicForm $ Draft uid
     <$> (entityKey <$> areq cubeField "Cube Name" Nothing)
     <*> (map entityKey <$> areq participantsField "Participants" Nothing)
  where

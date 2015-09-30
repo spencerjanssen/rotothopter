@@ -15,6 +15,7 @@ Card
     cardTypes [Text]
     CardName cardName
 Draft
+    creator UserId
     cubeId CubeId
     participants [UserId]
 DraftPick
