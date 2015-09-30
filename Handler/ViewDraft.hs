@@ -12,6 +12,23 @@ getViewDraftR draftId = do
         Just u <- runDB $ get (draftPickDrafter dp)
         return (userIdent u, dp)
     picks <- mapM dpdata =<< getDraftPicks draftId
+    let snaked = snakeTable (length participants) False (map (draftPickCard . snd) picks) :: [[Maybe Text]]
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")
+
+padTo :: Int -> a -> [a] -> [a]
+padTo n p [] = replicate n p
+padTo n p (x:xs) = x : padTo (n-1) p xs
+
+-- | snakeTable cols revThisLine items
+snakeTable :: Int -> Bool -> [a] -> [[Maybe a]]
+snakeTable 0 _ _ = error "Can't snake with 0 columns"
+snakeTable _ _ [] = []
+snakeTable n rev ps
+ = (trans . padTo n Nothing $ map Just row)
+ : snakeTable n (not rev) rest
+ where
+    (row, rest) = splitAt n ps
+    trans | rev       = reverse
+          | otherwise = id

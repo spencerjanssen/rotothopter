@@ -8,3 +8,16 @@
     $forall (person, pick) <- picks
         <li>
             #{person} drafted #{draftPickCard pick}
+<table .table .table-striped>
+    <tr>
+        $forall participant <- participants
+            <th>
+                #{participant}
+    $forall row <- snaked
+        <tr>
+            $forall mpick <- row
+                <td>
+                    $maybe pick <- mpick
+                        #{pick}
+                    $nothing
+                        ...
