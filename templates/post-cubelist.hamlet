@@ -3,5 +3,5 @@
 <div #form>
     <form method=post action=@{NewCubeListR} enctype=#{formEnctype}>
         ^{formWidget}
-        <button .btm .btn-primary type="submit">
+        <button .btn .btn-primary type="submit">
             Submit list
