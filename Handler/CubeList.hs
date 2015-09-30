@@ -23,7 +23,10 @@ cubeForm = renderBootstrap3 BootstrapBasicForm $ Cube
 
 getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
-    Just (Cube cname ccards) <- runDB $ get cid
+    (cname, cs) <- runDB $ do
+        Just (Cube cname ccards) <- get cid
+        cs <- forM ccards $ \c -> (,) c <$> getBy (CardName c)
+        return (cname, cs)
     defaultLayout $ do
         setTitle "View Cube List"
         $(widgetFile "view-cubelist")

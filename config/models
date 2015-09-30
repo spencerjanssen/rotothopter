@@ -18,6 +18,6 @@ Card
     -- ie instant, land
     -- not super types like legendary or subtypes like human
     cardTypes [Text]
-    UniqueCardName cardName
+    CardName cardName
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
