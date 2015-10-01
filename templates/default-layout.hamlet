@@ -1,9 +1,15 @@
-$maybe usr <- muinfo
-    <p>
-        Welcome back #
-        $if userAdmin usr
-            administrator #
-        #{pseudonym usr}
+$case muinfo
+    $of Just usr
+        <p>
+            Welcome back #
+            $if userAdmin usr
+                administrator #
+            #{pseudonym usr}
+            <a href=@{AuthR LogoutR}>Log out
+    $of Nothing
+        <p>
+            You're not logged in. #
+            <a href=@{AuthR LoginR}>Log in
 $maybe msg <- mmsg
   <div #message>#{msg}
 ^{widget}

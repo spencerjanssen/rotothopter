@@ -1,13 +1,5 @@
 <h1>Welcome to rotothopter
 
-<ul>
-  <li>
-    <a href=@{AuthR LoginR}>Log in.
-  <li>
-    <a href=@{AuthR LogoutR}>Log out.
-  <li>
-    <a href=@{NewDraftR}>Make a new draft.
-
 <h3>Running drafts:
 <ul>
     $forall (did, _, cube) <- drafts
