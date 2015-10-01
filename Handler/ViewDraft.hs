@@ -2,6 +2,7 @@ module Handler.ViewDraft where
 
 import Import
 import Common
+import Handler.PrettyCard
 
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do

@@ -26,7 +26,7 @@ $maybe nextdrafter <- mnextdrafter
             $forall mpick <- row
                 <td>
                     $maybe pick <- mpick
-                        #{draftPickCard pick}
+                        ^{prettyCard $ draftPickCard pick}
                     $nothing
                         <span .glyphicon .glyphicon-question-sign>
             <td>
