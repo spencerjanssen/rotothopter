@@ -6,6 +6,9 @@ host:           "_env:HOST:*4" # any IPv4 host
 port:           "_env:PORT:3000"
 approot:        "_env:APPROOT:http://celeborn.ignorelist.com:3000"
 ip-from-header: "_env:IP_FROM_HEADER:false"
+gmail-address: "_env:GMAIL_ADDRESS:null"
+gmail-password: "_env:GMAIL_PASSWORD:null"
+
 
 # Optional values with the following production defaults.
 # In development, they default to the inverse.
