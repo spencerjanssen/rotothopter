@@ -6,6 +6,7 @@ import Common
 import qualified Data.Set as Set
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Shakespeare.Text
+import qualified Prelude (last)
 
 getMakeDraftPickR :: DraftId -> Handler Html
 getMakeDraftPickR draftId = do
@@ -54,15 +55,20 @@ routeToTextUrl :: Route App -> Handler Text
 routeToTextUrl route = withUrlRenderer $ \f -> f route []
 
 checkSendEmail :: DraftId -> Draft -> UserId -> Handler ()
-checkSendEmail draftId draft uid = do
-    Just user <- runDB $ get uid
+checkSendEmail draftId draft olduid = do
     picks <- getDraftPicks draftId
 
     case getNextDrafter draft picks of
-        Just uid' | uid' /= uid -> do
+        Just newuid | newuid /= olduid -> do
+            Just user <- runDB $ get newuid
+            let lastpick = Prelude.last picks
+                round = (length picks + 1) `div` length (draftParticipants draft)
             url <- routeToTextUrl (ViewDraftR draftId)
-            sendEmail user "Your turn to draft" $ [st|
-It is your turn to draft. Please visit the address below:
+            Just lastpicker <- runDB $ get (draftPickDrafter lastpick)
+            sendEmail user ("Time for draft round " ++ pack (show round)) $ [st|
+#{pseudonym lastpicker} just drafted #{draftPickCard lastpick}.
+
+It is time to make your pick.
 
 #{url}
 |]
