@@ -9,6 +9,6 @@
 /cubelist/view/#CubeId ViewCubeListR GET
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /draft/new NewDraftR GET POST
-/draft/view/#DraftId ViewDraftR GET
-/draft/pick/#DraftId MakeDraftPickR GET POST
+/draft/#DraftId/view ViewDraftR GET
+/draft/#DraftId/pick MakeDraftPickR GET POST
 /admin/user/add AdminAddUserR GET POST
