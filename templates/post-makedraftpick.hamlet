@@ -7,3 +7,5 @@ $maybe card <- mcardinfo
     <form method=post action=@{MakeDraftPickR draftId cardToPick}>
         <button .btn .btn-primary type="submit">
             Confirm pick of #{cardToPick}?
+    <form method=get action=@{ViewDraftR draftId}>
+        <button .btn>Cancel
