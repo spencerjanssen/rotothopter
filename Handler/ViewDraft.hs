@@ -18,6 +18,7 @@ getViewDraftR draftId = do
                             (Just nextdrafter, Just uid)
                                 | uid == nextdrafter -> True
                             _ -> False
+    catcards <- categorizeUnknownCardList allowedCards
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")

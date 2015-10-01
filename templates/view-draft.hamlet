@@ -34,10 +34,13 @@ $if isNextDrafter
                     $of GoingLeft
                         <span .glyphicon .glyphicon-arrow-left>
 <h3>Unpicked Cards
-<ul>
-    $forall card <- allowedCards
-        <li>
-            $if isNextDrafter
-                <a href=@{MakeDraftPickR draftId card}>#{card}
-            $else
-                #{card}
+$forall (cat, cards) <- catcards
+    <h4>#{show cat}
+    <ul>
+        $forall card <- cards
+            $with cname <- either id cardCardName card
+                <li>
+                    $if isNextDrafter
+                        <a href=@{MakeDraftPickR draftId cname}>#{cname}
+                    $else
+                        #{cname}

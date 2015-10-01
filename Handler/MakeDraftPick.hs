@@ -55,7 +55,7 @@ checkSendEmail draftId draft olduid = do
         Just newuid | newuid /= olduid -> do
             Just user <- runDB $ get newuid
             let lastpick = Prelude.last picks
-                round = (length picks + 1) `div` length (draftParticipants draft)
+                round = 1 + ((length picks + 1) `div` length (draftParticipants draft))
             url <- routeToTextUrl (ViewDraftR draftId)
             Just lastpicker <- runDB $ get (draftPickDrafter lastpick)
             sendEmail user ("Time for draft round " ++ pack (show round)) $ [st|
