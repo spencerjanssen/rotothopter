@@ -17,6 +17,9 @@ getHomeR = do
     mwidge <- case muser of
         Nothing -> return Nothing
         Just user -> fmap (Just . fst) $ generateFormPost $ userDetailsForm (userDisplayName user)
+    drafts <- runDB $ do
+        ds <- selectList ([] :: [Filter Draft]) []
+        mapM (\(Entity did d) -> do Just cu <- get (draftCubeId d); return (did, d, cu)) ds
     defaultLayout $ do
         setTitle "Welcome To rotothopter!"
         $(widgetFile "homepage")
