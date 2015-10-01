@@ -1,9 +1,11 @@
 module Handler.MakeDraftPick where
 
 import Import
+import Import.Mail
 import Common
 import qualified Data.Set as Set
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
+import Text.Shakespeare.Text
 
 getMakeDraftPickR :: DraftId -> Handler Html
 getMakeDraftPickR draftId = do
@@ -45,7 +47,26 @@ actualPostMakeDraftPickR draftId uid picks draft = do
     allowedCards <- getPickAllowedCards draftId draft
     ((FormSuccess newDraftPick, __), _) <- runFormPost $ draftPickForm draftId (length picks) uid allowedCards
     dpid <- runDB $ insert newDraftPick
+    checkSendEmail draftId draft uid
     redirect (ViewDraftR draftId)
+
+routeToTextUrl :: Route App -> Handler Text
+routeToTextUrl route = withUrlRenderer $ \f -> f route []
+
+checkSendEmail :: DraftId -> Draft -> UserId -> Handler ()
+checkSendEmail draftId draft uid = do
+    Just user <- runDB $ get uid
+    picks <- getDraftPicks draftId
+
+    case getNextDrafter draft picks of
+        Just uid' | uid' /= uid -> do
+            url <- routeToTextUrl (ViewDraftR draftId)
+            sendEmail user "Your turn to draft" $ [st|
+It is your turn to draft. Please visit the address below:
+
+#{url}
+|]
+        _ -> return ()
 
 draftPickForm :: DraftId -> Int -> UserId -> [Text] -> Form DraftPick
 draftPickForm did picknum uid allowedCards =
