@@ -11,3 +11,4 @@
 /draft/new NewDraftR GET POST
 /draft/view/#DraftId ViewDraftR GET
 /draft/pick/#DraftId MakeDraftPickR GET POST
+/admin/user/add AdminAddUserR GET POST

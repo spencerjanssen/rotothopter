@@ -1,0 +1,7 @@
+<h1>Make a new user
+
+<div #form>
+    <form method=post action=@{AdminAddUserR} enctype=#{formEnctype}>
+        ^{formWidget}
+        <button .btn .btn-primary type="submit">
+            Enter user info

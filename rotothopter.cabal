@@ -29,6 +29,7 @@ library
                      Handler.NewDraft
                      Handler.ViewDraft
                      Handler.MakeDraftPick
+                     Handler.AdminAddUser
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
