@@ -6,16 +6,32 @@ $maybe nextdrafter <- mnextdrafter
         $if uid == nextdrafter
             <p>
                 <a href=@{MakeDraftPickR draftId}>Your turn to draft!
-<table .table .table-striped>
-    <tr>
-        $forall participant <- participants
-            <th>
-                #{participant}
-    $forall row <- snaked
+<table .table .table-striped .table-bordered .table-condensed>
+    <thead>
         <tr>
+            <th>
+            $forall participant <- participants
+                <th>
+                    #{pseudonym participant}
+            <th>
+    $forall (i, dir, row) <- snaked
+        <tr>
+            <td>
+                #{i}.
+                $case dir
+                    $of GoingRight
+                        <span .glyphicon .glyphicon-arrow-right>
+                    $of GoingLeft
+                        <span .glyphicon .glyphicon-arrow-down>
             $forall mpick <- row
                 <td>
                     $maybe pick <- mpick
-                        #{pick}
+                        #{draftPickCard pick}
                     $nothing
-                        ...
+                        <span .glyphicon .glyphicon-question-sign>
+            <td>
+                $case dir
+                    $of GoingRight
+                        <span .glyphicon .glyphicon-arrow-down>
+                    $of GoingLeft
+                        <span .glyphicon .glyphicon-arrow-left>

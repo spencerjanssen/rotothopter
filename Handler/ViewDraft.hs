@@ -6,16 +6,12 @@ import Common
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
-    Just participants <- (fmap (map userIdent) . sequence) <$> (runDB $ mapM get $ draftParticipants draft)
+    Just participants <- sequence <$> (runDB $ mapM get $ draftParticipants draft)
     Just (Cube cubename _) <- runDB $ get $ draftCubeId draft
-    let dpdata dp = do
-        Just u <- runDB $ get (draftPickDrafter dp)
-        return (userIdent u, dp)
-    rawpicks <- getDraftPicks draftId
-    picks <- mapM dpdata rawpicks
+    picks <- getDraftPicks draftId
     muid <- maybeAuthId
-    let snaked = snakeTable (length participants) False (map (draftPickCard . snd) picks) :: [[Maybe Text]]
-        mnextdrafter = getNextDrafter draft rawpicks
+    let snaked = snakeTable (length participants) picks
+        mnextdrafter = getNextDrafter draft picks
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")
@@ -24,14 +20,20 @@ padTo :: Int -> a -> [a] -> [a]
 padTo n p [] = replicate n p
 padTo n p (x:xs) = x : padTo (n-1) p xs
 
--- | snakeTable cols revThisLine items
-snakeTable :: Int -> Bool -> [a] -> [[Maybe a]]
-snakeTable 0 _ _ = error "Can't snake with 0 columns"
-snakeTable _ _ [] = []
-snakeTable n rev ps
- = (trans . padTo n Nothing $ map Just row)
- : snakeTable n (not rev) rest
+data Direction = GoingRight | GoingLeft
+
+chopBy :: Int -> [a] -> [[a]]
+chopBy _ [] = []
+chopBy n xs = case splitAt n xs of (ys, zs) -> ys : chopBy n zs
+
+mapLast :: (a -> a) -> [a] -> [a]
+mapLast f [x] = [f x]
+mapLast f (x:xs) = x : mapLast f xs
+mapLast _ [] = []
+
+snakeTable :: Int -> [a] -> [(Int, Direction, [Maybe a])]
+snakeTable n xs = zipWith3 dirify [1 ..] ds . mapLast (padTo n Nothing) . chopBy n . map Just $ xs
  where
-    (row, rest) = splitAt n ps
-    trans | rev       = reverse
-          | otherwise = id
+    ds = GoingRight : GoingLeft : ds
+    dirify n GoingRight x = (n, GoingRight, x)
+    dirify n GoingLeft x = (n, GoingLeft, reverse x)
