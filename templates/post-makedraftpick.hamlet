@@ -1,5 +1,8 @@
 <h1>Make a draft pick!
 
+$maybe card <- mcardinfo
+    <img src=#{cardImgUrl card}>
+
 <div #form>
     <form method=post action=@{MakeDraftPickR draftId cardToPick}>
         <button .btn .btn-primary type="submit">

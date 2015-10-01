@@ -6,6 +6,7 @@ import Common
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Shakespeare.Text
 import qualified Prelude (last)
+import Handler.PrettyCard
 
 getMakeDraftPickR :: DraftId -> Text -> Handler Html
 getMakeDraftPickR draftId cardToPick = do
@@ -13,6 +14,7 @@ getMakeDraftPickR draftId cardToPick = do
     draft <- getDraft draftId
     when (uid `notElem` draftParticipants draft) $ fail "you are not in this draft"
     picks <- getDraftPicks draftId
+    mcardinfo <- maybeCardInfo cardToPick
     case getNextDrafter draft picks of
         Nothing -> fail "this draft has broken, contact administrator"
         Just uid'
