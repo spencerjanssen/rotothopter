@@ -17,6 +17,7 @@ library
                      Foundation
                      Import
                      Import.NoFoundation
+                     Import.Mail
                      Model
                      Common
                      Settings
@@ -88,6 +89,8 @@ library
                  , containers
                  , vector
                  , time
+                 , smtps-gmail
+                 , mime-mail
 
 executable         rotothopter
     if flag(library-only)
