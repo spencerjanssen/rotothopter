@@ -10,5 +10,5 @@
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /draft/new NewDraftR GET POST
 /draft/#DraftId/view ViewDraftR GET
-/draft/#DraftId/pick MakeDraftPickR GET POST
+/draft/#DraftId/pick/#Text MakeDraftPickR GET POST
 /admin/user/add AdminAddUserR GET POST

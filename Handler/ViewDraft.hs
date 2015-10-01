@@ -11,8 +11,13 @@ getViewDraftR draftId = do
     Just (Cube cubename _) <- runDB $ get $ draftCubeId draft
     picks <- getDraftPicks draftId
     muid <- maybeAuthId
+    allowedCards <- getPickAllowedCards draftId draft
     let snaked = snakeTable (length participants) picks
         mnextdrafter = getNextDrafter draft picks
+        isNextDrafter = case (mnextdrafter, muid) of
+                            (Just nextdrafter, Just uid)
+                                | uid == nextdrafter -> True
+                            _ -> False
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")

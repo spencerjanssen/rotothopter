@@ -7,8 +7,23 @@ import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Shakespeare.Text
 import qualified Prelude (last)
 
-getMakeDraftPickR :: DraftId -> Handler Html
-getMakeDraftPickR draftId = do
+getMakeDraftPickR :: DraftId -> Text -> Handler Html
+getMakeDraftPickR draftId cardToPick = do
+    uid <- requireAuthId
+    draft <- getDraft draftId
+    when (uid `notElem` draftParticipants draft) $ fail "you are not in this draft"
+    picks <- getDraftPicks draftId
+    case getNextDrafter draft picks of
+        Nothing -> fail "this draft has broken, contact administrator"
+        Just uid'
+            | uid /= uid' -> fail "it isn't your turn to pick yet"
+            | otherwise ->
+                defaultLayout $ do
+                    setTitle "Make a draft pick"
+                    $(widgetFile "post-makedraftpick")
+
+postMakeDraftPickR :: DraftId -> Text -> Handler Html
+postMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
     when (uid `notElem` draftParticipants draft) $ fail "you are not in this draft"
@@ -16,32 +31,16 @@ getMakeDraftPickR draftId = do
     case getNextDrafter draft picks of
         Nothing -> fail "this draft has broken, contact administrator"
         Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
-                  | otherwise -> actualGetMakeDraftPickR draftId uid (map draftPickCard picks) draft
+                  | otherwise -> actualPostMakeDraftPickR draftId uid (map draftPickCard picks) draft cardToPick
 
-actualGetMakeDraftPickR draftId uid picks draft = do
+actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
     allowedCards <- getPickAllowedCards draftId draft
-    (formWidget, formEnctype) <- generateFormPost $ draftPickForm draftId (length picks) uid allowedCards
-    defaultLayout $ do
-        setTitle "Make a draft pick"
-        $(widgetFile "post-makedraftpick")
-
-postMakeDraftPickR :: DraftId -> Handler Html
-postMakeDraftPickR draftId = do
-    uid <- requireAuthId
-    draft <- getDraft draftId
-    when (uid `notElem` draftParticipants draft) $ fail "you are not in this draft"
-    picks <- getDraftPicks draftId
-    case getNextDrafter draft picks of
-        Nothing -> fail "this draft has broken, contact administrator"
-        Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
-                  | otherwise -> actualPostMakeDraftPickR draftId uid (map draftPickCard picks) draft
-
-actualPostMakeDraftPickR draftId uid picks draft = do
-    allowedCards <- getPickAllowedCards draftId draft
-    ((FormSuccess newDraftPick, __), _) <- runFormPost $ draftPickForm draftId (length picks) uid allowedCards
-    dpid <- runDB $ insert newDraftPick
-    checkSendEmail draftId draft uid
-    redirect (ViewDraftR draftId)
+    if cardToPick `elem` allowedCards
+        then do
+            dpid <- runDB $ insert $ DraftPick draftId (length picks) cardToPick uid
+            checkSendEmail draftId draft uid
+            redirect (ViewDraftR draftId)
+        else fail "you can't pick that card"
 
 routeToTextUrl :: Route App -> Handler Text
 routeToTextUrl route = withUrlRenderer $ \f -> f route []

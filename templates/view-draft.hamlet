@@ -1,11 +1,9 @@
 <h2>
     Drafting: #{cubename}
 
-$maybe nextdrafter <- mnextdrafter
-    $maybe uid <- muid
-        $if uid == nextdrafter
-            <p>
-                <a href=@{MakeDraftPickR draftId}>Your turn to draft!
+$if isNextDrafter
+    <p>
+        Your turn to draft! Click on a card in the cube list below to make a pick
 <table .table .table-striped .table-bordered .table-condensed>
     <thead>
         <tr>
@@ -35,3 +33,11 @@ $maybe nextdrafter <- mnextdrafter
                         <span .glyphicon .glyphicon-arrow-down>
                     $of GoingLeft
                         <span .glyphicon .glyphicon-arrow-left>
+<h3>Unpicked Cards
+<ul>
+    $forall card <- allowedCards
+        <li>
+            $if isNextDrafter
+                <a href=@{MakeDraftPickR draftId card}>#{card}
+            $else
+                #{card}

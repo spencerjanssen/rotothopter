@@ -1,7 +1,6 @@
 <h1>Make a draft pick!
 
 <div #form>
-    <form method=post action=@{MakeDraftPickR draftId} enctype=#{formEnctype}>
-        ^{formWidget}
+    <form method=post action=@{MakeDraftPickR draftId cardToPick}>
         <button .btn .btn-primary type="submit">
-            Submit pick
+            Confirm pick of #{cardToPick}?
