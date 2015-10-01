@@ -1,6 +1,7 @@
 module Common where
 
 import Import
+import qualified Data.Set as Set
 
 getCubeCards :: CubeId -> Handler [Text]
 getCubeCards cuid = do
@@ -26,3 +27,10 @@ getNextDrafter (Draft _ _ uids) picks = go (map draftPickDrafter picks) (pickOrd
     go [] (u:_) = Just u
     go (p:ps) (u:us) | p == u = go ps us
     go _ _ = Nothing
+
+getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
+getPickAllowedCards did draft = do
+    cubeCards <- getCubeCards (draftCubeId draft)
+    picks <- map draftPickCard <$> getDraftPicks did
+    return (Set.toList (Set.fromList cubeCards Set.\\ Set.fromList picks))
+

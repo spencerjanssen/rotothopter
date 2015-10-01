@@ -3,7 +3,6 @@ module Handler.MakeDraftPick where
 import Import
 import Import.Mail
 import Common
-import qualified Data.Set as Set
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Shakespeare.Text
 import qualified Prelude (last)
@@ -37,14 +36,7 @@ postMakeDraftPickR draftId = do
         Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
                   | otherwise -> actualPostMakeDraftPickR draftId uid (map draftPickCard picks) draft
 
-getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
-getPickAllowedCards did draft = do
-    cubeCards <- getCubeCards (draftCubeId draft)
-    picks <- map draftPickCard <$> getDraftPicks did
-    return (Set.toList (Set.fromList cubeCards Set.\\ Set.fromList picks))
-
 actualPostMakeDraftPickR draftId uid picks draft = do
-    cubeCards <- getCubeCards (draftCubeId draft)
     allowedCards <- getPickAllowedCards draftId draft
     ((FormSuccess newDraftPick, __), _) <- runFormPost $ draftPickForm draftId (length picks) uid allowedCards
     dpid <- runDB $ insert newDraftPick
