@@ -2,6 +2,7 @@ User
     ident Text
     UniqueUser ident
     admin Bool
+    displayName Text Maybe
     deriving Typeable
 Cube
     cubeName Text

@@ -7,3 +7,10 @@
     <a href=@{AuthR LogoutR}>Log out.
   <li>
     <a href=@{NewDraftR}>Make a new draft.
+
+$maybe form <- mwidge
+    <div #form>
+        <form method=post action=@{HomeR}>
+            ^{form}
+            <button .btn .btn-primary type="submit">
+                Update name

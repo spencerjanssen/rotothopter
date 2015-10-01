@@ -124,6 +124,11 @@ isAdmin = do
         Just (User {userAdmin = True}) -> return Authorized
         _ -> return $ Unauthorized "you are not a site admin"
 
+pseudonym :: User -> Text
+pseudonym u = case userDisplayName u of
+    Nothing -> userIdent u
+    Just dn -> dn
+
 -- How to run database actions.
 instance YesodPersist App where
     type YesodPersistBackend App = SqlBackend
@@ -147,7 +152,7 @@ instance YesodAuth App where
         x <- getBy $ UniqueUser $ credsIdent creds
         uid <- case x of
             Just (Entity uid _) -> return uid
-            Nothing -> insert $ User (credsIdent creds) False
+            Nothing -> insert $ User (credsIdent creds) False Nothing
         return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
