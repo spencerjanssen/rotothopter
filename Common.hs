@@ -22,7 +22,7 @@ pickOrder drafters = concat . repeat $ drafters ++ reverse drafters
 
 -- returns Nothing if the draft is invalid
 getNextDrafter :: Draft -> [DraftPick] -> Maybe UserId
-getNextDrafter (Draft _ _ uids) picks = go (map draftPickDrafter picks) (pickOrder uids)
+getNextDrafter (Draft _ _ uids _) picks = go (map draftPickDrafter picks) (pickOrder uids)
  where
     go [] (u:_) = Just u
     go (p:ps) (u:us) | p == u = go ps us

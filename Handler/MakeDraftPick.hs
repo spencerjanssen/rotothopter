@@ -39,7 +39,8 @@ actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
     allowedCards <- getPickAllowedCards draftId draft
     if cardToPick `elem` allowedCards
         then do
-            dpid <- runDB $ insert $ DraftPick draftId (length picks) cardToPick uid
+            t <- liftIO getCurrentTime
+            dpid <- runDB $ insert $ DraftPick draftId (length picks) cardToPick uid t
             checkSendEmail draftId draft uid
             redirect (ViewDraftR draftId)
         else fail "you can't pick that card"
@@ -66,11 +67,3 @@ It is time to make your pick.
 #{url}
 |]
         _ -> return ()
-
-draftPickForm :: DraftId -> Int -> UserId -> [Text] -> Form DraftPick
-draftPickForm did picknum uid allowedCards =
-    renderBootstrap3 BootstrapBasicForm $ DraftPick did picknum
-    <$> areq (selectFieldList labeledCards) "Card to Pick" Nothing
-    <*> pure uid
- where
-    labeledCards = zip allowedCards allowedCards

@@ -19,11 +19,13 @@ Draft
     creator UserId
     cubeId CubeId
     participants [UserId]
+    created UTCTime
 DraftPick
     draftId DraftId
     pickNumber Int -- starts at 0, ascends for each pick
     card Text -- invariant: one of the cards in the associated cube list
     drafter UserId
     UniqueDraftPick draftId pickNumber
+    created UTCTime
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
