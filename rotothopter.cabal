@@ -1,7 +1,11 @@
-name:              rotothopter
-version:           0.0.0
-cabal-version:     >= 1.8
-build-type:        Simple
+name:           rotothopter
+version:        0.0.1
+cabal-version:  >= 1.8
+build-type:     Simple
+homepage:       https://github.com/spencerjanssen/rotothopter
+license:        BSD3
+license-file:   LICENSE
+maintainer:     spencerjanssen@gmail.com
 
 Flag dev
     Description:   Turn on development settings, like auto-reload templates.
