@@ -24,5 +24,5 @@ database:
   database: "_env:SQLITE_DATABASE:rotothopter.sqlite3"
   poolsize: "_env:SQLITE_POOLSIZE:10"
 
-copyright: Insert copyright statement here
+copyright: copyright 2015. Spencer Janssen
 #analytics: UA-YOURCODE
