@@ -56,6 +56,7 @@ data AppSettings = AppSettings
     , gmailPassword             :: Maybe Text
     , googleClientId            :: Maybe Text
     , googleClientSecret        :: Maybe Text
+    , allowDummyAuth            :: Bool
     }
 
 instance FromJSON AppSettings where
@@ -86,6 +87,7 @@ instance FromJSON AppSettings where
         gmailPassword             <- nothingIfEmpty <$> o .:? "gmail-password"
         googleClientId            <- nothingIfEmpty <$> o .:? "google-client-id"
         googleClientSecret        <- nothingIfEmpty <$> o .:? "google-client-secret"
+        allowDummyAuth            <- o .:? "allow-dummy-auth" .!= False
 
         return AppSettings {..}
 

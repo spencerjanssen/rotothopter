@@ -160,8 +160,10 @@ instance YesodAuth App where
         return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins (App {appSettings}) = [authBrowserId def, authDummy] ++ gauth
+    authPlugins (App {appSettings}) = [authBrowserId def] ++ dauth ++ gauth
      where
+        dauth | allowDummyAuth appSettings = [authDummy]
+              | otherwise                  = []
         gauth = case (googleClientId appSettings, googleClientSecret appSettings) of
             (Just gci, Just gcs) -> [authGoogleEmail gci gcs]
             _ -> []

@@ -10,6 +10,7 @@ gmail-address: "_env:GMAIL_ADDRESS:null"
 gmail-password: "_env:GMAIL_PASSWORD:null"
 google-client-id: "_env:GOOGLE_CLIENT_ID:"
 google-client-secret: "_env:GOOGLE_CLIENT_PASSWORD:"
+allow-dummy-auth: "_env:ALLOW_DUMMY_AUTH:false"
 
 # Optional values with the following production defaults.
 # In development, they default to the inverse.
