@@ -8,7 +8,8 @@ approot:        "_env:APPROOT:http://celeborn.ignorelist.com:3000"
 ip-from-header: "_env:IP_FROM_HEADER:false"
 gmail-address: "_env:GMAIL_ADDRESS:null"
 gmail-password: "_env:GMAIL_PASSWORD:null"
-
+google-client-id: "_env:GOOGLE_CLIENT_ID:"
+google-client-secret: "_env:GOOGLE_CLIENT_PASSWORD:"
 
 # Optional values with the following production defaults.
 # In development, they default to the inverse.

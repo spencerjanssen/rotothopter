@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module Foundation where
 
 import Import.NoFoundation
@@ -6,6 +8,7 @@ import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
 import Yesod.Auth.BrowserId (authBrowserId)
 import Yesod.Auth.Dummy     (authDummy)
+import Yesod.Auth.GoogleEmail2 (authGoogleEmail)
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
@@ -157,7 +160,11 @@ instance YesodAuth App where
         return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins _ = [authBrowserId def, authDummy]
+    authPlugins (App {appSettings}) = [authBrowserId def, authDummy] ++ gauth
+     where
+        gauth = case (googleClientId appSettings, googleClientSecret appSettings) of
+            (Just gci, Just gcs) -> [authGoogleEmail gci gcs]
+            _ -> []
 
     authHttpManager = getHttpManager
 

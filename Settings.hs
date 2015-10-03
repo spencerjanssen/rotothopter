@@ -54,6 +54,8 @@ data AppSettings = AppSettings
     -- ^ Google Analytics code
     , gmailAddress              :: Maybe Text
     , gmailPassword             :: Maybe Text
+    , googleClientId            :: Maybe Text
+    , googleClientSecret        :: Maybe Text
     }
 
 instance FromJSON AppSettings where
@@ -64,6 +66,7 @@ instance FromJSON AppSettings where
 #else
                 False
 #endif
+        let nothingIfEmpty m = m >>= \t -> if null t then Nothing else Just t
         appStaticDir              <- o .: "static-dir"
         appDatabaseConf           <- o .: "database"
         appRoot                   <- o .: "approot"
@@ -79,8 +82,10 @@ instance FromJSON AppSettings where
 
         appCopyright              <- o .: "copyright"
         appAnalytics              <- o .:? "analytics"
-        gmailAddress              <- o .:? "gmail-address"
-        gmailPassword             <- o .:? "gmail-password"
+        gmailAddress              <- nothingIfEmpty <$> o .:? "gmail-address"
+        gmailPassword             <- nothingIfEmpty <$> o .:? "gmail-password"
+        googleClientId            <- nothingIfEmpty <$> o .:? "google-client-id"
+        googleClientSecret        <- nothingIfEmpty <$> o .:? "google-client-secret"
 
         return AppSettings {..}
 
