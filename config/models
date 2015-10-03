@@ -4,10 +4,12 @@ User
     admin Bool
     displayName Text Maybe
     deriving Typeable
+    deriving Show
 Cube
     cubeName Text
     cubeList [Text]
     UniqueCubeName cubeName
+    deriving Show
 Card
     cardName Text
     cardColors [Text]
@@ -15,11 +17,13 @@ Card
     -- not super types like legendary or subtypes like human
     cardTypes [Text]
     CardName cardName
+    deriving Show
 Draft
     creator UserId
     cubeId CubeId
     participants [UserId]
     created UTCTime
+    deriving Show
 DraftPick
     draftId DraftId
     pickNumber Int -- starts at 0, ascends for each pick
@@ -27,5 +31,6 @@ DraftPick
     drafter UserId
     UniqueDraftPick draftId pickNumber
     created UTCTime
+    deriving Show
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
