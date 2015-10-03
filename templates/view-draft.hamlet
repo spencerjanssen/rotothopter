@@ -25,11 +25,15 @@ $if isNextDrafter
                     $maybe pick <- Map.lookup (rcToPickNum draft (row, col)) pickmap
                         ^{prettyCard $ draftPickCard pick}
                         $if timestamp
+                            <br>
                             #{formatTime defaultTimeLocale "%c" $ utcToLocalTime tz $ draftPickCreated pick}
                             $maybe prevpick <- Map.lookup (pred $ draftPickPickNumber pick) pickmap
-                                "insert time diff here eventually"
+                                <br>
+                                #{prettyTimeDiff (draftPickCreated pick) (draftPickCreated prevpick)}
                     $nothing
                         <span .glyphicon .glyphicon-question-sign>
+                        $maybe prevpick <- Map.lookup (pred $ rcToPickNum draft (row, col)) pickmap
+                            #{prettyTimeDiff now (draftPickCreated prevpick)}
             <td>
                 $if isLeftToRightRow draft row
                     <span .glyphicon .glyphicon-arrow-down>

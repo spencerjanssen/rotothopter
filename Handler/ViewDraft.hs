@@ -3,7 +3,7 @@ module Handler.ViewDraft where
 import Import
 import Common
 import Handler.PrettyCard
-import Data.Time.LocalTime
+import Data.Time
 import qualified Data.Map as Map
 
 getViewDraftR :: DraftId -> Handler Html
@@ -23,13 +23,11 @@ getViewDraftR draftId = do
                             _ -> False
     catcards <- categorizeUnknownCardList allowedCards
     tz <- liftIO getCurrentTimeZone
+    now <- liftIO getCurrentTime
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")
-
-timestampForm :: Form Bool
-timestampForm = renderTable (maybe False id <$> aopt boolField "timestamp" Nothing)
 
 isLeftToRightRow :: Draft -> Int -> Bool
 isLeftToRightRow _ r = even r
@@ -49,3 +47,18 @@ rcToPickNum draft (r, c) = r * n + dir c
     n = length $ draftParticipants draft
     dir | isLeftToRightRow draft r = id
         | otherwise                = flip subtract (pred n)
+
+prettyTimeDiff :: UTCTime -> UTCTime -> String
+prettyTimeDiff t0 t1 = pref ++ concat
+    [elide days "d ", elide hours "h ", show minutes ++ "m"]
+ where
+    t = diffUTCTime t0 t1
+    elide n suff | n == 0    = ""
+                 | otherwise = show n ++ suff
+    posnegseconds = floor t :: Integer
+    posneg = signum posnegseconds
+    (days, dayremainder) = divMod (abs posnegseconds) (24*60*60)
+    (hours, hourremainder) = divMod dayremainder (60*60)
+    (minutes, _ ) = divMod hourremainder 60
+    pref | posneg < 0 = "-"
+         | otherwise = ""
