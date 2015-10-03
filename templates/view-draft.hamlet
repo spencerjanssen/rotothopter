@@ -25,6 +25,8 @@ $if isNextDrafter
                 <td>
                     $maybe pick <- mpick
                         ^{prettyCard $ draftPickCard pick}
+                        $if timestamp
+                            #{formatTime defaultTimeLocale "%c" $ utcToLocalTime tz $ draftPickCreated pick}
                     $nothing
                         <span .glyphicon .glyphicon-question-sign>
             <td>

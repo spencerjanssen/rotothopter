@@ -3,6 +3,7 @@ module Handler.ViewDraft where
 import Import
 import Common
 import Handler.PrettyCard
+import Data.Time.LocalTime
 
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
@@ -19,6 +20,8 @@ getViewDraftR draftId = do
                                 | uid == nextdrafter -> True
                             _ -> False
     catcards <- categorizeUnknownCardList allowedCards
+    tz <- liftIO getCurrentTimeZone
+    timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")
@@ -44,3 +47,6 @@ snakeTable n xs = zipWith3 dirify [1 ..] ds . mapLast (padTo n Nothing) . chopBy
     ds = GoingRight : GoingLeft : ds
     dirify n GoingRight x = (n, GoingRight, x)
     dirify n GoingLeft x = (n, GoingLeft, reverse x)
+
+timestampForm :: Form Bool
+timestampForm = renderTable (maybe False id <$> aopt boolField "timestamp" Nothing)
