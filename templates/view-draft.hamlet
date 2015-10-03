@@ -12,29 +12,29 @@ $if isNextDrafter
                 <th>
                     #{pseudonym participant}
             <th>
-    $forall (i, dir, row) <- snaked
+    $forall row <- enumFromTo 0 lastRow
         <tr>
             <td>
-                #{i}.
-                $case dir
-                    $of GoingRight
-                        <span .glyphicon .glyphicon-arrow-right>
-                    $of GoingLeft
-                        <span .glyphicon .glyphicon-arrow-down>
-            $forall mpick <- row
+                #{row + 1}.
+                $if isLeftToRightRow draft row
+                    <span .glyphicon .glyphicon-arrow-right>
+                $else
+                    <span .glyphicon .glyphicon-arrow-down>
+            $forall col <- zipWith const (enumFrom 0) participants
                 <td>
-                    $maybe pick <- mpick
+                    $maybe pick <- Map.lookup (rcToPickNum draft (row, col)) pickmap
                         ^{prettyCard $ draftPickCard pick}
                         $if timestamp
                             #{formatTime defaultTimeLocale "%c" $ utcToLocalTime tz $ draftPickCreated pick}
+                            $maybe prevpick <- Map.lookup (pred $ draftPickPickNumber pick) pickmap
+                                "insert time diff here eventually"
                     $nothing
                         <span .glyphicon .glyphicon-question-sign>
             <td>
-                $case dir
-                    $of GoingRight
-                        <span .glyphicon .glyphicon-arrow-down>
-                    $of GoingLeft
-                        <span .glyphicon .glyphicon-arrow-left>
+                $if isLeftToRightRow draft row
+                    <span .glyphicon .glyphicon-arrow-down>
+                $else
+                    <span .glyphicon .glyphicon-arrow-left>
 <h3>Unpicked Cards
 $forall (cat, cards) <- catcards
     <h4>#{show cat}

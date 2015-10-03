@@ -4,6 +4,7 @@ import Import
 import Common
 import Handler.PrettyCard
 import Data.Time.LocalTime
+import qualified Data.Map as Map
 
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
@@ -13,7 +14,8 @@ getViewDraftR draftId = do
     picks <- getDraftPicks draftId
     muid <- maybeAuthId
     allowedCards <- getPickAllowedCards draftId draft
-    let snaked = snakeTable (length participants) picks
+    let pickmap = Map.fromList $ map (\p -> (draftPickPickNumber p, p)) picks
+        (lastRow, _) = pickNumToRC draft $ Map.size pickmap
         mnextdrafter = getNextDrafter draft picks
         isNextDrafter = case (mnextdrafter, muid) of
                             (Just nextdrafter, Just uid)
@@ -26,27 +28,24 @@ getViewDraftR draftId = do
         setTitle "View Cube Draft"
         $(widgetFile "view-draft")
 
-padTo :: Int -> a -> [a] -> [a]
-padTo n p [] = replicate n p
-padTo n p (x:xs) = x : padTo (n-1) p xs
-
-data Direction = GoingRight | GoingLeft
-
-chopBy :: Int -> [a] -> [[a]]
-chopBy _ [] = []
-chopBy n xs = case splitAt n xs of (ys, zs) -> ys : chopBy n zs
-
-mapLast :: (a -> a) -> [a] -> [a]
-mapLast f [x] = [f x]
-mapLast f (x:xs) = x : mapLast f xs
-mapLast _ [] = []
-
-snakeTable :: Int -> [a] -> [(Int, Direction, [Maybe a])]
-snakeTable n xs = zipWith3 dirify [1 ..] ds . mapLast (padTo n Nothing) . chopBy n . map Just $ xs
- where
-    ds = GoingRight : GoingLeft : ds
-    dirify n GoingRight x = (n, GoingRight, x)
-    dirify n GoingLeft x = (n, GoingLeft, reverse x)
-
 timestampForm :: Form Bool
 timestampForm = renderTable (maybe False id <$> aopt boolField "timestamp" Nothing)
+
+isLeftToRightRow :: Draft -> Int -> Bool
+isLeftToRightRow _ r = even r
+
+pickNumToRC :: Draft -> Int -> (Int, Int)
+pickNumToRC draft i = (r, c)
+ where
+    n = length $ draftParticipants draft
+    r = i `div` n
+    dir | isLeftToRightRow draft r = id
+        | otherwise                = (pred n -)
+    c = dir (i `mod` n)
+
+rcToPickNum :: Draft -> (Int, Int) -> Int
+rcToPickNum draft (r, c) = r * n + dir c
+ where
+    n = length $ draftParticipants draft
+    dir | isLeftToRightRow draft r = id
+        | otherwise                = flip subtract (pred n)
