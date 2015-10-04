@@ -31,6 +31,8 @@ mkDerivation {
     persistent persistent-sqlite resourcet shakespeare transformers
     yesod yesod-core yesod-test
   ];
+  doHaddock = false;
+  doCheck = false;
   homepage = "https://github.com/spencerjanssen/rotothopter";
   license = stdenv.lib.licenses.bsd3;
 }
