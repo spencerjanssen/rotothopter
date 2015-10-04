@@ -27,7 +27,13 @@ getViewDraftR draftId = do
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle "View Cube Draft"
+        addScriptRemote jqueryCDN
+        addScriptRemote "http://timeago.yarp.com/jquery.timeago.js"
+        addScriptRemote "http://momentjs.com/downloads/moment.min.js"
         $(widgetFile "view-draft")
+
+utcTo8601 :: UTCTime -> String
+utcTo8601 = formatTime defaultTimeLocale $ iso8601DateFormat (Just "%H:%M:%S%z")
 
 isLeftToRightRow :: Draft -> Int -> Bool
 isLeftToRightRow _ r = even r

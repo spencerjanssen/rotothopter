@@ -181,6 +181,9 @@ instance RenderMessage App FormMessage where
 unsafeHandler :: App -> Handler a -> IO a
 unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 
+jqueryCDN :: Text
+jqueryCDN = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
+
 -- Note: Some functionality previously present in the scaffolding has been
 -- moved to documentation in the Wiki. Following are some hopefully helpful
 -- links:

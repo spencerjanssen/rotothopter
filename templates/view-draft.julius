@@ -1,0 +1,7 @@
+jQuery(document).ready(function() {
+    jQuery("time.timeago").timeago();
+
+    $(".convlocale").text(function(i, s){
+        return moment(s).format();
+    });
+});
