@@ -35,6 +35,7 @@ library
                      Handler.MakeDraftPick
                      Handler.AdminAddUser
                      Handler.PrettyCard
+                     Handler.WatchDraft
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

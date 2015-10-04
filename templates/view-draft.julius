@@ -4,4 +4,11 @@ jQuery(document).ready(function() {
     $(".convlocale").text(function(i, s){
         return moment(s).format();
     });
+
+    var ev;
+    ev = new EventSource("@{WatchDraftR draftId}");
+
+    ev.addEventListener('observe_pick', function(dat){
+        document.location.reload();
+    });
 });

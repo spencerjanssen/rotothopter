@@ -12,3 +12,4 @@
 /draft/#DraftId/view ViewDraftR GET
 /draft/#DraftId/pick/#Text MakeDraftPickR GET POST
 /admin/user/add AdminAddUserR GET POST
+/draft/#DraftId/watch WatchDraftR GET

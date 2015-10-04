@@ -40,8 +40,10 @@ actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
     if cardToPick `elem` allowedCards
         then do
             t <- liftIO getCurrentTime
-            dpid <- runDB $ insert $ DraftPick draftId (length picks) cardToPick uid t
+            let thepick = DraftPick draftId (length picks) cardToPick uid t
+            dpid <- runDB $ insert $ thepick
             checkSendEmail draftId draft uid
+            notifyDraftWatcher thepick
             redirect (ViewDraftR draftId)
         else fail "you can't pick that card"
 
