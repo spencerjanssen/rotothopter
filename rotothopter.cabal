@@ -96,6 +96,7 @@ library
                  , time
                  , smtps-gmail
                  , mime-mail
+                 , yesod-eventsource
 
 executable         rotothopter
     if flag(library-only)
