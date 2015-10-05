@@ -8,9 +8,12 @@ $if isNextDrafter
     <thead>
         <tr>
             <th>
-            $forall participant <- participants
+            $forall (col, participant) <- zip (enumFrom 0) participants
                 <th>
                     #{pseudonym participant}
+                    $if timestamp
+                        <br>
+                        #{prettyTimeDiff (timediffByCol col)}
             <th>
     $forall row <- enumFromTo 0 lastRow
         <tr>
@@ -27,9 +30,9 @@ $if isNextDrafter
                         $if timestamp
                             <br>
                             <date .convlocale>#{utcTo8601 $ draftPickCreated pick}
-                            $maybe prevpick <- Map.lookup (pred $ draftPickPickNumber pick) pickmap
+                            $maybe td <- Map.lookup (rcToPickNum draft (row, col)) timediffByCell
                                 <br>
-                                #{prettyTimeDiff (draftPickCreated pick) (draftPickCreated prevpick)}
+                                #{prettyTimeDiff td}
                     $nothing
                         <span .glyphicon .glyphicon-question-sign>
                         $maybe prevpick <- Map.lookup (pred $ rcToPickNum draft (row, col)) pickmap

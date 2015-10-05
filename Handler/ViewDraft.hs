@@ -17,6 +17,14 @@ getViewDraftR draftId = do
     let pickmap = Map.fromList $ map (\p -> (draftPickPickNumber p, p)) picks
         (lastRow, _) = pickNumToRC draft $ Map.size pickmap
         mnextdrafter = getNextDrafter draft picks
+        timediffByCell = Map.fromList $ do
+            (p1, p2) <- zip picks (drop 1 picks)
+            return ( draftPickPickNumber p2
+                   , diffUTCTime (draftPickCreated p2) (draftPickCreated p1))
+        timediffByCol c = sum $ do
+            r <- [0 .. lastRow]
+            Just d <- return $ Map.lookup (rcToPickNum draft (r, c)) timediffByCell
+            return d
         isNextDrafter = case (mnextdrafter, muid) of
                             (Just nextdrafter, Just uid)
                                 | uid == nextdrafter -> True
@@ -54,11 +62,10 @@ rcToPickNum draft (r, c) = r * n + dir c
     dir | isLeftToRightRow draft r = id
         | otherwise                = flip subtract (pred n)
 
-prettyTimeDiff :: UTCTime -> UTCTime -> String
-prettyTimeDiff t0 t1 = pref ++ concat
+prettyTimeDiff :: NominalDiffTime -> String
+prettyTimeDiff t = pref ++ concat
     [elide days "d ", elide hours "h ", show minutes ++ "m"]
  where
-    t = diffUTCTime t0 t1
     elide n suff | n == 0    = ""
                  | otherwise = show n ++ suff
     posnegseconds = floor t :: Integer
