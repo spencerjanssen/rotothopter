@@ -10,18 +10,30 @@ cardImgUrl c = base ++ cardCardName c
  where
     base = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
 
-colorBadge :: Card -> Text
-colorBadge card = badge $ case sort $ cardCardColors card of
-    [] -> "x"
-    ["White"] -> "w"
-    ["Blue"] -> "u"
-    ["Black"] -> "b"
-    ["Red"] -> "r"
-    ["Green"] -> "g"
+-- colorBadge :: Card -> Text
+colorBadge card = StaticR $ case sort $ cardCardColors card of
+    ["White"] -> img_mana_15_w_png
+    ["Blue"] -> img_mana_15_u_png
+    ["Black"] -> img_mana_15_b_png
+    ["Red"] -> img_mana_15_r_png
+    ["Green"] -> img_mana_15_g_png
     -- handle multicolor later:
-    _ -> ""
- where
-    badge s = "http://mtgjson.com/images/" ++ s ++ ".png"
+    [c1, c2] -> case (c1, c2) of
+        ("Black", "Green") -> img_mana_15_bg_png
+        ("Black", "Red") -> img_mana_15_br_png
+        ("Black", "Blue") -> img_mana_15_ub_png
+        ("Blue", "Red") -> img_mana_15_ur_png
+        ("Blue", "Green") -> img_mana_15_gu_png
+        ("Green", "White") -> img_mana_15_gw_png
+        ("Green", "Red") -> img_mana_15_rg_png
+        ("Red", "White") -> img_mana_15_rw_png
+        ("Black", "White") -> img_mana_15_wb_png
+        ("Blue", "White") -> img_mana_15_wu_png
+        _ -> img_mana_15_snow_png
+    [] -> if "Land" `elem` cardCardTypes card
+            then img_mana_15_tap_png
+            else img_mana_15_0_png
+    _ -> img_mana_15_snow_png
 
 prettyCard cname = do
     mcard <- handlerToWidget $ maybeCardInfo cname
