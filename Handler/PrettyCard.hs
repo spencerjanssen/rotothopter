@@ -51,6 +51,16 @@ data CardCategory
     | ArtifactColorless
  deriving (Eq, Ord, Show)
 
+cardCategoryGlyph cat = StaticR <$> case cat of
+    White -> Just img_mana_40_w_png
+    Blue -> Just img_mana_40_u_png
+    Black -> Just img_mana_40_b_png
+    Red -> Just img_mana_40_r_png
+    Green -> Just img_mana_40_g_png
+    Land -> Just img_mana_40_tap_png
+    ArtifactColorless -> Just img_mana_40_0_png
+    _ -> Nothing
+
 categorize :: Either Text Card -> CardCategory
 categorize (Left _) = Unknown
 categorize (Right card) = case colors of

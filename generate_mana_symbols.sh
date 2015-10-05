@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for px in 15; do
+for px in 15 40; do
     mkdir -p static/img/mana/$px
 
     for i in manasymbols/*.svg; do

@@ -44,7 +44,10 @@ $if isNextDrafter
                     <span .glyphicon .glyphicon-arrow-left>
 <h3>Unpicked Cards
 $forall (cat, cards) <- catcards
-    <h4>#{show cat}
+    <h4>
+        $maybe gl <- cardCategoryGlyph cat
+            <img src=@{gl}>
+        #{show cat}
     <ul>
         $forall card <- cards
             $with cname <- either id cardCardName card
