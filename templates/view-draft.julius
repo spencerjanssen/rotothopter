@@ -1,3 +1,4 @@
+var ev;
 jQuery(document).ready(function() {
     jQuery("time.timeago").timeago();
 
@@ -5,10 +6,16 @@ jQuery(document).ready(function() {
         return moment(s).format();
     });
 
-    var ev;
     ev = new EventSource("@{WatchDraftR draftId}");
 
     ev.addEventListener('observe_pick', function(dat){
         document.location.reload();
     });
+    ev.onopen = function(){
+        console.log('eventsource connection opened');
+    };
+    ev.onerror = function(err){
+        console.log('eventsource connection error:');
+        console.log(err);
+    };
 });
