@@ -22,6 +22,7 @@ Draft
     creator UserId
     cubeId CubeId
     participants [UserId]
+    rounds Word default=45
     created UTCTime
     deriving Show
 DraftPick

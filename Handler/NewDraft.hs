@@ -24,6 +24,7 @@ draftForm :: Key User -> Form (UTCTime -> Draft)
 draftForm uid = renderBootstrap3 BootstrapBasicForm $ Draft uid
     <$> (entityKey <$> areq cubeField "Cube Name" Nothing)
     <*> (map entityKey <$> areq participantsField "Participants" Nothing)
+    <*> areq intField "Rounds" (Just 45)
  where
     participantsField = checkMMap findParticipants (Textarea . unlines . map (userIdent . entityVal)) textareaField
     findParticipants txt = do
