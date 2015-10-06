@@ -1,0 +1,10 @@
+table.draft-table {
+    table-layout: fixed;
+    width: 100%
+}
+
+td.draftpick {
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+}

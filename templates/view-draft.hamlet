@@ -4,27 +4,26 @@
 $if isNextDrafter
     <p>
         Your turn to draft! Click on a card in the cube list below to make a pick
-<table .table .table-striped .table-bordered .table-condensed>
+<table .table .table-striped .table-bordered .table-condensed .draft-table>
     <thead>
         <tr>
-            <th>
+            <th width="2%">
             $forall (col, participant) <- zip (enumFrom 0) participants
-                <th>
+                <th width="12%">
                     #{pseudonym participant}
                     $if timestamp
                         <br>
                         #{prettyTimeDiff (timediffByCol col)}
-            <th>
+            <th width="2.0%">
     $forall row <- enumFromTo 0 lastRow
         <tr>
             <td>
-                #{row + 1}.
                 $if isLeftToRightRow draft row
                     <span .glyphicon .glyphicon-arrow-right>
                 $else
                     <span .glyphicon .glyphicon-arrow-down>
             $forall col <- zipWith const (enumFrom 0) participants
-                <td>
+                <td .draftpick>
                     $maybe pick <- Map.lookup (rcToPickNum draft (row, col)) pickmap
                         ^{prettyCard $ draftPickCard pick}
                         $if timestamp
