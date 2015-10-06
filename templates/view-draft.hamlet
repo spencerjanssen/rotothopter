@@ -1,6 +1,9 @@
 <h2>
     Drafting: #{cubename}
 
+$if draftdone
+    <p>
+        The draft is complete!  Thanks for playing!
 $if isNextDrafter
     <p>
         Your turn to draft! Click on a card in the cube list below to make a pick

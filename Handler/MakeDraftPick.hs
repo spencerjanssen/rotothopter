@@ -16,7 +16,7 @@ getMakeDraftPickR draftId cardToPick = do
     picks <- getDraftPicks draftId
     mcardinfo <- maybeCardInfo cardToPick
     case getNextDrafter draft picks of
-        Nothing -> fail "this draft has broken, contact administrator"
+        Nothing -> fail "this draft has completed, you can't make a pick"
         Just uid'
             | uid /= uid' -> fail "it isn't your turn to pick yet"
             | otherwise ->
@@ -31,7 +31,7 @@ postMakeDraftPickR draftId cardToPick = do
     when (uid `notElem` draftParticipants draft) $ fail "you are not in this draft"
     picks <- getDraftPicks draftId
     case getNextDrafter draft picks of
-        Nothing -> fail "this draft has broken, contact administrator"
+        Nothing -> fail "this draft has completed, you can't make a pick"
         Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
                   | otherwise -> actualPostMakeDraftPickR draftId uid (map draftPickCard picks) draft cardToPick
 

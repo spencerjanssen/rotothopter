@@ -15,7 +15,8 @@ getViewDraftR draftId = do
     muid <- maybeAuthId
     allowedCards <- getPickAllowedCards draftId draft
     let pickmap = Map.fromList $ map (\p -> (draftPickPickNumber p, p)) picks
-        (lastRow, _) = pickNumToRC draft $ Map.size pickmap
+        lastRow = min (fromIntegral $ draftRounds draft-1) . fst
+                . pickNumToRC draft $ Map.size pickmap
         mnextdrafter = getNextDrafter draft picks
         timediffByCell = Map.fromList $ do
             (p1, p2) <- zip picks (drop 1 picks)
@@ -25,13 +26,13 @@ getViewDraftR draftId = do
             r <- [0 .. lastRow]
             Just d <- return $ Map.lookup (rcToPickNum draft (r, c)) timediffByCell
             return d
-        isNextDrafter = case (mnextdrafter, muid) of
-                            (Just nextdrafter, Just uid)
-                                | uid == nextdrafter -> True
-                            _ -> False
+        (isNextDrafter, draftdone)
+         = case (mnextdrafter, muid) of
+                (Just nextdrafter, Just uid)
+                    | uid == nextdrafter -> (True, False)
+                (Nothing, _) -> (False, True)
+                _ -> (False, False)
     catcards <- categorizeUnknownCardList allowedCards
-    tz <- liftIO getCurrentTimeZone
-    now <- liftIO getCurrentTime
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle "View Cube Draft"

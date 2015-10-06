@@ -21,13 +21,15 @@ getDraft did = do
 pickOrder :: [a] -> [a]
 pickOrder drafters = concat . repeat $ drafters ++ reverse drafters
 
--- returns Nothing if the draft is invalid
+-- returns Nothing if the draft is complete
 getNextDrafter :: Draft -> [DraftPick] -> Maybe UserId
-getNextDrafter (Draft _ _ uids _ _) picks = go (map draftPickDrafter picks) (pickOrder uids)
+getNextDrafter (Draft _ _ uids n _) picks = go 0 (map draftPickDrafter picks) (pickOrder uids)
  where
-    go [] (u:_) = Just u
-    go (p:ps) (u:us) | p == u = go ps us
-    go _ _ = Nothing
+    maxPick = fromIntegral (length uids) * n
+    go i _ _ | i >= maxPick = Nothing
+    go _ [] (u:_) = Just u
+    go i (p:ps) (u:us) | p == u = go (succ i) ps us
+    go _ _ _ = error "this draft is invalid"
 
 getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
 getPickAllowedCards did draft = do
