@@ -1,0 +1,7 @@
+<h1>Admin Console
+
+<ul>
+    <li>
+        <a href=@{UpdateMtgJsonR}>Update card database
+    <li>
+        <a href=@{AdminAddUserR}>Add users

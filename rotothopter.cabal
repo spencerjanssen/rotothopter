@@ -36,6 +36,7 @@ library
                      Handler.AdminAddUser
                      Handler.PrettyCard
                      Handler.WatchDraft
+                     Handler.AdminConsole
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

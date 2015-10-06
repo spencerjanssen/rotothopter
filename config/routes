@@ -7,9 +7,10 @@
 / HomeR GET POST
 /cubelist/new NewCubeListR GET POST
 /cubelist/view/#CubeId ViewCubeListR GET
-/admin/updatemtgjson UpdateMtgJsonR GET POST
 /draft/new NewDraftR GET POST
 /draft/#DraftId/view ViewDraftR GET
 /draft/#DraftId/pick/#Text MakeDraftPickR GET POST
-/admin/user/add AdminAddUserR GET POST
 /draft/#DraftId/watch WatchDraftR GET
+/admin AdminConsoleR GET
+/admin/updatemtgjson UpdateMtgJsonR GET POST
+/admin/user/add AdminAddUserR GET POST

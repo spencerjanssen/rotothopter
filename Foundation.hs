@@ -82,6 +82,7 @@ instance Yesod App where
     isAuthorized (AuthR _) _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
+    isAuthorized AdminConsoleR _ = isAdmin
     isAuthorized UpdateMtgJsonR _ = isAdmin
     isAuthorized AdminAddUserR _ = isAdmin
     -- Default to Authorized for now.
