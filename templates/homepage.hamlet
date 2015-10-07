@@ -1,8 +1,1 @@
 <h1>Welcome to rotothopter
-
-$maybe form <- mwidge
-    <div #form>
-        <form method=post action=@{HomeR}>
-            ^{form}
-            <button .btn .btn-primary type="submit">
-                Update name

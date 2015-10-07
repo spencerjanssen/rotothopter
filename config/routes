@@ -4,7 +4,7 @@
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
 
-/ HomeR GET POST
+/ HomeR GET
 /cubelist/new NewCubeListR GET POST
 /cubelist/#CubeId/view ViewCubeListR GET
 /cube/all AllCubesR GET
@@ -16,3 +16,4 @@
 /admin AdminConsoleR GET
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /admin/user/add AdminAddUserR GET POST
+/user/profile UserProfileR GET POST

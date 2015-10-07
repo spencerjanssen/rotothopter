@@ -1,0 +1,5 @@
+<div #form>
+    <form method=post action=@{UserProfileR}>
+        ^{form}
+        <button .btn .btn-primary type="submit">
+            Update name

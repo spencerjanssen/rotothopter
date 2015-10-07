@@ -10,16 +10,16 @@
       <ul .nav .navbar-nav>
         <li :mroute == Just HomeR:.active>
           <a href=@{HomeR}>Home
+        <li :mroute == Just AllCubesR:.active>
+          <a href=@{AllCubesR}>Cubes
+        <li :mroute == Just AllDraftsR:.active>
+          <a href=@{AllDraftsR}>Drafts
         $if fmap userAdmin muinfo == Just True
           <li :mroute == Just AdminConsoleR:.active>
             <a href=@{AdminConsoleR}>Admin Console
-          <li :mroute == Just AllCubesR:.active>
-            <a href=@{AllCubesR}>Cubes
-          <li :mroute == Just AllDraftsR:.active>
-            <a href=@{AllDraftsR}>Drafts
       <form .navbar-form .navbar-right action=@{logDest} method=GET>
         <button .btn .btn-default type=submit>#{logText}
-      <ul .nav .navbar-nav .navbar-right>
-        <li>
-          $maybe user <- muinfo
-            <a href="#">#{pseudonym user}
+      $maybe user <- muinfo
+        <ul .nav .navbar-nav .navbar-right>
+          <li :mroute == Just UserProfileR:.active>
+            <a href=@{UserProfileR}>#{pseudonym user}

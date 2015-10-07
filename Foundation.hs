@@ -128,6 +128,11 @@ instance Yesod App where
 
     makeLogger = return . appLogger
 
+requireUserInfo :: Handler User
+requireUserInfo = do
+    (Entity _ user) <- requireAuth
+    return user
+
 getUserInfo :: Handler (Maybe User)
 getUserInfo = do
     mu <- maybeAuthId

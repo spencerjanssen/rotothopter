@@ -39,6 +39,7 @@ library
                      Handler.AdminConsole
                      Handler.AllCubes
                      Handler.AllDrafts
+                     Handler.UserProfile
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
