@@ -1,0 +1,6 @@
+<h1>All Cubes
+
+<ul>
+    $forall Entity cid cube <- cubes
+        <li>
+            <a href=@{ViewCubeListR cid}>#{cubeCubeName cube}

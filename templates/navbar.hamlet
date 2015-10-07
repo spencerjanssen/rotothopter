@@ -13,6 +13,8 @@
         $if fmap userAdmin muinfo == Just True
           <li :mroute == Just AdminConsoleR:.active>
             <a href=@{AdminConsoleR}>Admin Console
+          <li :mroute == Just AllCubesR:.active>
+            <a href=@{AllCubesR}>Cubes
       <form .navbar-form .navbar-right action=@{logDest} method=GET>
         <button .btn .btn-default type=submit>#{logText}
       <ul .nav .navbar-nav .navbar-right>

@@ -6,7 +6,8 @@
 
 / HomeR GET POST
 /cubelist/new NewCubeListR GET POST
-/cubelist/view/#CubeId ViewCubeListR GET
+/cubelist/#CubeId/view ViewCubeListR GET
+/cube/all AllCubesR GET
 /draft/new NewDraftR GET POST
 /draft/#DraftId/view ViewDraftR GET
 /draft/#DraftId/pick/#Text MakeDraftPickR GET POST
