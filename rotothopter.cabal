@@ -38,6 +38,7 @@ library
                      Handler.WatchDraft
                      Handler.AdminConsole
                      Handler.AllCubes
+                     Handler.AllDrafts
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

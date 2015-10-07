@@ -1,11 +1,5 @@
 <h1>Welcome to rotothopter
 
-<h3>Running drafts:
-<ul>
-    $forall (did, _, cube) <- drafts
-        <li>
-            <a href=@{ViewDraftR did}>#{cubeCubeName cube}
-
 $maybe form <- mwidge
     <div #form>
         <form method=post action=@{HomeR}>

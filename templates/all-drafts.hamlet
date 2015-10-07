@@ -1,0 +1,5 @@
+<h1>All drafts:
+<ul>
+    $forall (did, _, cube) <- drafts
+        <li>
+            <a href=@{ViewDraftR did}>#{cubeCubeName cube}

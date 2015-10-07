@@ -9,6 +9,7 @@
 /cubelist/#CubeId/view ViewCubeListR GET
 /cube/all AllCubesR GET
 /draft/new NewDraftR GET POST
+/draft/all AllDraftsR GET
 /draft/#DraftId/view ViewDraftR GET
 /draft/#DraftId/pick/#Text MakeDraftPickR GET POST
 /draft/#DraftId/watch WatchDraftR GET
