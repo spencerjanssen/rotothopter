@@ -38,6 +38,7 @@ getViewDraftR draftId = do
         setTitle "View Cube Draft"
         addScriptRemote "http://timeago.yarp.com/jquery.timeago.js"
         addScriptRemote "http://momentjs.com/downloads/moment.min.js"
+        addScriptRemote "http://vdw.github.io/HideSeek/javascripts/vendor/jquery.hideseek.min.js"
         $(widgetFile "view-draft")
 
 utcTo8601 :: UTCTime -> String

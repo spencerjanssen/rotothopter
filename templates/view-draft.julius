@@ -18,4 +18,5 @@ jQuery(document).ready(function() {
         console.log('eventsource connection error:');
         console.log(err);
     };
+    $('#search').hideseek();
 });

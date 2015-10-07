@@ -46,12 +46,14 @@ $if isNextDrafter
                 $else
                     <span .glyphicon .glyphicon-arrow-left>
 <h3>Unpicked Cards
+<span .glyphicon .glyphicon-search>
+<input name=search id=search placeholder=Search type=search data-list=".unpicked">
 $forall (cat, cards) <- catcards
     <h4>
         $maybe gl <- cardCategoryGlyph cat
             <img src=@{gl}>
         #{show cat}
-    <ul>
+    <ul .unpicked>
         $forall card <- cards
             $with cname <- either id cardCardName card
                 <li>
