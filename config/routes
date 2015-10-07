@@ -5,8 +5,8 @@
 /robots.txt RobotsR GET
 
 / HomeR GET
-/cubelist/new NewCubeListR GET POST
-/cubelist/#CubeId/view ViewCubeListR GET
+/cube/new NewCubeListR GET POST
+/cube/#CubeId/view ViewCubeListR GET
 /cube/all AllCubesR GET
 /draft/new NewDraftR GET POST
 /draft/all AllDraftsR GET
