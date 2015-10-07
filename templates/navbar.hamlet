@@ -1,0 +1,21 @@
+<nav .navbar .navbar-default .navbar-static-top>
+  <div .container>
+    <div .navbar-header>
+      <button type=button .navbar-toggle .collapsed data-toggle=collapse data-target=#navbar aria-expanded=false aria-controls=navbar>
+        <span .sr-only>Toggle navigation
+        <span .icon-bar>
+        <span .icon-bar>
+        <span .icon-bar>
+    <div id=navbar .navbar-collapse .collapse>
+      <ul .nav .navbar-nav>
+        <li :mroute == Just HomeR:.active>
+          <a href=@{HomeR}>Home
+        $if fmap userAdmin muinfo == Just True
+          <li :mroute == Just AdminConsoleR:.active>
+            <a href=@{AdminConsoleR}>Admin Console
+      <form .navbar-form .navbar-right action=@{logDest} method=GET>
+        <button .btn .btn-default type=submit>#{logText}
+      <ul .nav .navbar-nav .navbar-right>
+        <li>
+          $maybe user <- muinfo
+            <a href="#">#{pseudonym user}

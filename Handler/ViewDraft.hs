@@ -36,7 +36,6 @@ getViewDraftR draftId = do
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle "View Cube Draft"
-        addScriptRemote jqueryCDN
         addScriptRemote "http://timeago.yarp.com/jquery.timeago.js"
         addScriptRemote "http://momentjs.com/downloads/moment.min.js"
         $(widgetFile "view-draft")

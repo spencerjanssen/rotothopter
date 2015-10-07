@@ -1,15 +1,3 @@
-$case muinfo
-    $of Just usr
-        <p>
-            Welcome back #
-            #{pseudonym usr} #
-            $if userAdmin usr
-                <a href=@{AdminConsoleR}>Admin console
-            <a href=@{AuthR LogoutR}>Log out
-    $of Nothing
-        <p>
-            You're not logged in. #
-            <a href=@{AuthR LoginR}>Log in
 $maybe msg <- mmsg
   <div #message>#{msg}
 ^{widget}

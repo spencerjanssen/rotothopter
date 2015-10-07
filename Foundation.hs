@@ -63,6 +63,14 @@ instance Yesod App where
         master <- getYesod
         mmsg <- getMessage
         muinfo <- getUserInfo
+        mroute <- getCurrentRoute
+        let (logDest, logText) = case muinfo of
+                                    Nothing -> (AuthR LoginR, "Log in" :: Text)
+                                    Just _ -> (AuthR LogoutR, "Log out")
+            bootstrapcss, bootstrapjs, jquery :: Text
+            bootstrapcss = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+            bootstrapjs = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
+            jquery = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
 
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and
@@ -70,8 +78,12 @@ instance Yesod App where
         -- value passed to hamletToRepHtml cannot be a widget, this allows
         -- you to use normal widget features in default-layout.
 
+        nav <- widgetToPageContent $
+            $(widgetFile "navbar")
         pc <- widgetToPageContent $ do
-            addStylesheet $ StaticR css_bootstrap_css
+            addStylesheetRemote bootstrapcss
+            addScriptRemote jquery
+            addScriptRemote bootstrapjs
             $(widgetFile "default-layout")
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
@@ -182,9 +194,6 @@ instance RenderMessage App FormMessage where
 
 unsafeHandler :: App -> Handler a -> IO a
 unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
-
-jqueryCDN :: Text
-jqueryCDN = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
 
 -- Note: Some functionality previously present in the scaffolding has been
 -- moved to documentation in the Wiki. Following are some hopefully helpful
