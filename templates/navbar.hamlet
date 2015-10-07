@@ -6,6 +6,7 @@
         <span .icon-bar>
         <span .icon-bar>
         <span .icon-bar>
+      <a class="navbar-brand" href=@{HomeR}>Rotothopter
     <div id=navbar .navbar-collapse .collapse>
       <ul .nav .navbar-nav>
         <li :mroute == Just HomeR:.active>
