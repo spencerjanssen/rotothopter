@@ -35,7 +35,9 @@ getViewDraftR draftId = do
     catcards <- categorizeUnknownCardList allowedCards
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
-        setTitle "View Cube Draft"
+        setTitle $ if isNextDrafter
+                    then "***Your turn to pick!"
+                    else "View Cube Draft"
         addScriptRemote "http://timeago.yarp.com/jquery.timeago.js"
         addScriptRemote "http://momentjs.com/downloads/moment.min.js"
         addScriptRemote "http://vdw.github.io/HideSeek/javascripts/vendor/jquery.hideseek.min.js"
