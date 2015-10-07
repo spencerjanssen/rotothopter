@@ -32,7 +32,7 @@ mkDerivation {
     yesod yesod-core yesod-test
   ];
   doHaddock = false;
-  doCheck = false;
+  doCheck = true;
   homepage = "https://github.com/spencerjanssen/rotothopter";
   license = stdenv.lib.licenses.bsd3;
 }

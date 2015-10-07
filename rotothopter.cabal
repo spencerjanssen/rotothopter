@@ -138,7 +138,7 @@ test-suite test
 
     build-depends: base
                  , rotothopter
-                 , yesod-test >= 1.4.3 && < 1.5
+                 , yesod-test >= 1.4.3
                  , yesod-core
                  , yesod
                  , persistent
