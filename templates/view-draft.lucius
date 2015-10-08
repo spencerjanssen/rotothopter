@@ -1,0 +1,4 @@
+#draft-table thead {
+    color: white;
+    background-color: black;
+}

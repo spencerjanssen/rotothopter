@@ -7,7 +7,7 @@ $if draftdone
 $if isNextDrafter
     <p>
         Your turn to draft! Click on a card in the cube list below to make a pick
-<table .table .table-striped .table-bordered .table-condensed>
+<table .table .table-striped .table-bordered .table-condensed id="draft-table">
     <thead>
         <tr>
             <th>

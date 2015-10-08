@@ -41,6 +41,7 @@ getViewDraftR draftId = do
         addScriptRemote "http://timeago.yarp.com/jquery.timeago.js"
         addScriptRemote "http://momentjs.com/downloads/moment.min.js"
         addScriptRemote "http://vdw.github.io/HideSeek/javascripts/vendor/jquery.hideseek.min.js"
+        addScript (StaticR jquery_stickytableheaders_min_js)
         $(widgetFile "view-draft")
 
 utcTo8601 :: UTCTime -> String
