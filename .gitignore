@@ -18,4 +18,3 @@ cabal.sandbox.config
 *.keter
 config/secret.yml
 result
-static/img/mana/
