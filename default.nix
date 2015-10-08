@@ -1,2 +1,3 @@
 { nixpkgs ? import <nixpkgs> {}, compiler ? "ghc7102" }:
-nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./rotothopter.nix { }
+let pkgs = import <nixpkgs> { };
+in nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./rotothopter.nix { }
