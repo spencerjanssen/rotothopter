@@ -87,3 +87,19 @@ authenticateAdmin = do
  where ident = "admin@test.com"
 
 authenticateA = authenticateAs "a@test.com"
+
+checkRequiresAuth route = do
+    it "redirects for user that is not logged in" $ do
+        get route
+        statusIs 303
+    it "fails for non-admin" $ do
+        authenticateA
+        get route
+        statusIs 403
+
+checkRequiresAdmin route = do
+    checkRequiresAuth route
+    it "succeeds for admin" $ do
+        authenticateAdmin
+        get route
+        statusIs 200
