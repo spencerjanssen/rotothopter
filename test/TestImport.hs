@@ -19,7 +19,7 @@ import Yesod.Test            as X
 import Database.Persist.Sqlite              (sqlDatabase, wrapConnection, createSqlPool)
 import qualified Database.Sqlite as Sqlite
 import Control.Monad.Logger                 (runLoggingT)
-import Settings (appDatabaseConf)
+import Settings (appDatabaseConf, appRoot)
 import Yesod.Core (messageLoggerSource)
 
 runDB :: SqlPersistM a -> YesodExample App a
@@ -73,3 +73,17 @@ getTables :: MonadIO m => ReaderT SqlBackend m [Text]
 getTables = do
     tables <- rawSql "SELECT name FROM sqlite_master WHERE type = 'table';" []
     return (fmap unSingle tables)
+
+authenticateAs email = do
+    root <- appRoot . appSettings  <$> getTestYesod
+    request $ do
+        setMethod "POST"
+        addPostParam "ident" email
+        setUrl $ root ++ "/auth/page/dummy"
+
+authenticateAdmin = do
+    runDB $ insert $ User ident True Nothing
+    authenticateAs ident
+ where ident = "admin@test.com"
+
+authenticateA = authenticateAs "a@test.com"
