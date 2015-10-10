@@ -22,15 +22,3 @@ spec = withApp $ do
             Just (Entity id _) <- runDB $ getBy $ UniqueCubeName testCubeName
             get $ ViewCubeListR id
             statusIs 200
-
-testCubeName = "Test Cube"
-testCubeList = ["Life", "Death" , "Life // Death", "Lightning Bolt"]
-
-postTestCube = do
-    get NewCubeListR
-    request $ do
-        addToken
-        byLabel "Cube name" testCubeName
-        byLabel "The cube list" (unlines testCubeList)
-        setMethod "POST"
-        setUrl NewCubeListR

@@ -4,7 +4,9 @@ import TestImport
 
 spec :: Spec
 spec = withApp $ do
-
     describe "getAllCubesR" $ do
-        error "Spec not implemented: getAllCubesR"
-
+        it "lists the posted cube" $ do
+            postTestCube
+            get AllCubesR
+            statusIs 200
+            htmlCount "#main li" 1
