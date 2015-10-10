@@ -114,11 +114,20 @@ checkRequiresAdmin route = do
 testCubeName = "Test Cube"
 testCubeList = ["Life", "Death" , "Life // Death", "Lightning Bolt"]
 
-postTestCube = do
+postCube name list = do
     get NewCubeListR
     request $ do
         addToken
-        byLabel "Cube name" testCubeName
-        byLabel "The cube list" (unlines testCubeList)
+        byLabel "Cube name" name
+        byLabel "The cube list" (unlines list)
         setMethod "POST"
         setUrl NewCubeListR
+
+postTestCube = postCube testCubeName testCubeList
+
+testLargeCubeName = "Large Cube"
+testLargeCube = ["Card_" ++  pack (show i) | i <- [1 :: Int .. 360]]
+
+testParticipants = [cons c "@test.com" | c <- take 6 ['a' ..]]
+
+testDraftRounds = 15 :: Int
