@@ -88,17 +88,24 @@ authenticateAdmin = do
 
 authenticateA = authenticateAs "a@test.com"
 
-checkRequiresAuth route = do
+checkFailsNonAuth route = do
     it "redirects for user that is not logged in" $ do
         get route
         statusIs 303
+
+checkRequiresAuth route = do
+    checkFailsNonAuth route
+    it "succeeds for regular user" $ do
+        authenticateA
+        get route
+        statusIs 200
+
+checkRequiresAdmin route = do
+    checkFailsNonAuth route
     it "fails for non-admin" $ do
         authenticateA
         get route
         statusIs 403
-
-checkRequiresAdmin route = do
-    checkRequiresAuth route
     it "succeeds for admin" $ do
         authenticateAdmin
         get route
