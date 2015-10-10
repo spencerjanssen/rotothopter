@@ -125,12 +125,17 @@ postCube name list = do
 
 postTestCube = postCube testCubeName testCubeList
 
+testLargeCubeName :: Text
 testLargeCubeName = "Large Cube"
+
+testLargeCube :: [Text]
 testLargeCube = ["Card_" ++  pack (show i) | i <- [1 :: Int .. 360]]
 
+testParticipants :: [Text]
 testParticipants = [cons c "@test.com" | c <- take 6 ['a' ..]]
 
-testDraftRounds = 15 :: Int
+testDraftRounds :: Int
+testDraftRounds = 5
 
 postDraft cube participants rounds = do
     mapM_ authenticateAs participants
@@ -144,3 +149,7 @@ postDraft cube participants rounds = do
         byLabel "Rounds" (pack $ show rounds)
         setMethod "POST"
         setUrl NewDraftR
+
+getOnlyDraftId = do
+    Just (Entity did _) <- runDB $ selectFirst ([] :: [Filter Draft]) []
+    return did
