@@ -15,38 +15,12 @@ Flag library-only
     Description:   Build for use with "yesod devel"
     Default:       False
 
-library
-    hs-source-dirs: ., app
-    exposed-modules: Application
-                     Foundation
-                     Import
-                     Import.NoFoundation
-                     Import.Mail
-                     Model
-                     Common
-                     Settings
-                     Settings.StaticFiles
-                     Handler.Common
-                     Handler.Home
-                     Handler.CubeList
-                     Handler.UpdateMtgJson
-                     Handler.NewDraft
-                     Handler.ViewDraft
-                     Handler.MakeDraftPick
-                     Handler.AdminAddUser
-                     Handler.PrettyCard
-                     Handler.WatchDraft
-                     Handler.AdminConsole
-                     Handler.AllCubes
-                     Handler.AllDrafts
-                     Handler.UserProfile
+executable         rotothopter
+    if flag(library-only)
+        Buildable: False
 
-    if flag(dev) || flag(library-only)
-        cpp-options:   -DDEVELOPMENT
-        ghc-options:   -Wall -fwarn-tabs -O0
-    else
-        ghc-options:   -Wall -fwarn-tabs -O2
-
+    main-is:           main.hs
+    hs-source-dirs:    ., app
     extensions: TemplateHaskell
                 QuasiQuotes
                 OverloadedStrings
@@ -102,14 +76,6 @@ library
                  , smtps-gmail
                  , mime-mail
                  , yesod-eventsource
-
-executable         rotothopter
-    if flag(library-only)
-        Buildable: False
-
-    main-is:           main.hs
-    hs-source-dirs:    app
-    build-depends:     base, rotothopter
 
     ghc-options:       -threaded -O2 -rtsopts -with-rtsopts=-N
 
