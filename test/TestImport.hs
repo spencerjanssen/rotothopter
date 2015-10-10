@@ -131,3 +131,16 @@ testLargeCube = ["Card_" ++  pack (show i) | i <- [1 :: Int .. 360]]
 testParticipants = [cons c "@test.com" | c <- take 6 ['a' ..]]
 
 testDraftRounds = 15 :: Int
+
+postDraft cube participants rounds = do
+    mapM_ authenticateAs participants
+
+    authenticateA
+    get NewDraftR
+    request $ do
+        addToken
+        byLabel "Cube Name" cube
+        byLabel "Participants" (unlines participants)
+        byLabel "Rounds" (pack $ show rounds)
+        setMethod "POST"
+        setUrl NewDraftR
