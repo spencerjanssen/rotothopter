@@ -116,9 +116,9 @@ executable         rotothopter
 
     main-is:           main.hs
     if flag(executable-only)
-        hs-source-dirs:    app
-    else
         hs-source-dirs:    app, .
+    else
+        hs-source-dirs:    app
     if ! flag(executable-only)
         build-depends: rotothopter, base
 

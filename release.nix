@@ -9,7 +9,7 @@ in
     rotothopter_static = roto (drv: {
         pname = "rotothopter_static";
         enableSharedExecutables = false;
-        configureFlags = [ "-fexecutable-only=true" ];
+        configureFlags = [ "-f executable-only" ];
         isLibrary = false;
         doCheck = false;
     });
