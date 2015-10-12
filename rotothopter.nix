@@ -7,7 +7,6 @@
 , transformers, unordered-containers, vector, wai-extra, wai-logger
 , warp, yaml, yesod, yesod-auth, yesod-core, yesod-eventsource
 , yesod-form, yesod-static, yesod-test
-, yesod-bin
 }:
 mkDerivation {
   pname = "rotothopter";
@@ -23,16 +22,21 @@ mkDerivation {
     shakespeare smtps-gmail template-haskell text time
     unordered-containers vector wai-extra wai-logger warp yaml yesod
     yesod-auth yesod-core yesod-eventsource yesod-form yesod-static
-    yesod-bin
   ];
-  executableHaskellDepends = [ base ];
+  executableHaskellDepends = [
+    aeson base bytestring classy-prelude classy-prelude-conduit
+    classy-prelude-yesod conduit containers data-default directory
+    fast-logger file-embed hjsmin http-conduit mime-mail monad-control
+    monad-logger persistent persistent-sqlite persistent-template safe
+    shakespeare smtps-gmail template-haskell text time
+    unordered-containers vector wai-extra wai-logger warp yaml yesod
+    yesod-auth yesod-core yesod-eventsource yesod-form yesod-static
+  ];
   testHaskellDepends = [
     base classy-prelude classy-prelude-yesod hspec monad-logger
     persistent persistent-sqlite resourcet shakespeare transformers
     yesod yesod-core yesod-test
   ];
-  doHaddock = false;
-  doCheck = true;
   homepage = "https://github.com/spencerjanssen/rotothopter";
   license = stdenv.lib.licenses.bsd3;
 }
