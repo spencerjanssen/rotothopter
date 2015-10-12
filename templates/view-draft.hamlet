@@ -26,6 +26,9 @@ $if isNextDrafter
                     <span .glyphicon .glyphicon-arrow-right>
                 $else
                     <span .glyphicon .glyphicon-arrow-down>
+                $if timestamp
+                    <br>
+                    #{prettyTimeDiff (timediffByRow row)}
             $forall col <- zipWith const (enumFrom 0) participants
                 <td>
                     $maybe pick <- Map.lookup (rcToPickNum draft (row, col)) pickmap

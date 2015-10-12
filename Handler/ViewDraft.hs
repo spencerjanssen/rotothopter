@@ -26,6 +26,10 @@ getViewDraftR draftId = do
             r <- [0 .. lastRow]
             Just d <- return $ Map.lookup (rcToPickNum draft (r, c)) timediffByCell
             return d
+        timediffByRow r = sum $ do
+            c <- zipWith const [0 ..] participants
+            Just d <- return $ Map.lookup (rcToPickNum draft (r, c)) timediffByCell
+            return d
         (isNextDrafter, draftdone)
          = case (mnextdrafter, muid) of
                 (Just nextdrafter, Just uid)
