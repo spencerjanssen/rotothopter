@@ -1,6 +1,10 @@
-<h1>All Cubes
+<h3>
+    <a href=@{NewCubeListR}>Create a new cube
+
+<h3>Existing cubes:
 
 <ul>
     $forall Entity cid cube <- cubes
         <li>
             <a href=@{ViewCubeListR cid}>#{cubeCubeName cube}
+
