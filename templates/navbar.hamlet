@@ -16,11 +16,28 @@
         <li :mroute == Just AllDraftsR:.active>
           <a href=@{AllDraftsR}>Drafts
         $if fmap userAdmin muinfo == Just True
-          <li :mroute == Just AdminConsoleR:.active>
-            <a href=@{AdminConsoleR}>Admin Console
-      <form .navbar-form .navbar-right action=@{logDest} method=GET>
-        <button .btn .btn-default type=submit>#{logText}
-      $maybe user <- muinfo
-        <ul .nav .navbar-nav .navbar-right>
-          <li :mroute == Just UserProfileR:.active>
-            <a href=@{UserProfileR}>#{pseudonym user}
+          <li :mroute == Just AdminConsoleR:.active .dropdown>
+            <a href=# .dropdown-toggle data-toggle=dropdown role=button>
+              Admin
+              <span .caret>
+            <ul .dropdown-menu>
+              <li>
+                <a href=@{AdminConsoleR}>Admin console
+              <li>
+                <a href=@{UpdateMtgJsonR}>Update cards
+              <li>
+                <a href=@{AdminAddUserR}>Add users
+      <ul .nav .navbar-nav .navbar-right>
+        $maybe user <- muinfo
+          <li .dropdown>
+            <a href=# .dropdown-toggle data-toggle=dropdown role=button>
+              Hello #{pseudonym user}
+              <span .caret>
+            <ul .dropdown-menu>
+              <li>
+                <a href=@{UserProfileR}>Your Profile
+              <li>
+                <a href=@{AuthR LogoutR}>Log out
+        $nothing
+          <li>
+            <a href=@{AuthR LoginR}>Log in
