@@ -1,4 +1,7 @@
-<h1>All drafts:
+<h3>
+    <a href=@{NewDraftR}>Start a new draft
+
+<h3>All drafts:
 <ul>
     $forall (did, _, cube) <- drafts
         <li>
