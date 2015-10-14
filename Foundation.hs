@@ -180,7 +180,7 @@ instance YesodAuth App where
         return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins (App {appSettings}) = [authBrowserId def] ++ dauth ++ gauth
+    authPlugins (App {appSettings}) = gauth ++ [authBrowserId def] ++ dauth
      where
         dauth | allowDummyAuth appSettings = [authDummy]
               | otherwise                  = []
