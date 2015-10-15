@@ -13,7 +13,7 @@ getAdminAddUserR = do
 postAdminAddUserR :: Handler Html
 postAdminAddUserR = do
     ((FormSuccess (email, pseudo), _), _) <- runFormPost newUserForm
-    runDB $ insert (User email False pseudo)
+    _ <- runDB $ insert (User email False pseudo)
     redirect AdminAddUserR
 
 newUserForm :: Form (Text, Maybe Text)

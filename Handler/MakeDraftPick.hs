@@ -3,7 +3,6 @@ module Handler.MakeDraftPick where
 import Import
 import Import.Mail
 import Common
-import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Text.Shakespeare.Text
 import qualified Prelude (last)
 import Handler.PrettyCard
@@ -12,7 +11,7 @@ getMakeDraftPickR :: DraftId -> Text -> Handler Html
 getMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
-    when (uid `notElem` draftParticipants draft) $ fail "you are not in this draft"
+    when (uid `onotElem` draftParticipants draft) $ fail "you are not in this draft"
     picks <- getDraftPicks draftId
     mcardinfo <- maybeCardInfo cardToPick
     case getNextDrafter draft picks of
@@ -28,20 +27,21 @@ postMakeDraftPickR :: DraftId -> Text -> Handler Html
 postMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
-    when (uid `notElem` draftParticipants draft) $ fail "you are not in this draft"
+    when (uid `onotElem` draftParticipants draft) $ fail "you are not in this draft"
     picks <- getDraftPicks draftId
     case getNextDrafter draft picks of
         Nothing -> fail "this draft has completed, you can't make a pick"
         Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
-                  | otherwise -> actualPostMakeDraftPickR draftId uid (map draftPickCard picks) draft cardToPick
+                  | otherwise -> actualPostMakeDraftPickR draftId uid picks draft cardToPick
 
+actualPostMakeDraftPickR :: DraftId -> Key User -> [DraftPick] -> Draft -> Text -> Handler b
 actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
     allowedCards <- getPickAllowedCards draftId draft
-    if cardToPick `elem` allowedCards
+    if cardToPick `oelem` allowedCards
         then do
             t <- liftIO getCurrentTime
             let thepick = DraftPick draftId (length picks) cardToPick uid t
-            dpid <- runDB $ insert $ thepick
+            _ <- runDB $ insert $ thepick
             checkSendEmail draftId draft uid
             notifyDraftWatcher thepick
             redirect (ViewDraftR draftId)
@@ -58,10 +58,10 @@ checkSendEmail draftId draft olduid = do
         Just newuid | newuid /= olduid -> do
             Just user <- runDB $ get newuid
             let lastpick = Prelude.last picks
-                round = 1 + ((length picks + 1) `div` length (draftParticipants draft))
+                rnd = 1 + ((length picks + 1) `div` length (draftParticipants draft))
             url <- routeToTextUrl (ViewDraftR draftId)
             Just lastpicker <- runDB $ get (draftPickDrafter lastpick)
-            sendEmail user ("Time for draft round " ++ pack (show round)) $ [st|
+            sendEmail user ("Time for draft round " ++ pack (show rnd)) $ [st|
 #{pseudonym lastpicker} just drafted #{draftPickCard lastpick}.
 
 It is time to make your pick.

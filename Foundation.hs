@@ -64,10 +64,7 @@ instance Yesod App where
         mmsg <- getMessage
         muinfo <- getUserInfo
         mroute <- getCurrentRoute
-        let (logDest, logText) = case muinfo of
-                                    Nothing -> (AuthR LoginR, "Log in" :: Text)
-                                    Just _ -> (AuthR LogoutR, "Log out")
-            bootstrapcss, bootstrapjs, jquery :: Text
+        let bootstrapcss, bootstrapjs, jquery :: Text
             bootstrapcss = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
             bootstrapjs = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
             jquery = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
@@ -149,9 +146,7 @@ isAdmin = do
         _ -> return $ Unauthorized "you are not a site admin"
 
 pseudonym :: User -> Text
-pseudonym u = case userDisplayName u of
-    Nothing -> userIdent u
-    Just dn -> dn
+pseudonym u = fromMaybe (userIdent u) (userDisplayName u)
 
 -- How to run database actions.
 instance YesodPersist App where

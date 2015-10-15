@@ -7,5 +7,5 @@
             $case carddetails
                 $of Nothing
                     name not found!
-                $of Just (Entity _ det)
+                $of Just (Entity _ _)
                     found!

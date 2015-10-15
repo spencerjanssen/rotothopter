@@ -3,6 +3,7 @@ module Handler.PrettyCard where
 import Import
 import qualified Data.Map as Map
 
+maybeCardInfo :: Text -> Handler (Maybe Card)
 maybeCardInfo cname = fmap (fmap entityVal) $ runDB $ getBy (CardName cname)
 
 cardImgUrl :: Card -> Text
@@ -10,7 +11,7 @@ cardImgUrl c = base ++ cardCardName c
  where
     base = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
 
--- colorBadge :: Card -> Text
+colorBadge :: Card -> Route App
 colorBadge card = StaticR $ case sort $ cardCardColors card of
     ["White"] -> img_mana_15_w_png
     ["Blue"] -> img_mana_15_u_png
@@ -35,6 +36,7 @@ colorBadge card = StaticR $ case sort $ cardCardColors card of
             else img_mana_15_0_png
     _ -> img_mana_15_snow_png
 
+prettyCard :: Text -> WidgetT App IO ()
 prettyCard cname = do
     mcard <- handlerToWidget $ maybeCardInfo cname
     $(widgetFile "inline-card")
@@ -51,6 +53,7 @@ data CardCategory
     | ArtifactColorless
  deriving (Eq, Ord, Show)
 
+cardCategoryGlyph :: CardCategory -> Maybe (Route App)
 cardCategoryGlyph cat = StaticR <$> case cat of
     White -> Just img_mana_40_w_png
     Blue -> Just img_mana_40_u_png
@@ -82,4 +85,4 @@ categorizeCardList cs = Map.toList $ Map.fromListWith (flip (++)) [(categorize c
 
 categorizeUnknownCardList :: [Text] -> Handler [(CardCategory, [Either Text Card])]
 categorizeUnknownCardList ts =
-    categorizeCardList <$> forM ts (\t -> maybe (Left t) (Right) <$> maybeCardInfo t)
+    categorizeCardList <$> forM ts (\t -> maybe (Left t) Right <$> maybeCardInfo t)
