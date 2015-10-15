@@ -3,8 +3,8 @@ module Handler.ViewDraftSpec (spec) where
 import TestImport
 
 spec :: Spec
-spec = withApp $ do
-    describe "getViewDraftR" $ do
+spec = withApp $
+    describe "getViewDraftR" $
         it "displays a draft" $ do
             postCube testLargeCubeName testLargeCube
             postDraft testLargeCubeName testParticipants testDraftRounds

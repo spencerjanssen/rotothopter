@@ -4,10 +4,10 @@ import TestImport
 
 spec :: Spec
 spec = withApp $ do
-    describe "getAdminAddUserR" $ do
+    describe "getAdminAddUserR" $
         checkRequiresAdmin AdminAddUserR
 
-    describe "postAdminAddUserR" $ do
+    describe "postAdminAddUserR" $
         it "allows admin to add a user" $ do
             authenticateAdmin
             get AdminAddUserR

@@ -35,4 +35,4 @@ draftForm uid = renderBootstrap3 BootstrapBasicForm $ Draft uid
         return $ sequence validatedNames
     cubeField = checkMMap findCube (cubeCubeName . entityVal) textField
     findCube txt =
-        maybe (Left txt) Right <$> (runDB $ getBy $ UniqueCubeName txt)
+        maybe (Left txt) Right <$> runDB (getBy $ UniqueCubeName txt)

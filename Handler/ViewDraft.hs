@@ -9,7 +9,7 @@ import qualified Data.Map as Map
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
-    Just participants <- sequence <$> (runDB $ mapM get $ draftParticipants draft)
+    Just participants <- sequence <$> runDB (mapM get $ draftParticipants draft)
     Just (Cube cubename _) <- runDB $ get $ draftCubeId draft
     picks <- getDraftPicks draftId
     muid <- maybeAuthId
@@ -52,7 +52,7 @@ utcTo8601 :: UTCTime -> String
 utcTo8601 = formatTime defaultTimeLocale $ iso8601DateFormat (Just "%H:%M:%S%z")
 
 isLeftToRightRow :: Draft -> Int -> Bool
-isLeftToRightRow _ r = even r
+isLeftToRightRow = const even
 
 pickNumToRC :: Draft -> Int -> (Int, Int)
 pickNumToRC draft i = (r, c)

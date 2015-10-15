@@ -3,8 +3,8 @@ module Handler.AllCubesSpec (spec) where
 import TestImport
 
 spec :: Spec
-spec = withApp $ do
-    describe "getAllCubesR" $ do
+spec = withApp $
+    describe "getAllCubesR" $
         it "lists the posted cube" $ do
             postTestCube
             get AllCubesR

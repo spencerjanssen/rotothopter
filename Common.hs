@@ -10,7 +10,7 @@ getCubeCards cuid = do
     return cs
 
 getDraftPicks :: DraftId -> Handler [DraftPick]
-getDraftPicks draftId = runDB $ do
+getDraftPicks draftId = runDB $
     map entityVal <$> selectList [DraftPickDraftId ==. draftId] [Asc DraftPickPickNumber]
 
 getDraft :: DraftId -> Handler Draft
@@ -56,7 +56,7 @@ notifyDraftWatcher dp
  = atomically =<< withDraftWatch
                     (draftPickDraftId dp)
                     (Just $ return ()) 
-                    (\tc -> writeTChan tc dp)
+                    (`writeTChan` dp)
 
 subscribeDraftWatcher :: DraftId -> Handler (TChan DraftPick)
 subscribeDraftWatcher did

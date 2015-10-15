@@ -3,8 +3,8 @@ module Handler.AllDraftsSpec (spec) where
 import TestImport
 
 spec :: Spec
-spec = withApp $ do
-    describe "getAllDraftsR" $ do
+spec = withApp $
+    describe "getAllDraftsR" $
         it "shows the single posted draft" $ do
             postCube testLargeCubeName testLargeCube
             postDraft testLargeCubeName testParticipants testDraftRounds

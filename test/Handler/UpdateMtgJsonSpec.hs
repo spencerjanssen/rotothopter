@@ -3,9 +3,9 @@ module Handler.UpdateMtgJsonSpec (spec) where
 import TestImport
 
 spec :: Spec
-spec = withApp $ do
+spec = withApp $
 
-    describe "getUpdateMtgJsonR" $ do
+    describe "getUpdateMtgJsonR" $
         checkRequiresAdmin UpdateMtgJsonR
 
     {-

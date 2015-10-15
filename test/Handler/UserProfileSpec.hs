@@ -7,7 +7,7 @@ spec = withApp $ do
     describe "getUserProfileR" $
         checkRequiresAuth UserProfileR
 
-    describe "postUserProfileR" $ do
+    describe "postUserProfileR" $
         it "allows user to update name" $ do
             authenticateA
             get UserProfileR

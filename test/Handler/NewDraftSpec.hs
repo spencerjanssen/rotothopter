@@ -4,10 +4,10 @@ import TestImport
 
 spec :: Spec
 spec = withApp $ do
-    describe "getNewDraftR" $ do
+    describe "getNewDraftR" $
         checkRequiresAuth NewDraftR
 
-    describe "postNewDraftR" $ do
+    describe "postNewDraftR" $
         it "posts a new draft" $ do
             postCube testLargeCubeName testLargeCube
             authenticateA

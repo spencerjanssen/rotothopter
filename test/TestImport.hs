@@ -60,11 +60,11 @@ wipeDB app = do
     flip runSqlPersistMPool pool $ do
         tables <- getTables
         sqlBackend <- ask
-        let queries = map (\t -> "DELETE FROM " ++ (connEscapeName sqlBackend $ DBName t)) tables
+        let queries = map (\t -> "DELETE FROM " ++ connEscapeName sqlBackend (DBName t)) tables
         forM_ queries (\q -> rawExecute q [])
 
 rawConnection :: Text -> IO Sqlite.Connection
-rawConnection t = Sqlite.open t
+rawConnection = Sqlite.open
 
 disableForeignKeys :: Sqlite.Connection -> IO ()
 disableForeignKeys conn = Sqlite.prepare conn "PRAGMA foreign_keys = OFF;" >>= void . Sqlite.step
@@ -88,7 +88,7 @@ authenticateAdmin = do
 
 authenticateA = authenticateAs "a@test.com"
 
-checkFailsNonAuth route = do
+checkFailsNonAuth route =
     it "redirects for user that is not logged in" $ do
         get route
         statusIs 303

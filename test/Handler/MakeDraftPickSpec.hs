@@ -4,7 +4,7 @@ import TestImport
 
 spec :: Spec
 spec = withApp $ do
-    describe "getMakeDraftPickR" $ do
+    describe "getMakeDraftPickR" $
         it "grants access to the correct person" $ do
             did <- initialize
             let (a:b:_) = testParticipants
@@ -19,7 +19,7 @@ spec = withApp $ do
             -- get $ MakeDraftPickR did "card that isn't in the cube"
             -- statusIs 500
 
-    describe "postMakeDraftPickR" $ do
+    describe "postMakeDraftPickR" $
         it "completes a draft successfully" $ do
             did <- initialize
             forM_ picks $ \(i, good_p) -> do
