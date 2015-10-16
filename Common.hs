@@ -23,7 +23,7 @@ pickOrder drafters = concat . repeat $ drafters ++ reverse drafters
 
 -- returns Nothing if the draft is complete
 getNextDrafter :: Draft -> [DraftPick] -> Maybe UserId
-getNextDrafter (Draft _ _ uids n _) picks = go 0 (map draftPickDrafter picks) (pickOrder uids)
+getNextDrafter (Draft _ _ uids n _) picks = go 0 (view draftPickDrafter <$> picks) (pickOrder uids)
  where
     maxPick = fromIntegral (length uids) * n
     go i _ _ | i >= maxPick = Nothing
@@ -33,8 +33,8 @@ getNextDrafter (Draft _ _ uids n _) picks = go 0 (map draftPickDrafter picks) (p
 
 getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
 getPickAllowedCards did draft = do
-    cubeCards <- getCubeCards (draftCubeId draft)
-    picks <- map draftPickCard <$> getDraftPicks did
+    cubeCards <- getCubeCards (draft ^. draftCubeId)
+    picks <- map (view draftPickCard) <$> getDraftPicks did
     return (Set.toList (Set.fromList cubeCards Set.\\ Set.fromList picks))
 
 withDraftWatch :: DraftId -> Maybe (STM a) -> (TChan DraftPick -> STM a) -> Handler (STM a)
@@ -54,8 +54,8 @@ withDraftWatch did readFail f = do
 notifyDraftWatcher :: DraftPick -> Handler ()
 notifyDraftWatcher dp
  = atomically =<< withDraftWatch
-                    (draftPickDraftId dp)
-                    (Just $ return ()) 
+                    (dp ^. draftPickDraftId)
+                    (Just $ return ())
                     (`writeTChan` dp)
 
 subscribeDraftWatcher :: DraftId -> Handler (TChan DraftPick)

@@ -140,13 +140,13 @@ getUserInfo = do
 isAdmin :: Handler AuthResult
 isAdmin = do
     muser <- getUserInfo
-    case muser of
-        Nothing -> return AuthenticationRequired
-        Just (User {userAdmin = True}) -> return Authorized
-        _ -> return $ Unauthorized "you are not a site admin"
+    return $ case view userAdmin <$> muser of
+        Nothing -> AuthenticationRequired
+        Just True -> Authorized
+        Just False -> Unauthorized "you are not a site admin"
 
 pseudonym :: User -> Text
-pseudonym u = fromMaybe (userIdent u) (userDisplayName u)
+pseudonym u = fromMaybe (u ^. userIdent) (u ^. userDisplayName)
 
 -- How to run database actions.
 instance YesodPersist App where

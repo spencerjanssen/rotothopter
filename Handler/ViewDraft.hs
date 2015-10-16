@@ -9,19 +9,19 @@ import qualified Data.Map as Map
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
-    Just participants <- sequence <$> runDB (mapM get $ draftParticipants draft)
-    Just (Cube cubename _) <- runDB $ get $ draftCubeId draft
+    Just participants <- sequence <$> runDB (mapM get $ draft ^. draftParticipants)
+    Just (Cube cubename _) <- runDB $ get $ draft ^. draftCubeId
     picks <- getDraftPicks draftId
     muid <- maybeAuthId
     allowedCards <- getPickAllowedCards draftId draft
-    let pickmap = Map.fromList $ map (\p -> (draftPickPickNumber p, p)) picks
-        lastRow = min (fromIntegral $ draftRounds draft-1) . fst
+    let pickmap = Map.fromList $ map (\p -> (p ^. draftPickPickNumber, p)) picks
+        lastRow = min (fromIntegral $ view draftRounds draft-1) . fst
                 . pickNumToRC draft $ Map.size pickmap
         mnextdrafter = getNextDrafter draft picks
         timediffByCell = Map.fromList $ do
             (p1, p2) <- zip picks (drop 1 picks)
-            return ( draftPickPickNumber p2
-                   , diffUTCTime (draftPickCreated p2) (draftPickCreated p1))
+            return ( p2 ^. draftPickPickNumber
+                   , diffUTCTime (p2 ^. draftPickCreated) (p1 ^. draftPickCreated))
         timediffByCol c = sum $ do
             r <- [0 .. lastRow]
             Just d <- return $ Map.lookup (rcToPickNum draft (r, c)) timediffByCell
@@ -57,7 +57,7 @@ isLeftToRightRow = const even
 pickNumToRC :: Draft -> Int -> (Int, Int)
 pickNumToRC draft i = (r, c)
  where
-    n = length $ draftParticipants draft
+    n = length $ draft ^. draftParticipants
     r = i `div` n
     dir | isLeftToRightRow draft r = id
         | otherwise                = (pred n -)
@@ -66,7 +66,7 @@ pickNumToRC draft i = (r, c)
 rcToPickNum :: Draft -> (Int, Int) -> Int
 rcToPickNum draft (r, c) = r * n + dir c
  where
-    n = length $ draftParticipants draft
+    n = length $ draft ^. draftParticipants
     dir | isLeftToRightRow draft r = id
         | otherwise                = flip subtract (pred n)
 

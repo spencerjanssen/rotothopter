@@ -6,7 +6,9 @@ getAllDraftsR :: Handler Html
 getAllDraftsR = do
     drafts <- runDB $ do
         ds <- selectList ([] :: [Filter Draft]) []
-        mapM (\(Entity did d) -> do Just cu <- get (draftCubeId d); return (did, d, cu)) ds
+        forM ds $ \(Entity did d) -> do
+            Just cu <- get (view draftCubeId d)
+            return (did, d, cu)
     defaultLayout $ do
         setTitle "All Drafts"
         $(widgetFile "all-drafts")

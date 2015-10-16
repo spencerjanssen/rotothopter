@@ -5,8 +5,16 @@ module TestImport
 
 import qualified Prelude (id)
 import Application           (makeFoundation)
-import ClassyPrelude         as X
-import Database.Persist      as X hiding (get)
+import ClassyPrelude         as X hiding
+    ( Index
+    , index
+    , uncons
+    , unsnoc
+    , cons
+    , snoc
+    , (<.>)
+    )
+import Database.Persist      as X hiding (get, (<.))
 import Database.Persist.Sql  (SqlPersistM, SqlBackend, runSqlPersistMPool, rawExecute, rawSql, unSingle, connEscapeName)
 import Foundation            as X
 import Model                 as X
@@ -14,6 +22,7 @@ import Test.Hspec            as X
 import Text.Shakespeare.Text (st)
 import Yesod.Default.Config2 (ignoreEnv, loadAppSettings)
 import Yesod.Test            as X
+import Control.Lens as X
 
 -- Wiping the database
 import Database.Persist.Sqlite              (sqlDatabase, wrapConnection, createSqlPool)

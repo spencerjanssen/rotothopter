@@ -20,7 +20,7 @@ spec = withApp $ do
                 setUrl AdminAddUserR
             statusIs 303
             Just (Entity _ usr) <- runDB $ getBy $ UniqueUser x
-            assertEqual "userIdent" x (userIdent usr)
-            assertEqual "userDisplayName" (Just xname) (userDisplayName usr)
+            assertEqual "userIdent" x (usr ^. userIdent)
+            assertEqual "userDisplayName" (Just xname) (usr ^. userDisplayName)
  where
     (x, xname) = ("x@test.com", "Xavier")

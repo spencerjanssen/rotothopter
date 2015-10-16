@@ -7,7 +7,7 @@ import Data.Text (strip)
 getUserProfileR :: Handler Html
 getUserProfileR = do
     user <- requireUserInfo
-    (form, _) <- generateFormPost $ userDetailsForm (userDisplayName user)
+    (form, _) <- generateFormPost $ userDetailsForm (user ^. userDisplayName)
     defaultLayout $ do
         setTitle "User Profile"
         $(widgetFile "user-profile")

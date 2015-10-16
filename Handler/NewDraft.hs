@@ -26,13 +26,13 @@ draftForm uid = renderBootstrap3 BootstrapBasicForm $ Draft uid
     <*> (map entityKey <$> areq participantsField "Participants" Nothing)
     <*> areq intField "Rounds" (Just 45)
  where
-    participantsField = checkMMap findParticipants (Textarea . unlines . map (userIdent . entityVal)) textareaField
+    participantsField = checkMMap findParticipants (Textarea . unlines . map (view userIdent . entityVal)) textareaField
     findParticipants txt = do
         let names = map strip . lines $ unTextarea txt :: [Text]
         validatedNames <- runDB $
             forM names $
                 \n -> maybe (Left n) Right <$> getBy (UniqueUser n)
         return $ sequence validatedNames
-    cubeField = checkMMap findCube (cubeCubeName . entityVal) textField
+    cubeField = checkMMap findCube (view cubeCubeName . entityVal) textField
     findCube txt =
         maybe (Left txt) Right <$> runDB (getBy $ UniqueCubeName txt)

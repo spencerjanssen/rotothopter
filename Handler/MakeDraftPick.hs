@@ -11,7 +11,7 @@ getMakeDraftPickR :: DraftId -> Text -> Handler Html
 getMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
-    when (uid `onotElem` draftParticipants draft) $ fail "you are not in this draft"
+    when (uid `onotElem` (draft ^. draftParticipants)) $ fail "you are not in this draft"
     picks <- getDraftPicks draftId
     mcardinfo <- maybeCardInfo cardToPick
     case getNextDrafter draft picks of
@@ -27,7 +27,7 @@ postMakeDraftPickR :: DraftId -> Text -> Handler Html
 postMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
-    when (uid `onotElem` draftParticipants draft) $ fail "you are not in this draft"
+    when (uid `onotElem` view draftParticipants draft) $ fail "you are not in this draft"
     picks <- getDraftPicks draftId
     case getNextDrafter draft picks of
         Nothing -> fail "this draft has completed, you can't make a pick"
@@ -58,11 +58,11 @@ checkSendEmail draftId draft olduid = do
         Just newuid | newuid /= olduid -> do
             Just user <- runDB $ get newuid
             let lastpick = Prelude.last picks
-                rnd = 1 + ((length picks + 1) `div` length (draftParticipants draft))
+                rnd = 1 + ((length picks + 1) `div` length (draft ^. draftParticipants))
             url <- routeToTextUrl (ViewDraftR draftId)
-            Just lastpicker <- runDB $ get (draftPickDrafter lastpick)
+            Just lastpicker <- runDB $ get (lastpick ^. draftPickDrafter)
             sendEmail user ("Time for draft round " ++ pack (show rnd)) $ [st|
-#{pseudonym lastpicker} just drafted #{draftPickCard lastpick}.
+#{pseudonym lastpicker} just drafted #{lastpick ^. draftPickCard}.
 
 It is time to make your pick.
 

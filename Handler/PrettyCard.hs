@@ -7,12 +7,12 @@ maybeCardInfo :: Text -> Handler (Maybe Card)
 maybeCardInfo cname = fmap (fmap entityVal) $ runDB $ getBy (CardName cname)
 
 cardImgUrl :: Card -> Text
-cardImgUrl c = base ++ cardCardName c
+cardImgUrl c = base ++ c ^. cardCardName
  where
     base = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
 
 colorBadge :: Card -> Route App
-colorBadge card = StaticR $ case sort $ cardCardColors card of
+colorBadge card = StaticR $ case sort $ card ^. cardCardColors of
     ["White"] -> img_mana_15_w_png
     ["Blue"] -> img_mana_15_u_png
     ["Black"] -> img_mana_15_b_png
@@ -31,7 +31,7 @@ colorBadge card = StaticR $ case sort $ cardCardColors card of
         ("Black", "White") -> img_mana_15_wb_png
         ("Blue", "White") -> img_mana_15_wu_png
         _ -> img_mana_15_snow_png
-    [] -> if "Land" `elem` cardCardTypes card
+    [] -> if "Land" `elem` (card ^. cardCardTypes)
             then img_mana_15_tap_png
             else img_mana_15_0_png
     _ -> img_mana_15_snow_png
@@ -76,8 +76,8 @@ categorize (Right card) = case colors of
     (_:_:_) -> Multicolor
     _ -> ArtifactColorless
  where
-    types = cardCardTypes card
-    colors = cardCardColors card
+    types = card ^. cardCardTypes
+    colors = card ^. cardCardColors
 
 categorizeCardList :: [Either Text Card] -> [(CardCategory, [Either Text Card])]
 categorizeCardList cs = Map.toList $ Map.fromListWith (flip (++)) [(categorize c, [c]) | c <- cs]

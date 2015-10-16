@@ -19,4 +19,4 @@ spec = withApp $ do
                 setUrl UserProfileR
             statusIs 303
             Just (Entity _ usr) <- runDB $ getBy $ UniqueUser "a@test.com"
-            assertEqual "userDisplayName" (Just "Adam") (userDisplayName usr)
+            assertEqual "userDisplayName" (Just "Adam") (usr ^. userDisplayName)

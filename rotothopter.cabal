@@ -109,6 +109,7 @@ library
                  , smtps-gmail
                  , mime-mail
                  , yesod-eventsource
+                 , lens
 
 executable         rotothopter
     if flag(library-only)
@@ -161,6 +162,7 @@ executable         rotothopter
                  , smtps-gmail
                  , mime-mail
                  , yesod-eventsource
+                 , lens
 
     extensions: TemplateHaskell
                 QuasiQuotes
@@ -217,5 +219,6 @@ test-suite test
                  , hspec >= 2.0.0
                  , classy-prelude
                  , classy-prelude-yesod
+                 , lens
     if flag(executable-only)
         buildable: False

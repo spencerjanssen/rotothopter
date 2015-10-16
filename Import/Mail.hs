@@ -16,10 +16,10 @@ sendEmail :: User -> Text -> Text -> Handler ()
 sendEmail user subj msg = forkHandler excs $ do
     creds <- getGmailCreds
     case creds of
-        Just (from, password) -> 
-            liftIO $ sendGmail (fromStrict from) (fromStrict password)
-                (Address (Just "Rotothopter") from) -- from
-                [Address Nothing $ userIdent user] -- to
+        Just (from_, password) -> 
+            liftIO $ sendGmail (fromStrict from_) (fromStrict password)
+                (Address (Just "Rotothopter") from_) -- from
+                [Address Nothing $ user ^. userIdent] -- to
                 [] [] -- cc and bcc
                 subj
                 (fromStrict msg)

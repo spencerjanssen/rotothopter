@@ -15,7 +15,7 @@
           <a href=@{AllCubesR}>Cubes
         <li :mroute == Just AllDraftsR:.active>
           <a href=@{AllDraftsR}>Drafts
-        $if fmap userAdmin muinfo == Just True
+        $if fmap (view userAdmin) muinfo == Just True
           <li :mroute == Just AdminConsoleR:.active .dropdown>
             <a href=# .dropdown-toggle data-toggle=dropdown role=button>
               Admin
