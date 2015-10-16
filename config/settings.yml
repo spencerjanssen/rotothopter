@@ -27,4 +27,4 @@ database:
   poolsize: "_env:SQLITE_POOLSIZE:10"
 
 copyright: copyright 2015. Spencer Janssen
-#analytics: UA-YOURCODE
+analytics: UA-68954918-1
