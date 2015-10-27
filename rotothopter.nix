@@ -35,7 +35,7 @@ mkDerivation {
     yesod-static
   ];
   testHaskellDepends = [
-    base classy-prelude classy-prelude-yesod hspec monad-logger
+    base classy-prelude classy-prelude-yesod hspec lens monad-logger
     persistent persistent-sqlite resourcet shakespeare transformers
     yesod yesod-core yesod-test
   ];
