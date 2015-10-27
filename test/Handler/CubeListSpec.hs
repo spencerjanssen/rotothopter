@@ -6,6 +6,7 @@ spec :: Spec
 spec = withApp $ do
     describe "getNewCubeListR" $
         it "loads the page" $ do
+            authenticateA
             get NewCubeListR
             statusIs 200
 

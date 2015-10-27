@@ -124,6 +124,7 @@ testCubeName = "Test Cube"
 testCubeList = ["Life", "Death" , "Life // Death", "Lightning Bolt"]
 
 postCube name list = do
+    authenticateA
     get NewCubeListR
     request $ do
         addToken

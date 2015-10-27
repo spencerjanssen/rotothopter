@@ -6,7 +6,7 @@ import qualified Data.Map as Map
 
 getCubeCards :: CubeId -> Handler [Text]
 getCubeCards cuid = do
-    Just (Cube _ cs) <- runDB $ get cuid
+    Just (Cube _ _ cs) <- runDB $ get cuid
     return cs
 
 getPicks :: DraftId -> Handler [Pick]

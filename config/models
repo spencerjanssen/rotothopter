@@ -6,6 +6,7 @@ User
     deriving Typeable
     deriving Show
 Cube
+    creator UserId
     name Text
     list [Text]
     UniqueCubeName name

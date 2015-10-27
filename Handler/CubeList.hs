@@ -6,26 +6,28 @@ import Data.Text (strip)
 
 getNewCubeListR :: Handler Html
 getNewCubeListR = do
-    (formWidget, formEnctype) <- generateFormPost cubeForm
+    uid <- requireAuthId
+    (formWidget, formEnctype) <- generateFormPost $ cubeForm uid
     defaultLayout $ do
         setTitle "Post your cube list"
         $(widgetFile "post-cubelist")
 
 postNewCubeListR :: Handler Html
 postNewCubeListR = do
-    ((FormSuccess newCube, _), _) <- runFormPost cubeForm
+    uid <- requireAuthId
+    ((FormSuccess newCube, _), _) <- runFormPost $ cubeForm uid
     cid <- runDB $ insert newCube
     redirect (ViewCubeListR cid)
 
-cubeForm :: Form Cube
-cubeForm = renderBootstrap3 BootstrapBasicForm $ Cube
+cubeForm :: UserId -> Form Cube
+cubeForm uid = renderBootstrap3 BootstrapBasicForm $ Cube uid
     <$> areq textField "Cube name" Nothing
     <*> ((map strip . lines . unTextarea) <$> areq textareaField "The cube list" Nothing)
 
 getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
     (cname, cs) <- runDB $ do
-        Just (Cube cname ccards) <- get cid
+        Just (Cube _ cname ccards) <- get cid
         cs <- forM ccards $ \c -> (,) c <$> getBy (UniqueCardName c)
         return (cname, cs)
     defaultLayout $ do
