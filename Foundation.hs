@@ -23,7 +23,7 @@ data App = App
     , appConnPool    :: ConnectionPool -- ^ Database connection pool.
     , appHttpManager :: Manager
     , appLogger      :: Logger
-    , appDraftWatchers :: TVar (Map DraftId (TChan DraftPick))
+    , appDraftWatchers :: TVar (Map DraftId (TChan Pick))
     }
 
 instance HasHttpManager App where

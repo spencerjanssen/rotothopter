@@ -26,7 +26,7 @@ getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
     (cname, cs) <- runDB $ do
         Just (Cube cname ccards) <- get cid
-        cs <- forM ccards $ \c -> (,) c <$> getBy (CardName c)
+        cs <- forM ccards $ \c -> (,) c <$> getBy (UniqueCardName c)
         return (cname, cs)
     defaultLayout $ do
         setTitle "View Cube List"

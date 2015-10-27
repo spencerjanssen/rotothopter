@@ -16,4 +16,4 @@ getWatchDraftR draftId = pollingEventSource Nothing pollFn
         return ([ServerEvent (Just "initialized") Nothing ["initialized"]], Just tc);
     pollFn _ (Just tc) = do
         dp <- atomically $ readTChan tc
-        return ([ServerEvent mesg_name Nothing [intDec $ dp ^. draftPickPickNumber]], Just tc)
+        return ([ServerEvent mesg_name Nothing [intDec $ dp ^. pickNumber]], Just tc)

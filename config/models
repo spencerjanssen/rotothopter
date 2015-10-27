@@ -6,17 +6,17 @@ User
     deriving Typeable
     deriving Show
 Cube
-    cubeName Text
-    cubeList [Text]
-    UniqueCubeName cubeName
+    name Text
+    list [Text]
+    UniqueCubeName name
     deriving Show
 Card
-    cardName Text
-    cardColors [Text]
+    name Text
+    colors [Text]
     -- ie instant, land
     -- not super types like legendary or subtypes like human
-    cardTypes [Text]
-    CardName cardName
+    types [Text]
+    UniqueCardName name
     deriving Show
 Draft
     creator UserId
@@ -25,12 +25,12 @@ Draft
     rounds Word default=45
     created UTCTime
     deriving Show
-DraftPick
-    draftId DraftId
-    pickNumber Int -- starts at 0, ascends for each pick
+Pick
+    draft DraftId
+    number Int -- starts at 0, ascends for each pick
     card Text -- invariant: one of the cards in the associated cube list
     drafter UserId
-    UniqueDraftPick draftId pickNumber
+    UniquePick draft number
     created UTCTime
     deriving Show
 

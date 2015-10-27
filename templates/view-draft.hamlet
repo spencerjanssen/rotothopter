@@ -32,17 +32,17 @@ $if isNextDrafter
             $forall col <- zipWith const (enumFrom 0) participants
                 <td>
                     $maybe pick <- Map.lookup (rcToPickNum draft (row, col)) pickmap
-                        ^{prettyCard $ pick ^. draftPickCard}
+                        ^{prettyCard $ pick ^. pickCard}
                         $if timestamp
                             <br>
-                            <date .convlocale>#{utcTo8601 $ pick ^. draftPickCreated}
+                            <date .convlocale>#{utcTo8601 $ pick ^. pickCreated}
                             $maybe td <- Map.lookup (rcToPickNum draft (row, col)) timediffByCell
                                 <br>
                                 #{prettyTimeDiff td}
                     $nothing
                         <span .glyphicon .glyphicon-question-sign>
                         $maybe prevpick <- Map.lookup (pred $ rcToPickNum draft (row, col)) pickmap
-                            <time .timeago datetime=#{utcTo8601 $ prevpick ^. draftPickCreated}>
+                            <time .timeago datetime=#{utcTo8601 $ prevpick ^. pickCreated}>
             <td>
                 $if isLeftToRightRow draft row
                     <span .glyphicon .glyphicon-arrow-down>
@@ -58,7 +58,7 @@ $forall (cat, cards) <- catcards
         #{show cat}
     <ul .unpicked>
         $forall card <- cards
-            $with cname <- either id (view cardCardName) card
+            $with cname <- either id (view cardName) card
                 <li>
                     $if isNextDrafter
                         <a href=@{MakeDraftPickR draftId cname}>#{cname}

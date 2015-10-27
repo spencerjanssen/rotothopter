@@ -14,7 +14,7 @@ spec = withApp $ do
             postTestCube
             statusIs 303
             Just (Entity _ cl) <- runDB $ getBy (UniqueCubeName testCubeName)
-            assertEqual "cube list" (cl ^. cubeCubeList) testCubeList
+            assertEqual "cube list" (cl ^. cubeList) testCubeList
 
     describe "getViewCubeListR" $
         it "displays the cube" $ do

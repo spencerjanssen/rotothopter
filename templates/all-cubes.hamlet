@@ -6,5 +6,5 @@
 <ul>
     $forall Entity cid cube <- cubes
         <li>
-            <a href=@{ViewCubeListR cid}>#{cube ^. cubeCubeName}
+            <a href=@{ViewCubeListR cid}>#{cube ^. cubeName}
 

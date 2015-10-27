@@ -4,15 +4,15 @@ import Import
 import qualified Data.Map as Map
 
 maybeCardInfo :: Text -> Handler (Maybe Card)
-maybeCardInfo cname = fmap (fmap entityVal) $ runDB $ getBy (CardName cname)
+maybeCardInfo cname = fmap (fmap entityVal) $ runDB $ getBy (UniqueCardName cname)
 
 cardImgUrl :: Card -> Text
-cardImgUrl c = base ++ c ^. cardCardName
+cardImgUrl c = base ++ c ^. cardName
  where
     base = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
 
 colorBadge :: Card -> Route App
-colorBadge card = StaticR $ case sort $ card ^. cardCardColors of
+colorBadge card = StaticR $ case sort $ card ^. cardColors of
     ["White"] -> img_mana_15_w_png
     ["Blue"] -> img_mana_15_u_png
     ["Black"] -> img_mana_15_b_png
@@ -31,7 +31,7 @@ colorBadge card = StaticR $ case sort $ card ^. cardCardColors of
         ("Black", "White") -> img_mana_15_wb_png
         ("Blue", "White") -> img_mana_15_wu_png
         _ -> img_mana_15_snow_png
-    [] -> if "Land" `elem` (card ^. cardCardTypes)
+    [] -> if "Land" `elem` (card ^. cardTypes)
             then img_mana_15_tap_png
             else img_mana_15_0_png
     _ -> img_mana_15_snow_png
@@ -76,8 +76,8 @@ categorize (Right card) = case colors of
     (_:_:_) -> Multicolor
     _ -> ArtifactColorless
  where
-    types = card ^. cardCardTypes
-    colors = card ^. cardCardColors
+    types = card ^. cardTypes
+    colors = card ^. cardColors
 
 categorizeCardList :: [Either Text Card] -> [(CardCategory, [Either Text Card])]
 categorizeCardList cs = Map.toList $ Map.fromListWith (flip (++)) [(categorize c, [c]) | c <- cs]

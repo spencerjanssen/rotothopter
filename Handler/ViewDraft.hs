@@ -11,17 +11,17 @@ getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
     Just participants <- sequence <$> runDB (mapM get $ draft ^. draftParticipants)
     Just (Cube cubename _) <- runDB $ get $ draft ^. draftCubeId
-    picks <- getDraftPicks draftId
+    picks <- getPicks draftId
     muid <- maybeAuthId
     allowedCards <- getPickAllowedCards draftId draft
-    let pickmap = Map.fromList $ map (\p -> (p ^. draftPickPickNumber, p)) picks
+    let pickmap = Map.fromList $ map (\p -> (p ^. pickNumber, p)) picks
         lastRow = min (fromIntegral $ view draftRounds draft-1) . fst
                 . pickNumToRC draft $ Map.size pickmap
         mnextdrafter = getNextDrafter draft picks
         timediffByCell = Map.fromList $ do
             (p1, p2) <- zip picks (drop 1 picks)
-            return ( p2 ^. draftPickPickNumber
-                   , diffUTCTime (p2 ^. draftPickCreated) (p1 ^. draftPickCreated))
+            return ( p2 ^. pickNumber
+                   , diffUTCTime (p2 ^. pickCreated) (p1 ^. pickCreated))
         timediffByCol c = sum $ do
             r <- [0 .. lastRow]
             Just d <- return $ Map.lookup (rcToPickNum draft (r, c)) timediffByCell

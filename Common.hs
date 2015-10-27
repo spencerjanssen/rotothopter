@@ -9,9 +9,9 @@ getCubeCards cuid = do
     Just (Cube _ cs) <- runDB $ get cuid
     return cs
 
-getDraftPicks :: DraftId -> Handler [DraftPick]
-getDraftPicks draftId = runDB $
-    map entityVal <$> selectList [DraftPickDraftId ==. draftId] [Asc DraftPickPickNumber]
+getPicks :: DraftId -> Handler [Pick]
+getPicks draftId = runDB $
+    map entityVal <$> selectList [PickDraft ==. draftId] [Asc PickNumber]
 
 getDraft :: DraftId -> Handler Draft
 getDraft did = do
@@ -22,8 +22,8 @@ pickOrder :: [a] -> [a]
 pickOrder drafters = concat . repeat $ drafters ++ reverse drafters
 
 -- returns Nothing if the draft is complete
-getNextDrafter :: Draft -> [DraftPick] -> Maybe UserId
-getNextDrafter (Draft _ _ uids n _) picks = go 0 (view draftPickDrafter <$> picks) (pickOrder uids)
+getNextDrafter :: Draft -> [Pick] -> Maybe UserId
+getNextDrafter (Draft _ _ uids n _) picks = go 0 (view pickDrafter <$> picks) (pickOrder uids)
  where
     maxPick = fromIntegral (length uids) * n
     go i _ _ | i >= maxPick = Nothing
@@ -34,10 +34,10 @@ getNextDrafter (Draft _ _ uids n _) picks = go 0 (view draftPickDrafter <$> pick
 getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
 getPickAllowedCards did draft = do
     cubeCards <- getCubeCards (draft ^. draftCubeId)
-    picks <- map (view draftPickCard) <$> getDraftPicks did
+    picks <- map (view pickCard) <$> getPicks did
     return (Set.toList (Set.fromList cubeCards Set.\\ Set.fromList picks))
 
-withDraftWatch :: DraftId -> Maybe (STM a) -> (TChan DraftPick -> STM a) -> Handler (STM a)
+withDraftWatch :: DraftId -> Maybe (STM a) -> (TChan Pick -> STM a) -> Handler (STM a)
 withDraftWatch did readFail f = do
     tmp <- appDraftWatchers <$> ask
     return $ do
@@ -51,13 +51,13 @@ withDraftWatch did readFail f = do
                     f x
                 Just act -> act
 
-notifyDraftWatcher :: DraftPick -> Handler ()
+notifyDraftWatcher :: Pick -> Handler ()
 notifyDraftWatcher dp
  = atomically =<< withDraftWatch
-                    (dp ^. draftPickDraftId)
+                    (dp ^. pickDraft)
                     (Just $ return ())
                     (`writeTChan` dp)
 
-subscribeDraftWatcher :: DraftId -> Handler (TChan DraftPick)
+subscribeDraftWatcher :: DraftId -> Handler (TChan Pick)
 subscribeDraftWatcher did
  = atomically =<< withDraftWatch did Nothing dupTChan

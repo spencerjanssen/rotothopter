@@ -12,7 +12,7 @@ getMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
     when (uid `onotElem` (draft ^. draftParticipants)) $ fail "you are not in this draft"
-    picks <- getDraftPicks draftId
+    picks <- getPicks draftId
     mcardinfo <- maybeCardInfo cardToPick
     case getNextDrafter draft picks of
         Nothing -> fail "this draft has completed, you can't make a pick"
@@ -28,19 +28,19 @@ postMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
     when (uid `onotElem` view draftParticipants draft) $ fail "you are not in this draft"
-    picks <- getDraftPicks draftId
+    picks <- getPicks draftId
     case getNextDrafter draft picks of
         Nothing -> fail "this draft has completed, you can't make a pick"
         Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
                   | otherwise -> actualPostMakeDraftPickR draftId uid picks draft cardToPick
 
-actualPostMakeDraftPickR :: DraftId -> Key User -> [DraftPick] -> Draft -> Text -> Handler b
+actualPostMakeDraftPickR :: DraftId -> Key User -> [Pick] -> Draft -> Text -> Handler b
 actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
     allowedCards <- getPickAllowedCards draftId draft
     if cardToPick `oelem` allowedCards
         then do
             t <- liftIO getCurrentTime
-            let thepick = DraftPick draftId (length picks) cardToPick uid t
+            let thepick = Pick draftId (length picks) cardToPick uid t
             _ <- runDB $ insert $ thepick
             checkSendEmail draftId draft uid
             notifyDraftWatcher thepick
@@ -52,7 +52,7 @@ routeToTextUrl route = withUrlRenderer $ \f -> f route []
 
 checkSendEmail :: DraftId -> Draft -> UserId -> Handler ()
 checkSendEmail draftId draft olduid = do
-    picks <- getDraftPicks draftId
+    picks <- getPicks draftId
 
     case getNextDrafter draft picks of
         Just newuid | newuid /= olduid -> do
@@ -60,9 +60,9 @@ checkSendEmail draftId draft olduid = do
             let lastpick = Prelude.last picks
                 rnd = 1 + ((length picks + 1) `div` length (draft ^. draftParticipants))
             url <- routeToTextUrl (ViewDraftR draftId)
-            Just lastpicker <- runDB $ get (lastpick ^. draftPickDrafter)
+            Just lastpicker <- runDB $ get (lastpick ^. pickDrafter)
             sendEmail user ("Time for draft round " ++ pack (show rnd)) $ [st|
-#{pseudonym lastpicker} just drafted #{lastpick ^. draftPickCard}.
+#{pseudonym lastpicker} just drafted #{lastpick ^. pickCard}.
 
 It is time to make your pick.
 
