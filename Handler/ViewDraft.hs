@@ -57,6 +57,7 @@ getPicksAndInfo did = map munge <$> runDB query
     query = E.select $ E.from $ \(pick `E.LeftOuterJoin` card) -> do
                 E.on $ E.just (pick E.^. PickCard) E.==. card E.?. CardName
                 E.where_ $ pick E.^. PickDraft E.==. E.val did
+                E.orderBy [E.asc (pick E.^. PickNumber)]
                 return (pick, card)
 
 getAllowedCards :: DraftId -> CubeId -> Handler [Either Text Card]
