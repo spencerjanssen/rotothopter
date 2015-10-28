@@ -22,10 +22,19 @@ allow-dummy-auth: "_env:ALLOW_DUMMY_AUTH:false"
 # mutable-static: false
 # skip-combining: false
 
+# database:
+#   backend: "_env:DB_BACKEND:sqlite"
+#   database: "_env:SQLITE_DATABASE:rotothopter.sqlite3"
+#   poolsize: "_env:SQLITE_POOLSIZE:10"
+
 database:
-  backend: "_env:DB_BACKEND:sqlite"
-  database: "_env:SQLITE_DATABASE:rotothopter.sqlite3"
-  poolsize: "_env:SQLITE_POOLSIZE:10"
+  backend: "_env:DB_BACKEND:postgres"
+  user:     "_env:PGUSER:sjanssen"
+  password: "_env:PGPASS:"
+  host:     "_env:PGHOST:localhost"
+  port:     "_env:PGPORT:5432"
+  database: "_env:PGDATABASE:rotothopter"
+  poolsize: "_env:PGPOOLSIZE:10"
 
 copyright: copyright 2015. Spencer Janssen
 analytics: UA-68954918-1
