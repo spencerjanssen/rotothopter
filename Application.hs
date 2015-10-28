@@ -10,6 +10,12 @@ module Application
     -- * for GHCI
     , handler
     , db
+#if DEVELOPMENT
+    , testUsers
+    , seedTestUsers
+    , mkAdmin
+    , fillDraft
+#endif
     ) where
 
 import Control.Monad.Logger                 (liftLoc, runLoggingT)
@@ -186,3 +192,29 @@ handler h = getAppSettings >>= makeFoundation >>= flip unsafeHandler h
 -- | Run DB queries
 db :: ReaderT SqlBackend (HandlerT App IO) a -> IO a
 db = handler . runDB
+
+#if DEVELOPMENT
+testUsers :: [Text]
+testUsers = [c ++ "@" ++ c ++ ".com" | c <- chars ]
+ where
+    chars = map singleton $ take 8 ['a' .. ]
+
+seedTestUsers :: Handler [UserId]
+seedTestUsers = runDB $ mapM (\u -> insert $ User u False Nothing) testUsers
+
+mkAdmin :: Text -> Handler ()
+mkAdmin u = runDB $ do
+    Just (Entity i _) <- getBy (UniqueUser u)
+    update i [UserAdmin =. True]
+    return ()
+
+fillDraft :: DraftId -> Handler ()
+fillDraft did = runDB $ do
+    Just d <- get did
+    t <- liftIO getCurrentTime
+    let picks = fromIntegral (d ^. draftRounds) * length (d ^. draftParticipants)
+        ucycle = (d ^. draftParticipants) ++ reverse (d ^. draftParticipants) ++ ucycle
+    cs <- map (view cubeCardName . entityVal)<$> selectList [CubeCardCube ==. d ^. draftCubeId] [LimitTo picks]
+    forM_ (zip3 [0 ..] cs ucycle) $ \(i, c, u) -> void $ insert $ Pick did i c u t
+    return ()
+#endif
