@@ -64,10 +64,6 @@ instance Yesod App where
         mmsg <- getMessage
         muinfo <- getUserInfo
         mroute <- getCurrentRoute
-        let bootstrapcss, bootstrapjs, jquery :: Text
-            bootstrapcss = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
-            bootstrapjs = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
-            jquery = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
 
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and
@@ -78,9 +74,9 @@ instance Yesod App where
         nav <- widgetToPageContent $
             $(widgetFile "navbar")
         pc <- widgetToPageContent $ do
-            addStylesheetRemote bootstrapcss
-            addScriptRemote jquery
-            addScriptRemote bootstrapjs
+            addStylesheet (StaticR css_bootstrap_css)
+            addScript (StaticR js_jquery_min_js)
+            addScript (StaticR js_bootstrap_min_js)
             $(widgetFile "default-layout")
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 

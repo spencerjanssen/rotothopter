@@ -42,10 +42,10 @@ getViewDraftR draftId = do
         setTitle $ if isNextDrafter
                     then "***Your turn to pick!"
                     else "View Cube Draft"
-        addScriptRemote "http://timeago.yarp.com/jquery.timeago.js"
-        addScriptRemote "http://momentjs.com/downloads/moment.min.js"
-        addScriptRemote "http://vdw.github.io/HideSeek/javascripts/vendor/jquery.hideseek.min.js"
-        addScript (StaticR jquery_stickytableheaders_min_js)
+        addScript (StaticR js_jquery_timeago_js)
+        addScript (StaticR js_moment_min_js)
+        addScript (StaticR js_jquery_hideseek_min_js)
+        addScript (StaticR js_jquery_stickytableheaders_min_js)
         $(widgetFile "view-draft")
 
 utcTo8601 :: UTCTime -> String
