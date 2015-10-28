@@ -110,6 +110,7 @@ library
                  , mime-mail
                  , yesod-eventsource
                  , lens
+                 , esqueleto
 
 executable         rotothopter
     if flag(library-only)
@@ -163,6 +164,7 @@ executable         rotothopter
                  , mime-mail
                  , yesod-eventsource
                  , lens
+                 , esqueleto
 
     extensions: TemplateHaskell
                 QuasiQuotes
@@ -220,5 +222,6 @@ test-suite test
                  , classy-prelude
                  , classy-prelude-yesod
                  , lens
+                 , esqueleto
     if flag(executable-only)
         buildable: False

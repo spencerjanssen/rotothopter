@@ -1,7 +1,7 @@
 <h1>#{cname}
 
 <ul>
-    $forall (card, carddetails) <- cs
+    $forall (E.Value card, carddetails) <- cs
         <li>
             #{card} #
             $case carddetails

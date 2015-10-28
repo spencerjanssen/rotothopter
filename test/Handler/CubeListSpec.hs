@@ -14,8 +14,10 @@ spec = withApp $ do
         it "inserts the new cube in the DB" $ do
             postTestCube
             statusIs 303
-            Just (Entity _ cl) <- runDB $ getBy (UniqueCubeName testCubeName)
-            assertEqual "cube list" (cl ^. cubeList) testCubeList
+            cs <- runDB $ do
+                Just (Entity ci c) <- getBy (UniqueCubeName testCubeName)
+                map (view cubeCardName . entityVal) <$> selectList [CubeCardCube ==. ci] []
+            assertEqual "cube list" (sort cs) (sort testCubeList)
 
     describe "getViewCubeListR" $
         it "displays the cube" $ do

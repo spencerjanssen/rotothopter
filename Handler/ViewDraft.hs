@@ -10,7 +10,7 @@ getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
     Just participants <- sequence <$> runDB (mapM get $ draft ^. draftParticipants)
-    Just (Cube _ cubename _) <- runDB $ get $ draft ^. draftCubeId
+    Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCubeId
     picks <- getPicks draftId
     muid <- maybeAuthId
     allowedCards <- getPickAllowedCards draftId draft

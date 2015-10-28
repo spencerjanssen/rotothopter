@@ -6,8 +6,8 @@ import qualified Data.Map as Map
 
 getCubeCards :: CubeId -> Handler [Text]
 getCubeCards cuid = do
-    Just (Cube _ _ cs) <- runDB $ get cuid
-    return cs
+    cs <- runDB $ selectList [CubeCardCube ==. cuid] []
+    return $ map (view cubeCardName . entityVal) cs
 
 getPicks :: DraftId -> Handler [Pick]
 getPicks draftId = runDB $

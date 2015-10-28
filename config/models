@@ -8,8 +8,12 @@ User
 Cube
     creator UserId
     name Text
-    list [Text]
     UniqueCubeName name
+    deriving Show
+CubeCard
+    cube CubeId
+    name Text
+    UniqueCubeCard cube name
     deriving Show
 Card
     name Text
