@@ -5,6 +5,7 @@ import Common
 import Handler.PrettyCard
 import Data.Time
 import qualified Data.Map as Map
+import qualified Database.Esqueleto as E
 
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
@@ -13,7 +14,7 @@ getViewDraftR draftId = do
     Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCubeId
     picks <- getPicks draftId
     muid <- maybeAuthId
-    allowedCards <- getPickAllowedCards draftId draft
+    allowedCards <- getAllowedCards draftId (draft ^. draftCubeId)
     let pickmap = Map.fromList $ map (\p -> (p ^. pickNumber, p)) picks
         lastRow = min (fromIntegral $ view draftRounds draft-1) . fst
                 . pickNumToRC draft $ Map.size pickmap
@@ -36,7 +37,7 @@ getViewDraftR draftId = do
                     | uid == nextdrafter -> (True, False)
                 (Nothing, _) -> (False, True)
                 _ -> (False, False)
-    catcards <- categorizeUnknownCardList allowedCards
+    let catcards = categorizeCardList allowedCards
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle $ if isNextDrafter
@@ -47,6 +48,19 @@ getViewDraftR draftId = do
         addScript (StaticR js_jquery_hideseek_min_js)
         addScript (StaticR js_jquery_stickytableheaders_min_js)
         $(widgetFile "view-draft")
+
+getAllowedCards :: DraftId -> CubeId -> Handler [Either Text Card]
+getAllowedCards did cuid = map munge <$> runDB query
+ where
+    munge (E.Value x, my) = maybe (Left x) Right (entityVal <$> my)
+    subquery = E.from $ \pick -> do
+                E.where_ $ pick E.^. PickDraft E.==. E.val did
+                return (pick E.^. PickCard)
+    query = E.select $ E.from $ \(cubeCard `E.LeftOuterJoin` card) -> do
+                E.on $ E.just (cubeCard E.^. CubeCardName) E.==. card E.?. CardName
+                E.where_ $ cubeCard E.^. CubeCardCube E.==. E.val cuid
+                E.where_ $ cubeCard E.^. CubeCardName `E.notIn` E.subList_select subquery
+                return (cubeCard E.^. CubeCardName, card)
 
 utcTo8601 :: UTCTime -> String
 utcTo8601 = formatTime defaultTimeLocale $ iso8601DateFormat (Just "%H:%M:%S%z")
