@@ -15,6 +15,8 @@ module Application
 import Control.Monad.Logger                 (liftLoc, runLoggingT)
 import Database.Persist.Sqlite              (createSqlitePool, runSqlPool,
                                              sqlDatabase, sqlPoolSize)
+import Database.Persist.Postgresql          (createPostgresqlPool,
+                                             pgConnStr, pgPoolSize)
 import Import
 import Language.Haskell.TH.Syntax           (qLocation)
 import Network.Wai.Handler.Warp             (Settings, defaultSettings,
@@ -77,9 +79,9 @@ makeFoundation appSettings = do
         logFunc = messageLoggerSource tempFoundation appLogger
 
     -- Create the database connection pool
-    pool <- flip runLoggingT logFunc $ createSqlitePool
-        (sqlDatabase $ appDatabaseConf appSettings)
-        (sqlPoolSize $ appDatabaseConf appSettings)
+    pool <- flip runLoggingT logFunc $ case appDatabaseConf appSettings of
+        Sqlite c -> createSqlitePool (sqlDatabase c) (sqlPoolSize c)
+        Postgres c -> createPostgresqlPool (pgConnStr c) (pgPoolSize c)
 
     -- Perform database migration using our application's logging settings.
     runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc

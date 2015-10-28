@@ -23,6 +23,7 @@ allow-dummy-auth: "_env:ALLOW_DUMMY_AUTH:false"
 # skip-combining: false
 
 database:
+  backend: "_env:DB_BACKEND:sqlite"
   database: "_env:SQLITE_DATABASE:rotothopter.sqlite3"
   poolsize: "_env:SQLITE_POOLSIZE:10"
 

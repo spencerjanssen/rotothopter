@@ -28,7 +28,7 @@ import Control.Lens as X
 import Database.Persist.Sqlite              (sqlDatabase, wrapConnection, createSqlPool)
 import qualified Database.Sqlite as Sqlite
 import Control.Monad.Logger                 (runLoggingT)
-import Settings (appDatabaseConf, appRoot)
+import Settings (appDatabaseConf, appRoot, SqlBackendConf(Sqlite))
 import Yesod.Core (messageLoggerSource)
 
 runDB :: SqlPersistM a -> YesodExample App a
@@ -59,8 +59,9 @@ wipeDB app = do
 
     -- Aside: SQLite by default *does not enable foreign key checks*
     -- (disabling foreign keys is only necessary for those who specifically enable them).
-    let settings = appSettings app   
-    sqliteConn <- rawConnection (sqlDatabase $ appDatabaseConf settings)    
+    let settings = appSettings app
+    Sqlite dbconf <- return $ appDatabaseConf settings
+    sqliteConn <- rawConnection (sqlDatabase $ dbconf)
     disableForeignKeys sqliteConn
 
     let logFunc = messageLoggerSource app (appLogger app)
