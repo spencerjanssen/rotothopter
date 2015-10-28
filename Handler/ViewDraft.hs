@@ -12,15 +12,16 @@ getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
     Just participants <- sequence <$> runDB (mapM get $ draft ^. draftParticipants)
     Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCubeId
-    picks <- getPicks draftId
+    picks <- getPicksAndInfo draftId
     muid <- maybeAuthId
     allowedCards <- getAllowedCards draftId (draft ^. draftCubeId)
-    let pickmap = Map.fromList $ map (\p -> (p ^. pickNumber, p)) picks
+    let pickmap = Map.fromList $ map (\p -> (p ^. _1.pickNumber, p)) picks
+        picksOnly = map fst picks
         lastRow = min (fromIntegral $ view draftRounds draft-1) . fst
                 . pickNumToRC draft $ Map.size pickmap
-        mnextdrafter = getNextDrafter draft picks
+        mnextdrafter = getNextDrafter draft picksOnly
         timediffByCell = Map.fromList $ do
-            (p1, p2) <- zip picks (drop 1 picks)
+            (p1, p2) <- zip picksOnly (drop 1 picksOnly)
             return ( p2 ^. pickNumber
                    , diffUTCTime (p2 ^. pickCreated) (p1 ^. pickCreated))
         timediffByCol c = sum $ do
@@ -48,6 +49,15 @@ getViewDraftR draftId = do
         addScript (StaticR js_jquery_hideseek_min_js)
         addScript (StaticR js_jquery_stickytableheaders_min_js)
         $(widgetFile "view-draft")
+
+getPicksAndInfo :: DraftId -> Handler [(Pick, Maybe Card)]
+getPicksAndInfo did = map munge <$> runDB query
+ where
+    munge (x, my) = (entityVal x, entityVal <$> my)
+    query = E.select $ E.from $ \(pick `E.LeftOuterJoin` card) -> do
+                E.on $ E.just (pick E.^. PickCard) E.==. card E.?. CardName
+                E.where_ $ pick E.^. PickDraft E.==. E.val did
+                return (pick, card)
 
 getAllowedCards :: DraftId -> CubeId -> Handler [Either Text Card]
 getAllowedCards did cuid = map munge <$> runDB query

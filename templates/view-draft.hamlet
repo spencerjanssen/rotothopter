@@ -31,8 +31,8 @@ $if isNextDrafter
                     #{prettyTimeDiff (timediffByRow row)}
             $forall col <- zipWith const (enumFrom 0) participants
                 <td>
-                    $maybe pick <- Map.lookup (rcToPickNum draft (row, col)) pickmap
-                        ^{prettyCard $ pick ^. pickCard}
+                    $maybe (pick, details) <- Map.lookup (rcToPickNum draft (row, col)) pickmap
+                        ^{prettyCard (pick ^. pickCard) details}
                         $if timestamp
                             <br>
                             <date .convlocale>#{utcTo8601 $ pick ^. pickCreated}
@@ -41,7 +41,7 @@ $if isNextDrafter
                                 #{prettyTimeDiff td}
                     $nothing
                         <span .glyphicon .glyphicon-question-sign>
-                        $maybe prevpick <- Map.lookup (pred $ rcToPickNum draft (row, col)) pickmap
+                        $maybe (prevpick, _) <- Map.lookup (pred $ rcToPickNum draft (row, col)) pickmap
                             <time .timeago datetime=#{utcTo8601 $ prevpick ^. pickCreated}>
             <td>
                 $if isLeftToRightRow draft row

@@ -36,9 +36,8 @@ colorBadge card = StaticR $ case sort $ card ^. cardColors of
             else img_mana_15_0_png
     _ -> img_mana_15_snow_png
 
-prettyCard :: Text -> WidgetT App IO ()
-prettyCard cname = do
-    mcard <- handlerToWidget $ maybeCardInfo cname
+prettyCard :: Text -> Maybe Card -> WidgetT App IO ()
+prettyCard cname mcard = do
     $(widgetFile "inline-card")
 
 data CardCategory
@@ -81,8 +80,3 @@ categorize (Right card) = case colors of
 
 categorizeCardList :: [Either Text Card] -> [(CardCategory, [Either Text Card])]
 categorizeCardList cs = Map.toList $ Map.fromListWith (flip (++)) [(categorize c, [c]) | c <- cs]
--- we flip there to preserve the input order
-
-categorizeUnknownCardList :: [Text] -> Handler [(CardCategory, [Either Text Card])]
-categorizeUnknownCardList ts =
-    categorizeCardList <$> forM ts (\t -> maybe (Left t) Right <$> maybeCardInfo t)
