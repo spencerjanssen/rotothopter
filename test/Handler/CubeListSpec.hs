@@ -16,7 +16,7 @@ spec = withApp $ do
             statusIs 303
             cs <- runDB $ do
                 Just (Entity ci c) <- getBy (UniqueCubeName testCubeName)
-                map (view cubeCardName . entityVal) <$> selectList [CubeCardCube ==. ci] []
+                map (unCardKey . view cubeEntryCard . entityVal) <$> selectList [CubeEntryCube ==. ci] []
             assertEqual "cube list" (sort cs) (sort testCubeList)
 
     describe "getViewCubeListR" $
