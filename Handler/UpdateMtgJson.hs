@@ -78,11 +78,16 @@ postUpdateMtgJsonR = do
     case massage <$> eitherDecode js of
         Left err -> fail err
         Right cs -> do
-            runDB $ do
-                deleteWhere ([] :: [Filter Card])
-                mapM_ (\c -> insert c >> return ()) cs
+            runDB $
+                forM_ cs $ \c -> void $ upsert c (cardToUpdates c)
             defaultLayout [whamlet|
                 <p>Successfully loaded #{length cs} cards
             |]
  where
     url = "http://mtgjson.com/json/AllCards.json"
+
+cardToUpdates :: Card -> [Update Card]
+cardToUpdates c =
+    [ CardColors =. c ^. cardColors
+    , CardTypes =. c ^. cardTypes
+    ]
