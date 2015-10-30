@@ -214,7 +214,7 @@ fillDraft did = runDB $ do
     t <- liftIO getCurrentTime
     let picks = fromIntegral (d ^. draftRounds) * length (d ^. draftParticipants)
         ucycle = (d ^. draftParticipants) ++ reverse (d ^. draftParticipants) ++ ucycle
-    cs <- map entityVal <$> selectList [CubeEntryCube ==. d ^. draftCube] [LimitTo picks]
+    cs <- map entityVal <$> selectList [CubeEntryCube ==. d ^. draftCube] [Asc CubeEntryCard, LimitTo picks]
     forM_ (zip3 [0 ..] cs ucycle) $ \(i, c, u) -> void $ insert $ Pick did i (d ^. draftCube) (c ^. cubeEntryCard) u t
     return ()
 #endif
