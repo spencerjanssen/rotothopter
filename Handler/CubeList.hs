@@ -19,7 +19,7 @@ postNewCubeListR = do
     ((FormSuccess (name, cards), _), _) <- runFormPost cubeForm
     cid <- runDB $ do
         cid <- insert $ Cube uid name
-        mapM_ (void . insert . CubeCard cid) cards
+        mapM_ (void . insert . CubeEntry cid . CardKey) cards
         return cid
     redirect (ViewCubeListR cid)
 
@@ -32,10 +32,10 @@ getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
     (cname, cs) <- runDB $ do
         Just (Cube _ cname) <- get cid
-        cs <- E.select $ E.from $ \(cubeCard `E.LeftOuterJoin` card) -> do
-            E.on $ E.just (cubeCard E.^. CubeCardName) E.==. card E.?. CardName
-            E.where_ (E.val cid E.==. cubeCard E.^. CubeCardCube)
-            return (cubeCard E.^. CubeCardName, card)
+        cs <- E.select $ E.from $ \(cubeCard `E.InnerJoin` card) -> do
+            E.on $ cubeCard E.^. CubeEntryCard E.==. card E.^. CardId
+            E.where_ (E.val cid E.==. cubeCard E.^. CubeEntryCube)
+            return (cubeCard E.^. CubeEntryCard, card)
         return (cname, cs)
     defaultLayout $ do
         setTitle "View Cube List"

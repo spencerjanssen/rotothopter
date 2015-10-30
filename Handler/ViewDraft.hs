@@ -11,10 +11,10 @@ getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
     Just draft <- runDB $ get draftId
     Just participants <- sequence <$> runDB (mapM get $ draft ^. draftParticipants)
-    Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCubeId
+    Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCube
     picks <- getPicksAndInfo draftId
     muid <- maybeAuthId
-    allowedCards <- getAllowedCards draftId (draft ^. draftCubeId)
+    allowedCards <- getAllowedCards draftId (draft ^. draftCube)
     let pickmap = Map.fromList $ map (\p -> (p ^. _1.pickNumber, p)) picks
         picksOnly = map fst picks
         lastRow = min (fromIntegral $ view draftRounds draft-1) . fst
@@ -50,28 +50,29 @@ getViewDraftR draftId = do
         addScript (StaticR js_jquery_stickytableheaders_min_js)
         $(widgetFile "view-draft")
 
-getPicksAndInfo :: DraftId -> Handler [(Pick, Maybe Card)]
+getPicksAndInfo :: DraftId -> Handler [(Pick, Card)]
 getPicksAndInfo did = map munge <$> runDB query
  where
-    munge (x, my) = (entityVal x, entityVal <$> my)
-    query = E.select $ E.from $ \(pick `E.LeftOuterJoin` card) -> do
-                E.on $ E.just (pick E.^. PickCard) E.==. card E.?. CardName
+    munge (x, y) = (entityVal x, entityVal y)
+    query = E.select $ E.from $ \(pick `E.InnerJoin` cubeEntry `E.InnerJoin` card) -> do
+                E.on $ cubeEntry E.^. CubeEntryCard E.==. card E.^. CardId
+                E.on $ cubeEntry E.^. CubeEntryCard E.==. pick E.^. PickCard
                 E.where_ $ pick E.^. PickDraft E.==. E.val did
                 E.orderBy [E.asc (pick E.^. PickNumber)]
                 return (pick, card)
 
-getAllowedCards :: DraftId -> CubeId -> Handler [Either Text Card]
+getAllowedCards :: DraftId -> CubeId -> Handler [Card]
 getAllowedCards did cuid = map munge <$> runDB query
  where
-    munge (E.Value x, my) = maybe (Left x) Right (entityVal <$> my)
+    munge (Entity _ x) = x
     subquery = E.from $ \pick -> do
                 E.where_ $ pick E.^. PickDraft E.==. E.val did
                 return (pick E.^. PickCard)
-    query = E.select $ E.from $ \(cubeCard `E.LeftOuterJoin` card) -> do
-                E.on $ E.just (cubeCard E.^. CubeCardName) E.==. card E.?. CardName
-                E.where_ $ cubeCard E.^. CubeCardCube E.==. E.val cuid
-                E.where_ $ cubeCard E.^. CubeCardName `E.notIn` E.subList_select subquery
-                return (cubeCard E.^. CubeCardName, card)
+    query = E.select $ E.from $ \(cubeEntry `E.InnerJoin` card) -> do
+                E.on $ cubeEntry E.^. CubeEntryCard E.==. card E.^. CardId
+                E.where_ $ cubeEntry E.^. CubeEntryCube E.==. E.val cuid
+                E.where_ $ cubeEntry E.^. CubeEntryCard `E.notIn` E.subList_select subquery
+                return card
 
 utcTo8601 :: UTCTime -> String
 utcTo8601 = formatTime defaultTimeLocale $ iso8601DateFormat (Just "%H:%M:%S%z")

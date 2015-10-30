@@ -6,8 +6,8 @@ import qualified Data.Map as Map
 
 getCubeCards :: CubeId -> Handler [Text]
 getCubeCards cuid = do
-    cs <- runDB $ selectList [CubeCardCube ==. cuid] []
-    return $ map (view cubeCardName . entityVal) cs
+    cs <- runDB $ selectList [CubeEntryCube ==. cuid] []
+    return $ map (unCardKey . view cubeEntryCard . entityVal) cs
 
 getPicks :: DraftId -> Handler [Pick]
 getPicks draftId = runDB $
@@ -33,8 +33,8 @@ getNextDrafter (Draft _ _ uids n _) picks = go 0 (view pickDrafter <$> picks) (p
 
 getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
 getPickAllowedCards did draft = do
-    cubeCards <- getCubeCards (draft ^. draftCubeId)
-    picks <- map (view pickCard) <$> getPicks did
+    cubeCards <- getCubeCards (draft ^. draftCube)
+    picks <- map (unCardKey . view pickCard) <$> getPicks did
     return (Set.toList (Set.fromList cubeCards Set.\\ Set.fromList picks))
 
 withDraftWatch :: DraftId -> Maybe (STM a) -> (TChan Pick -> STM a) -> Handler (STM a)

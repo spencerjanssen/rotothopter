@@ -1,11 +1,6 @@
 <h1>#{cname}
 
 <ul>
-    $forall (E.Value card, carddetails) <- cs
+    $forall (E.Value (CardKey card), _carddetails) <- cs
         <li>
-            #{card} #
-            $case carddetails
-                $of Nothing
-                    name not found!
-                $of Just (Entity _ _)
-                    found!
+            #{card}

@@ -40,7 +40,7 @@ actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
     if cardToPick `oelem` allowedCards
         then do
             t <- liftIO getCurrentTime
-            let thepick = Pick draftId (length picks) cardToPick uid t
+            let thepick = Pick draftId (length picks) (draft ^. draftCube) (CardKey cardToPick) uid t
             _ <- runDB $ insert $ thepick
             checkSendEmail draftId draft uid
             notifyDraftWatcher thepick
@@ -62,7 +62,7 @@ checkSendEmail draftId draft olduid = do
             url <- routeToTextUrl (ViewDraftR draftId)
             Just lastpicker <- runDB $ get (lastpick ^. pickDrafter)
             sendEmail user ("Time for draft round " ++ pack (show rnd)) $ [st|
-#{pseudonym lastpicker} just drafted #{lastpick ^. pickCard}.
+#{pseudonym lastpicker} just drafted #{unCardKey (lastpick ^. pickCard)}.
 
 It is time to make your pick.
 

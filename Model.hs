@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Model where
 
 import ClassyPrelude.Yesod

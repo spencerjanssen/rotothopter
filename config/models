@@ -10,22 +10,23 @@ Cube
     name Text
     UniqueCubeName name
     deriving Show
-CubeCard
+CubeEntry
     cube CubeId
-    name Text
-    UniqueCubeCard cube name
+    card CardId
+    Primary cube card
     deriving Show
 Card
-    name Text
+    Primary card
+    card Text
     colors [Text]
     -- ie instant, land
     -- not super types like legendary or subtypes like human
     types [Text]
-    UniqueCardName name
+    UniqueCardName card
     deriving Show
 Draft
     creator UserId
-    cubeId CubeId
+    cube CubeId
     participants [UserId]
     rounds Word default=45
     created UTCTime
@@ -33,7 +34,10 @@ Draft
 Pick
     draft DraftId
     number Int -- starts at 0, ascends for each pick
-    card Text -- invariant: one of the cards in the associated cube list
+    Primary draft number
+    cube CubeId
+    card CardId
+    Foreign CubeEntry asdf cube card
     drafter UserId
     UniquePick draft number
     created UTCTime
