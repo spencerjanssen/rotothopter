@@ -15,8 +15,8 @@ instance FromJSON ColorSet where
     parseJSON x = toColors <$> parseJSON x
 
 colorless, white, blue, black, red, green :: ColorSet
-(colorless, white, blue, black, red, green) = (CS 0, p 1, p 2, p 3, p 4, p 5)
- where p = CS . flip setBit 0
+(colorless, white, blue, black, red, green) = (CS 0, p 0, p 1, p 2, p 3, p 4)
+ where p = CS . setBit 0
 
 toColor :: Text -> ColorSet
 toColor x = case x of
@@ -44,8 +44,8 @@ artifact, conspiracy, creature, enchantment, instant, land, phenomenon, plane,
  planeswalker, scheme, sorcery, tribal, vanguard :: TypeSet
 (artifact, conspiracy, creature, enchantment, instant, land, phenomenon, plane,
  planeswalker, scheme, sorcery, tribal, vanguard)
- = (p 1, p 2, p 3, p 4, p 5, p 6, p 7, p 8, p 9, p 10, p 11, p 12, p 13)
- where p = TS . flip setBit 0
+ = (p 0, p 1, p 2, p 3, p 4, p 5, p 6, p 7, p 8, p 9, p 10, p 11, p 12)
+ where p = TS . setBit 0
 
 toType :: Text -> TypeSet
 toType x = case x of
