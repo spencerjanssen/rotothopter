@@ -11,30 +11,32 @@ cardImgUrl c = base ++ c ^. cardCard
  where
     base = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
 
+colorBadgeMap :: Map ColorSet StaticRoute
+colorBadgeMap = Map.fromList
+    [ (white, img_mana_15_w_png)
+    , (blue, img_mana_15_u_png)
+    , (black, img_mana_15_b_png)
+    , (red ,img_mana_15_r_png)
+    , (green,img_mana_15_g_png)
+    , (black++green,img_mana_15_bg_png)
+    , (black++red,img_mana_15_br_png)
+    , (black++blue,img_mana_15_ub_png)
+    , (blue++red,img_mana_15_ur_png)
+    , (blue++green,img_mana_15_gu_png)
+    , (green++white,img_mana_15_gw_png)
+    , (green++red,img_mana_15_rg_png)
+    , (red++white,img_mana_15_rw_png)
+    , (black++white,img_mana_15_wb_png)
+    , (blue++white,img_mana_15_wu_png)
+    ]
+
 colorBadge :: Card -> Route App
-colorBadge card = StaticR $ case sort $ card ^. cardColors of
-    ["White"] -> img_mana_15_w_png
-    ["Blue"] -> img_mana_15_u_png
-    ["Black"] -> img_mana_15_b_png
-    ["Red"] -> img_mana_15_r_png
-    ["Green"] -> img_mana_15_g_png
-    -- handle multicolor later:
-    [c1, c2] -> case (c1, c2) of
-        ("Black", "Green") -> img_mana_15_bg_png
-        ("Black", "Red") -> img_mana_15_br_png
-        ("Black", "Blue") -> img_mana_15_ub_png
-        ("Blue", "Red") -> img_mana_15_ur_png
-        ("Blue", "Green") -> img_mana_15_gu_png
-        ("Green", "White") -> img_mana_15_gw_png
-        ("Green", "Red") -> img_mana_15_rg_png
-        ("Red", "White") -> img_mana_15_rw_png
-        ("Black", "White") -> img_mana_15_wb_png
-        ("Blue", "White") -> img_mana_15_wu_png
-        _ -> img_mana_15_snow_png
-    [] -> if "Land" `elem` (card ^. cardTypes)
-            then img_mana_15_tap_png
-            else img_mana_15_0_png
-    _ -> img_mana_15_snow_png
+colorBadge card = StaticR $ case Map.lookup (card ^. cardColors) colorBadgeMap of
+    Just cb -> cb
+    Nothing | card ^. cardColors == colorless -> if land `typeSubset` (card ^. cardTypes)
+                                                    then img_mana_15_tap_png
+                                                    else img_mana_15_0_png
+            | otherwise -> img_mana_15_snow_png
 
 prettyCard :: Card -> WidgetT App IO ()
 prettyCard card = $(widgetFile "inline-card")
@@ -63,15 +65,15 @@ cardCategoryGlyph cat = StaticR <$> case cat of
     _ -> Nothing
 
 categorize :: Card -> CardCategory
-categorize card = case colors of
-    _ | "Land" `elem` types -> Land
-    ["White"] -> White
-    ["Blue"] -> Blue
-    ["Black"] -> Black
-    ["Red"] -> Red
-    ["Green"] -> Green
-    (_:_:_) -> Multicolor
-    _ -> ArtifactColorless
+categorize card
+    | land `typeSubset` types = Land
+    | colors == white = White
+    | colors == blue = Blue
+    | colors == black = Black
+    | colors == red = Red
+    | colors == green = Green
+    | colors == colorless = ArtifactColorless
+    | otherwise = Multicolor
  where
     types = card ^. cardTypes
     colors = card ^. cardColors

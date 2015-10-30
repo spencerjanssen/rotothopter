@@ -27,6 +27,7 @@ library
                      Import.NoFoundation
                      Import.Mail
                      Model
+                     Model.Card
                      Common
                      Settings
                      Settings.StaticFiles

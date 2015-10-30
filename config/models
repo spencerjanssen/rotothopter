@@ -18,10 +18,10 @@ CubeEntry
 Card
     Primary card
     card Text
-    colors [Text]
+    colors ColorSet
     -- ie instant, land
     -- not super types like legendary or subtypes like human
-    types [Text]
+    types TypeSet
     UniqueCardName card
     deriving Show
 Draft

@@ -3,7 +3,6 @@ module Handler.UpdateMtgJson where
 import Import
 import Data.Aeson
 import qualified Data.Map as Map
-import qualified Data.Set as Set
 
 getUpdateMtgJsonR :: Handler Html
 getUpdateMtgJsonR = do
@@ -21,14 +20,14 @@ data Layout = Split
             | MehLayout
  deriving Show
 
-data CardInfo = CardInfo { ciname :: Text, cicolors :: [Text], citypes :: [Text], layout :: Layout, names :: Maybe [Text] }
+data CardInfo = CardInfo { ciname :: Text, cicolors :: ColorSet, citypes :: TypeSet, layout :: Layout, names :: Maybe [Text] }
  deriving Show
 
 instance FromJSON CardInfo where
     parseJSON (Object v) = CardInfo
                             <$> v .: "name"
-                            <*> v .:? "colors" .!= []
-                            <*> v .:? "types" .!= []
+                            <*> v .:? "colors" .!= mempty
+                            <*> v .:? "types" .!= mempty
                             <*> v .: "layout"
                             <*> v .:? "names" .!= Nothing
     parseJSON _ = mzero
@@ -42,15 +41,12 @@ instance FromJSON Layout where
                                 _ -> MehLayout
     parseJSON _ = mzero
 
-uniq :: Ord a => [a] -> [a]
-uniq xs = Set.toList . Set.fromList $ xs
-
 -- | Assume all CardInfo are part of the same split card
 combineCardInfo :: [CardInfo] -> CardInfo
 combineCardInfo xs@(CardInfo {layout = Split, names = Just ns}:_) = CardInfo
     { ciname = name
-    , cicolors = uniq $ concatMap cicolors xs
-    , citypes = uniq $ concatMap citypes xs
+    , cicolors = foldMap cicolors xs
+    , citypes = foldMap citypes xs
     , layout = Split
     , names = Just ns
     }
