@@ -5,11 +5,11 @@ module Foundation where
 import Import.NoFoundation
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Text.Hamlet          (hamletFile)
-import Text.Jasmine         (minifym)
+-- import Text.Jasmine         (minifym)
 import Yesod.Auth.BrowserId (authBrowserId)
 import Yesod.Auth.Dummy     (authDummy)
 import Yesod.Auth.GoogleEmail2 (authGoogleEmail)
-import Yesod.Default.Util   (addStaticContentExternal)
+-- import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 
@@ -97,7 +97,9 @@ instance Yesod App where
     -- and names them based on a hash of their content. This allows
     -- expiration dates to be set far in the future without worry of
     -- users receiving stale content.
-    addStaticContent ext mime content = do
+    addStaticContent _ _ _ = return Nothing
+        {-
+    addStaticContent ext mime content = return Nothing
         master <- getYesod
         let staticDir = appStaticDir $ appSettings master
         addStaticContentExternal
@@ -111,6 +113,7 @@ instance Yesod App where
       where
         -- Generate a unique filename based on the content itself
         genFileName lbs = "autogen-" ++ base64md5 lbs
+        -}
 
     -- What messages should be logged. The following includes all messages when
     -- in development, and warnings and errors in production.
