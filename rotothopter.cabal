@@ -6,6 +6,20 @@ homepage:       https://github.com/spencerjanssen/rotothopter
 license:        BSD3
 license-file:   LICENSE
 maintainer:     spencerjanssen@gmail.com
+data-files:
+    static/css/*.css
+    static/fonts/*.eot
+    static/fonts/*.svg
+    static/fonts/*.ttf
+    static/fonts/*.woff
+    static/img/mana/15/*.png
+    static/img/mana/40/*.png
+    static/js/bootstrap.min.js
+    static/js/jquery.hideseek.min.js
+    static/js/jquery.min.js
+    static/js/jquery.stickytableheaders.min.js
+    static/js/jquery.timeago.js
+    static/js/moment.min.js
 
 Flag dev
     Description:   Turn on development settings, like auto-reload templates.
