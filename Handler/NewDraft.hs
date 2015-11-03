@@ -16,16 +16,20 @@ postNewDraftR :: Handler Html
 postNewDraftR = do
     uid <- requireAuthId
     t <- liftIO getCurrentTime
-    ((FormSuccess newDraft, _), _) <- runFormPost $ draftForm uid
-    did <- runDB $ insert $ newDraft t
+    ((FormSuccess (newDraft, uids), _), _) <- runFormPost $ draftForm uid
+    did <- runDB $ do
+        did <- insert $ newDraft t
+        forM_ (zip uids [0 ..]) $ \(u, i) -> void $ insert (DraftParticipant u did i)
+        return did
     redirect (ViewDraftR did)
 
-draftForm :: Key User -> Form (UTCTime -> Draft)
-draftForm uid = renderBootstrap3 BootstrapBasicForm $ Draft uid
+draftForm :: Key User -> Form (UTCTime -> Draft, [UserId])
+draftForm uid = renderBootstrap3 BootstrapBasicForm $ mk
     <$> (entityKey <$> areq cubeField "Cube Name" Nothing)
     <*> (map entityKey <$> areq participantsField "Participants" Nothing)
     <*> areq intField "Rounds" (Just 45)
  where
+    mk cn ps rs = (Draft uid cn (fromIntegral $ length ps) rs, ps)
     participantsField = checkMMap findParticipants (Textarea . unlines . map (view userIdent . entityVal)) textareaField
     findParticipants txt = do
         let names = map strip . lines $ unTextarea txt :: [Text]

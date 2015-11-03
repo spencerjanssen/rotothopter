@@ -11,10 +11,11 @@ getMakeDraftPickR :: DraftId -> Text -> Handler Html
 getMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
-    when (uid `onotElem` (draft ^. draftParticipants)) $ fail "you are not in this draft"
-    picks <- getPicks draftId
+    drafters <- map entityKey <$> getParticipants draftId
+    when (uid `onotElem` drafters ) $ fail "you are not in this draft"
     mcardinfo <- maybeCardInfo cardToPick
-    case getNextDrafter draft picks of
+    mnext <- getNextDrafter (Entity draftId draft)
+    case mnext of
         Nothing -> fail "this draft has completed, you can't make a pick"
         Just uid'
             | uid /= uid' -> fail "it isn't your turn to pick yet"
@@ -27,9 +28,11 @@ postMakeDraftPickR :: DraftId -> Text -> Handler Html
 postMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
-    when (uid `onotElem` view draftParticipants draft) $ fail "you are not in this draft"
+    drafters <- map entityKey <$> getParticipants draftId
+    when (uid `onotElem` drafters) $ fail "you are not in this draft"
     picks <- getPicks draftId
-    case getNextDrafter draft picks of
+    mnext <- getNextDrafter (Entity draftId draft)
+    case mnext of
         Nothing -> fail "this draft has completed, you can't make a pick"
         Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
                   | otherwise -> actualPostMakeDraftPickR draftId uid picks draft cardToPick
@@ -54,11 +57,12 @@ checkSendEmail :: DraftId -> Draft -> UserId -> Handler ()
 checkSendEmail draftId draft olduid = do
     picks <- getPicks draftId
 
-    case getNextDrafter draft picks of
+    mnext <- getNextDrafter (Entity draftId draft)
+    case mnext of
         Just newuid | newuid /= olduid -> do
             Just user <- runDB $ get newuid
             let lastpick = Prelude.last picks
-                rnd = 1 + ((length picks + 1) `div` length (draft ^. draftParticipants))
+                (rnd, _) = pickNumToRC draft (length picks + 1)
             url <- routeToTextUrl (ViewDraftR draftId)
             Just lastpicker <- runDB $ get (lastpick ^. pickDrafter)
             sendEmail user ("Time for draft round " ++ pack (show rnd)) $ [st|

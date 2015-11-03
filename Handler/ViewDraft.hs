@@ -9,8 +9,9 @@ import qualified Database.Esqueleto as E
 
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
-    Just draft <- runDB $ get draftId
-    Just participants <- sequence <$> runDB (mapM get $ draft ^. draftParticipants)
+    draft <- runDB $ get404 draftId
+    participants <- map entityVal <$> getParticipants draftId
+    mnextdrafter <- getNextDrafter (Entity draftId draft)
     Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCube
     picks <- getPicksAndInfo draftId
     muid <- maybeAuthId
@@ -19,7 +20,6 @@ getViewDraftR draftId = do
         picksOnly = map fst picks
         lastRow = min (fromIntegral $ view draftRounds draft-1) . fst
                 . pickNumToRC draft $ Map.size pickmap
-        mnextdrafter = getNextDrafter draft picksOnly
         timediffByCell = Map.fromList $ do
             (p1, p2) <- zip picksOnly (drop 1 picksOnly)
             return ( p2 ^. pickNumber
@@ -76,25 +76,6 @@ getAllowedCards did cuid = map munge <$> runDB query
 
 utcTo8601 :: UTCTime -> String
 utcTo8601 = formatTime defaultTimeLocale $ iso8601DateFormat (Just "%H:%M:%S%z")
-
-isLeftToRightRow :: Draft -> Int -> Bool
-isLeftToRightRow = const even
-
-pickNumToRC :: Draft -> Int -> (Int, Int)
-pickNumToRC draft i = (r, c)
- where
-    n = length $ draft ^. draftParticipants
-    r = i `div` n
-    dir | isLeftToRightRow draft r = id
-        | otherwise                = (pred n -)
-    c = dir (i `mod` n)
-
-rcToPickNum :: Draft -> (Int, Int) -> Int
-rcToPickNum draft (r, c) = r * n + dir c
- where
-    n = length $ draft ^. draftParticipants
-    dir | isLeftToRightRow draft r = id
-        | otherwise                = flip subtract (pred n)
 
 prettyTimeDiff :: NominalDiffTime -> String
 prettyTimeDiff t = pref ++ concat

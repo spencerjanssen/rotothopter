@@ -52,6 +52,8 @@ import Handler.AllCubes
 import Handler.AllDrafts
 import Handler.UserProfile
 
+import Common
+
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
 -- comments there for more details.
@@ -209,12 +211,14 @@ mkAdmin u = runDB $ do
     return ()
 
 fillDraft :: DraftId -> Handler ()
-fillDraft did = runDB $ do
-    Just d <- get did
-    t <- liftIO getCurrentTime
-    let picks = fromIntegral (d ^. draftRounds) * length (d ^. draftParticipants)
-        ucycle = (d ^. draftParticipants) ++ reverse (d ^. draftParticipants) ++ ucycle
-    cs <- map entityVal <$> selectList [CubeEntryCube ==. d ^. draftCube] [Asc CubeEntryCard, LimitTo picks]
-    forM_ (zip3 [0 ..] cs ucycle) $ \(i, c, u) -> void $ insert $ Pick did i (d ^. draftCube) (c ^. cubeEntryCard) u t
-    return ()
+fillDraft did = do
+    ps <- map entityKey <$> getParticipants did
+    runDB $ do
+        Just d <- get did
+        t <- liftIO getCurrentTime
+        let picks = fromIntegral (d ^. draftRounds) * length ps
+            ucycle = ps ++ reverse ps ++ ucycle
+        cs <- map entityVal <$> selectList [CubeEntryCube ==. d ^. draftCube] [Asc CubeEntryCard, LimitTo picks]
+        forM_ (zip3 [0 ..] cs ucycle) $ \(i, c, u) -> void $ insert $ Pick did i (d ^. draftCube) (c ^. cubeEntryCard) u t
+        return ()
 #endif

@@ -3,6 +3,7 @@ module Common where
 import Import
 import qualified Data.Set as Set
 import qualified Data.Map as Map
+import qualified Database.Esqueleto as E
 
 getCubeCards :: CubeId -> Handler [Text]
 getCubeCards cuid = do
@@ -21,15 +22,45 @@ getDraft did = do
 pickOrder :: [a] -> [a]
 pickOrder drafters = concat . repeat $ drafters ++ reverse drafters
 
--- returns Nothing if the draft is complete
-getNextDrafter :: Draft -> [Pick] -> Maybe UserId
-getNextDrafter (Draft _ _ uids n _) picks = go 0 (view pickDrafter <$> picks) (pickOrder uids)
+getNextDrafter :: Entity Draft -> Handler (Maybe UserId)
+getNextDrafter (Entity did d) =
+    runDB $ do
+        mpick <- selectFirst [PickDraft ==. did] [Desc PickNumber, LimitTo 1]
+        let nextpick = fromIntegral $ maybe 0 (succ . view pickNumber) (entityVal <$> mpick)
+            (rd, nextseat) = pickNumToRC d nextpick
+        if fromIntegral rd >= d ^. draftRounds
+            then return Nothing
+            else do
+                s <- getBy (UniqueDraftSeat did (fromIntegral nextseat))
+                return (view draftParticipantDrafter . entityVal <$> s)
+
+pickNumToRC :: Draft -> Int -> (Int, Int)
+pickNumToRC draft i = (r, c)
  where
-    maxPick = fromIntegral (length uids) * n
-    go i _ _ | i >= maxPick = Nothing
-    go _ [] (u:_) = Just u
-    go i (p:ps) (u:us) | p == u = go (succ i) ps us
-    go _ _ _ = error "this draft is invalid"
+    n = fromIntegral $ draft ^. draftParticipants
+    r = i `div` n
+    dir | isLeftToRightRow draft r = id
+        | otherwise                = (pred n -)
+    c = dir (i `mod` n)
+
+rcToPickNum :: Draft -> (Int, Int) -> Int
+rcToPickNum draft (r, c) = r * n + dir c
+ where
+    n = fromIntegral $ draft ^. draftParticipants
+    dir | isLeftToRightRow draft r = id
+        | otherwise                = flip subtract (pred n)
+
+isLeftToRightRow :: Draft -> Int -> Bool
+isLeftToRightRow = const even
+
+getParticipants :: DraftId -> Handler [Entity User]
+getParticipants did = runDB query
+ where
+    query = E.select $ E.from $ \(dp `E.InnerJoin` user) -> do
+                E.on $ dp E.^. DraftParticipantDrafter E.==. user E.^. UserId
+                E.where_ $ dp E.^. DraftParticipantDraft E.==. E.val did
+                E.orderBy [E.asc (dp E.^. DraftParticipantSeat)]
+                return user
 
 getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
 getPickAllowedCards did draft = do

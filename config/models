@@ -27,18 +27,25 @@ Card
 Draft
     creator UserId
     cube CubeId
-    participants [UserId]
+    participants Word
     rounds Word default=45
     created UTCTime
     deriving Show
+DraftParticipant
+    drafter UserId
+    draft DraftId
+    seat Word
+    Primary drafter draft
+    UniqueDraftSeat draft seat
 Pick
     draft DraftId
     number Int -- starts at 0, ascends for each pick
     Primary draft number
     cube CubeId
     card CardId
-    Foreign CubeEntry asdf cube card
+    Foreign CubeEntry entryfk cube card
     drafter UserId
+    Foreign DraftParticipant dpfk drafter draft
     UniquePick draft number
     created UTCTime
     deriving Show
