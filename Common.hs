@@ -9,6 +9,11 @@ import Yesod.Form.Bootstrap3 (bfs)
 bootstrapLabel :: Text -> FieldSettings site
 bootstrapLabel x = bfs (x :: Text)
 
+textAreaHeight :: Int -> FieldSettings site -> FieldSettings site
+textAreaHeight n s = s {fsAttrs = ("style", css) : fsAttrs s}
+ where
+    css = "height: " ++ pack (show n) ++ "em"
+
 getCubeCards :: CubeId -> Handler [Text]
 getCubeCards cuid = do
     cs <- runDB $ selectList [CubeEntryCube ==. cuid] []

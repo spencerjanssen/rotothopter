@@ -4,7 +4,7 @@ import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Data.Text (strip)
 import qualified Database.Esqueleto as E
-import Common (bootstrapLabel)
+import Common (bootstrapLabel, textAreaHeight)
 
 getNewCubeListR :: Handler Html
 getNewCubeListR = do
@@ -28,7 +28,7 @@ cubeForm :: Form (Text, [Text])
 cubeForm = renderBootstrap3 BootstrapBasicForm $ (,)
     <$> areq textField (bootstrapLabel "Cube name") Nothing
     <*> ((map strip . lines . unTextarea)
-        <$> areq textareaField (bootstrapLabel "The cube list" ) Nothing)
+        <$> areq textareaField (textAreaHeight 20 $ bootstrapLabel "The cube list" ) Nothing)
 
 getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
