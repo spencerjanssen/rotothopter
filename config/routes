@@ -19,3 +19,4 @@
 /user/profile UserProfileR GET POST
 /draft/invite/new NewDraftInviteR GET POST
 !/draft/invite/#InviteHash ViewDraftInviteR GET
+!/draft/invite/#InviteHash/join JoinDraftInviteR POST

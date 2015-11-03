@@ -17,7 +17,7 @@ $maybe (Entity uid _usr) <- mauth
     $if elem uid (map entityKey members)
         <p>You're already in the draft
     $else
-        <form method=post .form-inline>
+        <form method=post action=@{JoinDraftInviteR inviteHash} .form-inline>
             <button .btn .btn-primary type=submit>
                 Join Draft
 $nothing

@@ -53,6 +53,7 @@ import Handler.AllDrafts
 import Handler.UserProfile
 import Handler.NewDraftInvite
 import Handler.ViewDraftInvite
+import Handler.JoinDraftInvite
 
 import Common
 
