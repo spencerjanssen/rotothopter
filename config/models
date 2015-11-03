@@ -31,6 +31,13 @@ Draft
     rounds Word default=45
     created UTCTime
     deriving Show
+DraftInvite
+    creator UserId
+    cube CubeId
+    rounds Word default=45
+    hash InviteHash
+    UniqueInviteHash hash
+    created UTCTime
 DraftParticipant
     drafter UserId
     draft DraftId

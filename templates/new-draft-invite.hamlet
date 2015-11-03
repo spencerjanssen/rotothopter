@@ -1,0 +1,5 @@
+<div #form>
+    <form method=post action=@{NewDraftInviteR} enctype=#{formEnctype}>
+        ^{formWidget}
+        <button .btn .btn-primary type=submit>
+            Make invite

@@ -22,3 +22,4 @@ import Yesod.Core.Types      as Import (loggerSet)
 import Yesod.Default.Config2 as Import
 import Control.Lens as Import
 import Model.Card as Import
+import Model.InviteHash as Import

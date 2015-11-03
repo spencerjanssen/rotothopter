@@ -17,3 +17,4 @@
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /admin/user/add AdminAddUserR GET POST
 /user/profile UserProfileR GET POST
+/draft/invite/new NewDraftInviteR GET POST

@@ -42,6 +42,7 @@ library
                      Import.Mail
                      Model
                      Model.Card
+                     Model.InviteHash
                      Common
                      Settings
                      Settings.StaticFiles
@@ -59,6 +60,7 @@ library
                      Handler.AllCubes
                      Handler.AllDrafts
                      Handler.UserProfile
+                     Handler.NewDraftInvite
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
@@ -127,6 +129,7 @@ library
                  , yesod-eventsource
                  , lens
                  , esqueleto
+                 , uuid
 
 executable         rotothopter
     if flag(library-only)
@@ -182,6 +185,7 @@ executable         rotothopter
                  , yesod-eventsource
                  , lens
                  , esqueleto
+                 , uuid
 
     extensions: TemplateHaskell
                 QuasiQuotes
