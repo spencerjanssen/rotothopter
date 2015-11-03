@@ -18,3 +18,4 @@
 /admin/user/add AdminAddUserR GET POST
 /user/profile UserProfileR GET POST
 /draft/invite/new NewDraftInviteR GET POST
+!/draft/invite/#InviteHash ViewDraftInviteR GET

@@ -52,6 +52,7 @@ import Handler.AllCubes
 import Handler.AllDrafts
 import Handler.UserProfile
 import Handler.NewDraftInvite
+import Handler.ViewDraftInvite
 
 import Common
 

@@ -164,3 +164,13 @@ postDraft cube participants rounds = do
 getOnlyDraftId = do
     Just (Entity did _) <- runDB $ selectFirst ([] :: [Filter Draft]) []
     return did
+
+postDraftInvite cube = do
+    authenticateA
+    get NewDraftInviteR
+    request $ do
+        addToken
+        byLabel "Cube Name" cube
+        byLabel "Rounds" "45"
+        setMethod "POST"
+        setUrl NewDraftInviteR

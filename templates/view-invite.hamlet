@@ -1,0 +1,24 @@
+<p>Drafting #
+    <a href=@{ViewCubeListR (inv ^. draftInviteCube)}>
+        #{cube ^. cubeName}
+<p>The draft will have #{inv ^. draftInviteRounds} rounds.
+
+$if not (null members)
+    <h2>
+        Draft participants so far:
+    <ol>
+        $forall (Entity _ mem) <- members
+            <li>
+                #{pseudonym mem}
+$else
+    <p>No one has joined the draft yet, you could be the first!
+
+$maybe (Entity uid _usr) <- mauth
+    $if elem uid (map entityKey members)
+        <p>You're already in the draft
+    $else
+        <form method=post .form-inline>
+            <button .btn .btn-primary type=submit>
+                Join Draft
+$nothing
+    <p>You have to sign in first to join the draft

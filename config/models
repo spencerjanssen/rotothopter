@@ -38,6 +38,10 @@ DraftInvite
     hash InviteHash
     UniqueInviteHash hash
     created UTCTime
+DraftInvitee
+    drafter UserId
+    draftInvite DraftInviteId
+    Primary drafter draftInvite
 DraftParticipant
     drafter UserId
     draft DraftId

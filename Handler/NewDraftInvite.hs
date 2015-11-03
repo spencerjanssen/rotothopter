@@ -19,7 +19,7 @@ postNewDraftInviteR = do
     h <- newInviteHash
     _invid <- runDB $ insert $ newInvite h t
     -- todo, redirect to draft join page
-    redirect HomeR
+    redirect (ViewDraftInviteR h)
 
 inviteForm :: UserId -> Form (InviteHash -> UTCTime -> DraftInvite)
 inviteForm uid = renderBootstrap3 BootstrapBasicForm $ mk
