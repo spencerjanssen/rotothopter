@@ -2,6 +2,7 @@ module Handler.AdminAddUser where
 
 import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
+import Common (bootstrapLabel)
 
 getAdminAddUserR :: Handler Html
 getAdminAddUserR = do
@@ -18,5 +19,5 @@ postAdminAddUserR = do
 
 newUserForm :: Form (Text, Maybe Text)
 newUserForm = renderBootstrap3 BootstrapBasicForm $ (,)
-    <$> areq emailField "Email" Nothing
-    <*> aopt textField "Name" Nothing
+    <$> areq emailField (bootstrapLabel "Email") Nothing
+    <*> aopt textField (bootstrapLabel "Name") Nothing

@@ -3,6 +3,7 @@ module Handler.UserProfile where
 import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Data.Text (strip)
+import Common (bootstrapLabel)
 
 getUserProfileR :: Handler Html
 getUserProfileR = do
@@ -24,4 +25,5 @@ postUserProfileR = do
             redirect UserProfileR
 
 userDetailsForm :: Maybe Text -> Form Text
-userDetailsForm mt = renderBootstrap3 BootstrapBasicForm (areq textField "Your name" mt)
+userDetailsForm mt = renderBootstrap3 BootstrapBasicForm
+    (areq textField (bootstrapLabel "Your name") mt)

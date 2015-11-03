@@ -1,7 +1,8 @@
 module Handler.NewDraftInvite where
 
 import Import
-import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, bfs)
+import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
+import Common (bootstrapLabel)
 
 getNewDraftInviteR :: Handler Html
 getNewDraftInviteR = do
@@ -23,8 +24,8 @@ postNewDraftInviteR = do
 
 inviteForm :: UserId -> Form (InviteHash -> UTCTime -> DraftInvite)
 inviteForm uid = renderBootstrap3 BootstrapBasicForm $ mk
-    <$> (entityKey <$> areq cubeField (bfs ("Cube Name" :: Text)) Nothing)
-    <*> areq intField (bfs ("Rounds" :: Text)) (Just 45)
+    <$> (entityKey <$> areq cubeField (bootstrapLabel "Cube Name") Nothing)
+    <*> areq intField (bootstrapLabel "Rounds") (Just 45)
  where
     mk cid rds = DraftInvite uid cid rds
     cubeField = checkMMap findCube (view cubeName . entityVal) textField

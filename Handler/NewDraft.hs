@@ -3,6 +3,7 @@ module Handler.NewDraft where
 import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Data.Text (strip)
+import Common (bootstrapLabel)
 
 getNewDraftR :: Handler Html
 getNewDraftR = do
@@ -25,8 +26,8 @@ postNewDraftR = do
 
 draftForm :: Key User -> Form (UTCTime -> Draft, [UserId])
 draftForm uid = renderBootstrap3 BootstrapBasicForm $ mk
-    <$> (entityKey <$> areq cubeField "Cube Name" Nothing)
-    <*> (map entityKey <$> areq participantsField "Participants" Nothing)
+    <$> (entityKey <$> areq cubeField (bootstrapLabel "Cube Name") Nothing)
+    <*> (map entityKey <$> areq participantsField (bootstrapLabel "Participants") Nothing)
     <*> areq intField "Rounds" (Just 45)
  where
     mk cn ps rs = (Draft uid cn (fromIntegral $ length ps) rs, ps)

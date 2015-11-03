@@ -4,6 +4,10 @@ import Import
 import qualified Data.Set as Set
 import qualified Data.Map as Map
 import qualified Database.Esqueleto as E
+import Yesod.Form.Bootstrap3 (bfs)
+
+bootstrapLabel :: Text -> FieldSettings site
+bootstrapLabel x = bfs (x :: Text)
 
 getCubeCards :: CubeId -> Handler [Text]
 getCubeCards cuid = do
