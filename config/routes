@@ -17,7 +17,7 @@
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /admin/user/add AdminAddUserR GET POST
 /user/profile UserProfileR GET POST
-/draft/invite/new NewDraftInviteR GET POST
+/draft/invite/new/#CubeId NewDraftInviteR GET POST
 !/draft/invite/#InviteHash ViewDraftInviteR GET
 !/draft/invite/#InviteHash/join JoinDraftInviteR POST
 !/draft/invite/#InviteHash/launch LaunchDraftInviteR POST

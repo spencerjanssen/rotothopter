@@ -4,30 +4,26 @@ import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Common (bootstrapLabel)
 
-getNewDraftInviteR :: Handler Html
-getNewDraftInviteR = do
+getNewDraftInviteR :: CubeId -> Handler Html
+getNewDraftInviteR cubeId = do
     uid <- requireAuthId
-    (formWidget, formEnctype) <- generateFormPost $ inviteForm uid
+    (formWidget, formEnctype) <- generateFormPost $ inviteForm uid cubeId
     defaultLayout $ do
         setTitle "Create a new draft invitation"
         $(widgetFile "new-draft-invite")
 
-postNewDraftInviteR :: Handler Html
-postNewDraftInviteR = do
+postNewDraftInviteR :: CubeId -> Handler Html
+postNewDraftInviteR cubeId = do
     uid <- requireAuthId
-    ((FormSuccess newInvite, _), _) <- runFormPost $ inviteForm uid
+    ((FormSuccess newInvite, _), _) <- runFormPost $ inviteForm uid cubeId
     t <- liftIO getCurrentTime
     h <- newInviteHash
     _invid <- runDB $ insert $ newInvite h t
     -- todo, redirect to draft join page
     redirect (ViewDraftInviteR h)
 
-inviteForm :: UserId -> Form (InviteHash -> UTCTime -> DraftInvite)
-inviteForm uid = renderBootstrap3 BootstrapBasicForm $ mk
-    <$> (entityKey <$> areq cubeField (bootstrapLabel "Cube Name") Nothing)
-    <*> areq intField (bootstrapLabel "Rounds") (Just 45)
+inviteForm :: UserId -> CubeId -> Form (InviteHash -> UTCTime -> DraftInvite)
+inviteForm uid cid = renderBootstrap3 BootstrapBasicForm $ mk
+    <$> areq intField (bootstrapLabel "Rounds") (Just 45)
  where
-    mk cid rds = DraftInvite uid cid rds
-    cubeField = checkMMap findCube (view cubeName . entityVal) textField
-    findCube txt =
-        maybe (Left txt) Right <$> runDB (getBy $ UniqueCubeName txt)
+    mk rds = DraftInvite uid cid rds

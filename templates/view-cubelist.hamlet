@@ -1,5 +1,7 @@
 <h1>#{cname}
 
+<a href=@{NewDraftInviteR cid}>Draft this cube
+
 <ul>
     $forall (E.Value (CardKey card), _carddetails) <- cs
         <li>

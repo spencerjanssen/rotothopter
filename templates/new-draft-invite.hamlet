@@ -1,5 +1,5 @@
 <div #form>
-    <form method=post action=@{NewDraftInviteR} enctype=#{formEnctype}>
+    <form method=post action=@{NewDraftInviteR cubeId} enctype=#{formEnctype}>
         ^{formWidget}
         <button .btn .btn-primary type=submit>
             Make invite

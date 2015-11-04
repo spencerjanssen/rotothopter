@@ -167,10 +167,9 @@ getOnlyDraftId = do
 
 postDraftInvite cube = do
     authenticateA
-    get NewDraftInviteR
+    get (NewDraftInviteR cube)
     request $ do
         addToken
-        byLabel "Cube Name" cube
         byLabel "Rounds" "45"
         setMethod "POST"
-        setUrl NewDraftInviteR
+        setUrl (NewDraftInviteR cube)
