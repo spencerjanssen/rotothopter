@@ -151,25 +151,24 @@ testDraftRounds = 5
 postDraft cube participants rounds = do
     mapM_ authenticateAs participants
 
+    postDraftInvite cube rounds
+    Just (Entity _ inv) <- runDB $ selectFirst [] []
+    forM_ participants $ \p -> do
+        authenticateAs p
+        post $ JoinDraftInviteR $ inv ^. draftInviteHash
     authenticateA
-    get NewDraftR
-    request $ do
-        addToken
-        byLabel "Cube Name" cube
-        byLabel "Participants" (unlines participants)
-        byLabel "Rounds" (pack $ show rounds)
-        setMethod "POST"
-        setUrl NewDraftR
+    post $ LaunchDraftInviteR $ inv ^. draftInviteHash
 
 getOnlyDraftId = do
     Just (Entity did _) <- runDB $ selectFirst ([] :: [Filter Draft]) []
     return did
 
-postDraftInvite cube = do
+postDraftInvite cube rounds = do
+    Just (Entity cuid _) <- runDB $ selectFirst [CubeName ==. cube] []
     authenticateA
-    get (NewDraftInviteR cube)
+    get (NewDraftInviteR cuid)
     request $ do
         addToken
-        byLabel "Rounds" "45"
+        byLabel "Rounds" (pack $ show rounds)
         setMethod "POST"
-        setUrl (NewDraftInviteR cube)
+        setUrl (NewDraftInviteR cuid)

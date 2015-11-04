@@ -8,8 +8,7 @@ spec = withApp $ do
     describe "postJoinDraftInviteR" $ do
         it "lets the user join a draft" $ do
             postCube testLargeCubeName testLargeCube
-            Just (Entity cid _) <- runDB $ selectFirst ([] :: [Filter Cube]) []
-            postDraftInvite cid
+            postDraftInvite testLargeCubeName 45
             Just (Entity _ inv) <- runDB $ selectFirst ([] :: [Filter DraftInvite]) []
             post $ JoinDraftInviteR $ inv ^. draftInviteHash
             statusIs 303

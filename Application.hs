@@ -42,7 +42,6 @@ import Handler.Common
 import Handler.Home
 import Handler.CubeList
 import Handler.UpdateMtgJson
-import Handler.NewDraft
 import Handler.ViewDraft
 import Handler.MakeDraftPick
 import Handler.AdminAddUser

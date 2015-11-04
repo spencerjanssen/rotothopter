@@ -50,7 +50,6 @@ library
                      Handler.Home
                      Handler.CubeList
                      Handler.UpdateMtgJson
-                     Handler.NewDraft
                      Handler.ViewDraft
                      Handler.MakeDraftPick
                      Handler.AdminAddUser

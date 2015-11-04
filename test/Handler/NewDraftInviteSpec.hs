@@ -12,6 +12,5 @@ spec = withApp $ do
     describe "postNewDraftInviteR" $ do
         it "posts a new draft invite" $ do
             postCube testLargeCubeName testLargeCube
-            Just (Entity cid _) <- runDB $ selectFirst ([] :: [Filter Cube]) []
-            postDraftInvite cid
+            postDraftInvite testLargeCubeName 45
             statusIs 303
