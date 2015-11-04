@@ -63,6 +63,7 @@ library
                      Handler.NewDraftInvite
                      Handler.ViewDraftInvite
                      Handler.JoinDraftInvite
+                     Handler.LaunchDraftInvite
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

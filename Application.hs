@@ -54,6 +54,7 @@ import Handler.UserProfile
 import Handler.NewDraftInvite
 import Handler.ViewDraftInvite
 import Handler.JoinDraftInvite
+import Handler.LaunchDraftInvite
 
 import Common
 

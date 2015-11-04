@@ -30,6 +30,8 @@ Draft
     participants Word
     rounds Word default=45
     created UTCTime
+    hash InviteHash
+    UniqueDraftHash hash
     deriving Show
 DraftInvite
     creator UserId

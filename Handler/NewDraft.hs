@@ -17,14 +17,15 @@ postNewDraftR :: Handler Html
 postNewDraftR = do
     uid <- requireAuthId
     t <- liftIO getCurrentTime
+    h <- newInviteHash
     ((FormSuccess (newDraft, uids), _), _) <- runFormPost $ draftForm uid
     did <- runDB $ do
-        did <- insert $ newDraft t
+        did <- insert $ newDraft t h
         forM_ (zip uids [0 ..]) $ \(u, i) -> void $ insert (DraftParticipant u did i)
         return did
     redirect (ViewDraftR did)
 
-draftForm :: Key User -> Form (UTCTime -> Draft, [UserId])
+draftForm :: Key User -> Form (UTCTime -> InviteHash -> Draft, [UserId])
 draftForm uid = renderBootstrap3 BootstrapBasicForm $ mk
     <$> (entityKey <$> areq cubeField (bootstrapLabel "Cube Name") Nothing)
     <*> (map entityKey <$> areq participantsField partLabel Nothing)

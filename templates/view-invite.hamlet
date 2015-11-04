@@ -22,3 +22,8 @@ $maybe (Entity uid _usr) <- mauth
                 Join Draft
 $nothing
     <p>You have to sign in first to join the draft
+
+$if isCreator
+    <form method=post action=@{LaunchDraftInviteR inviteHash}>
+        <button .btn .btn-primary type=submit>
+            Start Draft
