@@ -11,6 +11,7 @@ postLaunchDraftInviteR inviteHash = do
     time <- liftIO getCurrentTime
     did <- runDB $ do
         ps <- selectList [DraftInviteeDraftInvite ==. invId] []
+        when (null ps) $ fail "can't start a draft with 0 participants"
         deleteWhere [DraftInviteeDraftInvite ==. invId]
         delete invId
         did <- insert $ Draft
