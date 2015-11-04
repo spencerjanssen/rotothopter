@@ -17,13 +17,15 @@ $maybe (Entity uid _usr) <- mauth
     $if elem uid (map entityKey members)
         <p>You're already in the draft
     $else
-        <form method=post action=@{JoinDraftInviteR inviteHash} .form-inline>
-            <button .btn .btn-primary type=submit>
-                Join Draft
+        <p>
+            <form method=post action=@{JoinDraftInviteR inviteHash} .form-inline>
+                <button .btn .btn-primary type=submit>
+                    Join Draft
 $nothing
     <p>You have to sign in first to join the draft
 
 $if isCreator
-    <form method=post action=@{LaunchDraftInviteR inviteHash}>
-        <button .btn .btn-primary type=submit>
-            Start Draft
+    <p>
+        <form method=post action=@{LaunchDraftInviteR inviteHash}>
+            <button .btn .btn-primary type=submit>
+                Start Draft
