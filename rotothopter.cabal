@@ -63,6 +63,7 @@ library
                      Handler.ViewDraftInvite
                      Handler.JoinDraftInvite
                      Handler.LaunchDraftInvite
+                     Handler.PicksByParticipant
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

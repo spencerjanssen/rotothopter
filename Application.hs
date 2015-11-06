@@ -54,6 +54,7 @@ import Handler.NewDraftInvite
 import Handler.ViewDraftInvite
 import Handler.JoinDraftInvite
 import Handler.LaunchDraftInvite
+import Handler.PicksByParticipant
 
 import Common
 

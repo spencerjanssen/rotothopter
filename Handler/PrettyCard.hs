@@ -80,3 +80,8 @@ categorize card
 
 categorizeCardList :: [Card] -> [(CardCategory, [Card])]
 categorizeCardList cs = Map.toList $ Map.fromListWith (flip (++)) [(categorize c, [c]) | c <- cs]
+
+cardListView :: [Card] -> Text -> Maybe (Text -> WidgetT App IO ()) -> WidgetT App IO ()
+cardListView cs clss mtrans = do
+    let catcards = categorizeCardList cs
+    $(widgetFile "card-list")

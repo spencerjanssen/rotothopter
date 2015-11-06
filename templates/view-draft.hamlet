@@ -11,9 +11,10 @@ $if isNextDrafter
     <thead>
         <tr>
             <th>
-            $forall (col, participant) <- zip (enumFrom 0) participants
+            $forall (col, Entity pid participant) <- zip (enumFrom 0) participants
                 <th>
-                    #{pseudonym participant}
+                    <a href=@{PicksByParticipantR draftId pid}>
+                        #{pseudonym participant}
                     $if timestamp
                         <br>
                         #{prettyTimeDiff (timediffByCol col)}
@@ -51,16 +52,4 @@ $if isNextDrafter
 <h3>Unpicked Cards
 <span .glyphicon .glyphicon-search>
 <input name=search id=search placeholder=Search type=search data-list=".unpicked">
-$forall (cat, cards) <- catcards
-    <h4>
-        $maybe gl <- cardCategoryGlyph cat
-            <img src=@{gl}>
-        #{show cat}
-    <ul .unpicked>
-        $forall card <- cards
-            $with cname <- view cardCard card
-                <li>
-                    $if isNextDrafter
-                        <a href=@{MakeDraftPickR draftId cname}>#{cname}
-                    $else
-                        #{cname}
+^{cardListView allowedCards "unpicked" linkpick}

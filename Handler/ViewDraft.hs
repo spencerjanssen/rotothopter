@@ -10,10 +10,10 @@ import qualified Database.Esqueleto as E
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
     draft <- runDB $ get404 draftId
-    participants <- map entityVal <$> getParticipants draftId
+    participants <- getParticipants draftId
     mnextdrafter <- getNextDrafter (Entity draftId draft)
     Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCube
-    picks <- getPicksAndInfo draftId
+    picks <- getPicksAndInfo draftId Nothing
     muid <- maybeAuthId
     allowedCards <- getAllowedCards draftId (draft ^. draftCube)
     let pickmap = Map.fromList $ map (\p -> (p ^. _1.pickNumber, p)) picks
@@ -38,7 +38,11 @@ getViewDraftR draftId = do
                     | uid == nextdrafter -> (True, False)
                 (Nothing, _) -> (False, True)
                 _ -> (False, False)
-    let catcards = categorizeCardList allowedCards
+        linkpick | isNextDrafter = Just $ \cname ->
+                    [whamlet|
+                    <a href=@{MakeDraftPickR draftId cname}>#{cname}
+                    |]
+                 | otherwise = Nothing
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle $ if isNextDrafter
@@ -49,17 +53,6 @@ getViewDraftR draftId = do
         addScript (StaticR js_jquery_hideseek_min_js)
         addScript (StaticR js_jquery_stickytableheaders_min_js)
         $(widgetFile "view-draft")
-
-getPicksAndInfo :: DraftId -> Handler [(Pick, Card)]
-getPicksAndInfo did = map munge <$> runDB query
- where
-    munge (x, y) = (entityVal x, entityVal y)
-    query = E.select $ E.from $ \(pick `E.InnerJoin` cubeEntry `E.InnerJoin` card) -> do
-                E.on $ cubeEntry E.^. CubeEntryCard E.==. card E.^. CardId
-                E.on $ cubeEntry E.^. CubeEntryCard E.==. pick E.^. PickCard
-                E.where_ $ pick E.^. PickDraft E.==. E.val did
-                E.orderBy [E.asc (pick E.^. PickNumber)]
-                return (pick, card)
 
 getAllowedCards :: DraftId -> CubeId -> Handler [Card]
 getAllowedCards did cuid = map munge <$> runDB query

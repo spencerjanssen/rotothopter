@@ -28,6 +28,23 @@ getDraft did = do
     Just draft <- runDB $ get did
     return draft
 
+type PicksInfoConstraint
+    =  E.SqlExpr (Entity Pick)
+    -> E.SqlExpr (Entity Card)
+    -> E.SqlExpr (E.Value Bool)
+
+getPicksAndInfo :: DraftId -> Maybe PicksInfoConstraint -> Handler [(Pick, Card)]
+getPicksAndInfo did mbconst = map munge <$> runDB query
+ where
+    munge (x, y) = (entityVal x, entityVal y)
+    query = E.select $ E.from $ \(pick `E.InnerJoin` cubeEntry `E.InnerJoin` card) -> do
+                E.on $ cubeEntry E.^. CubeEntryCard E.==. card E.^. CardId
+                E.on $ cubeEntry E.^. CubeEntryCard E.==. pick E.^. PickCard
+                E.where_ $ pick E.^. PickDraft E.==. E.val did
+                forM_ mbconst $ \f -> E.where_ (f pick card)
+                E.orderBy [E.asc (pick E.^. PickNumber)]
+                return (pick, card)
+
 pickOrder :: [a] -> [a]
 pickOrder drafters = concat . repeat $ drafters ++ reverse drafters
 
