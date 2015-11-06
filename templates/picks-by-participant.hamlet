@@ -1,0 +1,6 @@
+<p>
+    <a href=@{ViewDraftR draftId}>
+        Back to the draft
+<h3>
+    Picks made by #{pseudonym usr}
+^{cardListView cards "" Nothing}

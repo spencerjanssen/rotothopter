@@ -1,0 +1,13 @@
+$forall (cat, cards) <- catcards
+    <h4>
+        $maybe gl <- cardCategoryGlyph cat
+            <img src=@{gl}>
+        #{show cat}
+    <ul class=#{clss}>
+        $forall card <- cards
+            $with cname <- view cardCard card
+                <li>
+                    $maybe trans <- mtrans
+                        ^{trans cname}
+                    $nothing
+                        #{cname}
