@@ -6,6 +6,7 @@ let
       branchName = "sqlify";
     };
     rotostatic = (import "${rotorepo}/release.nix" {  }).rotothopter_static;
+    secrets = (import ./prod-secrets.nix);
 in
 {
     network.description = "Rotothopter Single AWS";
@@ -71,6 +72,10 @@ in
                     PGHOST = "127.0.0.1";
                     PGDATABASE = "rotothopter";
                     ALLOW_DUMMY_AUTH = "true";
+                    GMAIL_PASSWORD = secrets.gmail_password;
+                    GMAIL_ADDRESS = secrets.gmail_address;
+                    GOOGLE_CLIENT_ID = secrets.google_client_id;
+                    GOOGLE_CLIENT_PASSWORD = secrets.google_client_password;
                 };
             };
             users.extraUsers.rotothopter = {
