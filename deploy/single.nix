@@ -1,8 +1,8 @@
 let
     rotorepo = (import <nixpkgs> {}).fetchgit {
       url = /home/sjanssen/rotothopter;
-      rev = "8c96206841cceeb717eb1f17a490155a09152ac1";
-      sha256 = "05vin88rkyv03kyvhks2cws0802x3adc6vi1zgjylwp9z355pr7n";
+      rev = "737b28a12ce7798f8e9639ca50a846e5c67f31f7";
+      sha256 = "aab3740385b094d416a95e540c85eb517135b60f0af174f1ed0e4a6eb8750303";
       branchName = "sqlify";
     };
     rotostatic = (import "${rotorepo}/release.nix" {  }).rotothopter_static;
