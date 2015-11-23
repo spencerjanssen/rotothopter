@@ -214,8 +214,8 @@ mkAdmin u = runDB $ do
 
 fillDraft :: DraftId -> Handler ()
 fillDraft did = do
-    ps <- map entityKey <$> getParticipants did
     runDB $ do
+        ps <- map (view draftParticipantDrafter . entityVal) <$> selectList [DraftParticipantDraft ==. did] []
         Just d <- get did
         t <- liftIO getCurrentTime
         let picks = fromIntegral (d ^. draftRounds) * length ps
