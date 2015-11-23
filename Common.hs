@@ -37,7 +37,7 @@ getPicksAndInfo :: DraftId -> Maybe PicksInfoConstraint -> Handler [(Pick, Card)
 getPicksAndInfo did mbconst = map munge <$> runDB query
  where
     munge (x, y) = (entityVal x, entityVal y)
-    query = E.select $ E.from $ \(pick `E.InnerJoin` cubeEntry `E.InnerJoin` card) -> do
+    query = E.select $ E.distinct $ E.from $ \(pick `E.InnerJoin` cubeEntry `E.InnerJoin` card) -> do
                 E.on $ cubeEntry E.^. CubeEntryCard E.==. card E.^. CardId
                 E.on $ cubeEntry E.^. CubeEntryCard E.==. pick E.^. PickCard
                 E.where_ $ pick E.^. PickDraft E.==. E.val did
