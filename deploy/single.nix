@@ -66,7 +66,7 @@ in
                 environment = {
                     STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-7.10.2/rotothopter-0.0.1/static/'';
                     PORT = "3000";
-                    APPROOT = "http://52.32.51.182";
+                    APPROOT = "http://rotothopter.ignorelist.com";
                     PGUSER = "roto";
                     PGPASS = "roto";
                     PGHOST = "127.0.0.1";
