@@ -3,10 +3,16 @@ let
       url = /home/sjanssen/rotothopter;
       rev = "737b28a12ce7798f8e9639ca50a846e5c67f31f7";
       sha256 = "aab3740385b094d416a95e540c85eb517135b60f0af174f1ed0e4a6eb8750303";
-      branchName = "sqlify";
+      branchName = "master";
     };
     rotostatic = (import "${rotorepo}/release.nix" {  }).rotothopter_static;
     secrets = (import ./prod-secrets.nix);
+    wowrepo = (import <nixpkgs> {}).fetchgit {
+        url = /home/sjanssen/randy_soundboard;
+        rev = "c54465ba3c23095e63ef47c3e312e55d385fd2a6";
+        sha256 = "1w7pkqfickr88v5cs6g16x6zqldiiwpfjkmg7w7zva1arrz36s9h";
+    };
+    wow = (import "${wowrepo}/release.nix" {}).randy_soundboard;
 in
 {
     network.description = "Rotothopter Single AWS";
@@ -41,6 +47,9 @@ in
 
                 location / {
                     proxy_pass http://backends;
+                }
+                location /wow {
+                    alias ${wow}/;
                 }
             }
             '';
