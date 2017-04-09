@@ -1,8 +1,6 @@
 { }:
-let pkgs = import <nixpkgs> {  };
-in
-with import <nixpkgs/pkgs/development/haskell-modules/lib.nix> { inherit pkgs; };
-let roto = f: overrideCabal (import ./default.nix {}) f;
+let pkgs = import ./pinned-nixpkgs.nix ;
+    roto = f: pkgs.haskell.lib.overrideCabal (import ./default.nix {}) f;
 in
 {
     rotothopter_dynamic = roto (drv: {});

@@ -1,3 +1,3 @@
 { compiler ? "ghc802" }:
-let pkgs = import <nixpkgs> {  };
-in pkgs.pkgs.haskell.packages.${compiler}.callPackage ./rotothopter.nix { }
+let pkgs = import ./pinned-nixpkgs.nix ;
+in pkgs.haskell.packages.${compiler}.callPackage ./rotothopter.nix { }
