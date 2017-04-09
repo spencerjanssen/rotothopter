@@ -7,12 +7,16 @@ import qualified Prelude (id)
 import Application           (makeFoundation)
 import ClassyPrelude         as X hiding
     ( Index
+    , Handler
     , index
     , uncons
     , unsnoc
     , cons
     , snoc
     , (<.>)
+    , (<|)
+    , delete
+    , deleteBy
     )
 import Database.Persist      as X hiding (get, (<.))
 import Database.Persist.Sql  (SqlPersistM, SqlBackend, runSqlPersistMPool, rawExecute, rawSql, unSingle, connEscapeName)

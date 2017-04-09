@@ -4,6 +4,7 @@ module Import.NoFoundation
 
 import ClassyPrelude.Yesod   as Import hiding
     ( Index
+    , Handler(..)
     , (<.)
     , index
     , uncons
@@ -20,6 +21,6 @@ import Settings.StaticFiles  as Import
 import Yesod.Auth            as Import
 import Yesod.Core.Types      as Import (loggerSet)
 import Yesod.Default.Config2 as Import
-import Control.Lens as Import
+import Control.Lens as Import hiding ((<|))
 import Model.Card as Import
 import Model.InviteHash as Import

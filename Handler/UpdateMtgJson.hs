@@ -69,7 +69,7 @@ massage cs' = [Card (ciname ci) (cicolors ci) (citypes ci)
 
 postUpdateMtgJsonR :: Handler Html
 postUpdateMtgJsonR = do
-    req <- parseUrl url
+    req <- parseUrlThrow url
     js <- responseBody <$> httpLbs req
     case massage <$> eitherDecode js of
         Left err -> fail err

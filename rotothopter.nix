@@ -5,9 +5,9 @@
 , monad-logger, persistent, persistent-postgresql
 , persistent-sqlite, persistent-template, resourcet, safe
 , shakespeare, smtps-gmail, stdenv, template-haskell, text, time
-, transformers, unordered-containers, vector, wai-extra, wai-logger
-, warp, yaml, yesod, yesod-auth, yesod-core, yesod-eventsource
-, yesod-form, yesod-static, yesod-test
+, transformers, unordered-containers, uuid, vector, wai-extra
+, wai-logger, warp, yaml, yesod, yesod-auth, yesod-core
+, yesod-eventsource, yesod-form, yesod-static, yesod-test
 }:
 mkDerivation {
   pname = "rotothopter";
@@ -21,9 +21,9 @@ mkDerivation {
     esqueleto fast-logger file-embed hjsmin http-conduit lens mime-mail
     monad-control monad-logger persistent persistent-postgresql
     persistent-sqlite persistent-template safe shakespeare smtps-gmail
-    template-haskell text time unordered-containers vector wai-extra
-    wai-logger warp yaml yesod yesod-auth yesod-core yesod-eventsource
-    yesod-form yesod-static
+    template-haskell text time unordered-containers uuid vector
+    wai-extra wai-logger warp yaml yesod yesod-auth yesod-core
+    yesod-eventsource yesod-form yesod-static
   ];
   executableHaskellDepends = [
     aeson base bytestring classy-prelude classy-prelude-conduit
@@ -31,9 +31,9 @@ mkDerivation {
     esqueleto fast-logger file-embed hjsmin http-conduit lens mime-mail
     monad-control monad-logger persistent persistent-postgresql
     persistent-sqlite persistent-template safe shakespeare smtps-gmail
-    template-haskell text time unordered-containers vector wai-extra
-    wai-logger warp yaml yesod yesod-auth yesod-core yesod-eventsource
-    yesod-form yesod-static
+    template-haskell text time unordered-containers uuid vector
+    wai-extra wai-logger warp yaml yesod yesod-auth yesod-core
+    yesod-eventsource yesod-form yesod-static
   ];
   testHaskellDepends = [
     base classy-prelude classy-prelude-yesod esqueleto hspec lens

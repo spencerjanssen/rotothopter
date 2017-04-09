@@ -6,7 +6,6 @@ import Import.NoFoundation
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Text.Hamlet          (hamletFile)
 -- import Text.Jasmine         (minifym)
-import Yesod.Auth.BrowserId (authBrowserId)
 import Yesod.Auth.Dummy     (authDummy)
 import Yesod.Auth.GoogleEmail2 (authGoogleEmail)
 -- import Yesod.Default.Util   (addStaticContentExternal)
@@ -174,7 +173,7 @@ instance YesodAuth App where
         return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins (App {appSettings}) = gauth ++ [authBrowserId def] ++ dauth
+    authPlugins (App {appSettings}) = gauth ++ dauth
      where
         dauth | allowDummyAuth appSettings = [authDummy]
               | otherwise                  = []
