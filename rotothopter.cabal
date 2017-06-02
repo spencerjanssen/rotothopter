@@ -20,6 +20,7 @@ data-files:
     static/js/jquery.stickytableheaders.min.js
     static/js/jquery.timeago.js
     static/js/moment.min.js
+    static/gen/*.js
 
 Flag dev
     Description:   Turn on development settings, like auto-reload templates.
@@ -64,6 +65,10 @@ library
                      Handler.JoinDraftInvite
                      Handler.LaunchDraftInvite
                      Handler.PicksByParticipant
+                     Handler.NewRanking
+                     Handler.Ranking
+                     Handler.RankingChoice
+                     Handler.ViewRanking
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

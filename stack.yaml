@@ -1,0 +1,10 @@
+resolver: lts-8.9
+
+nix:
+    enable: true
+    pure: true
+    packages: [zlib, postgresql]
+
+extra-deps:
+#     - esqueleto-2.5.1
+     - smtps-gmail-1.3.2

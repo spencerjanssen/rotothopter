@@ -19,3 +19,8 @@ cabal.sandbox.config
 config/secret.yml
 result
 deploy/prod-secrets.nix
+purescript/bower_components
+purescript/node_modules
+purescript/.psc-ide-port
+purescript/.pulp-cache
+purescript/output

@@ -32,13 +32,15 @@ cubeForm = renderBootstrap3 BootstrapBasicForm $ (,)
 
 getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
-    (cname, cs) <- runDB $ do
+    muid <- maybeAuthId
+    (cname, cs, mrid) <- runDB $ do
         Just (Cube _ cname) <- get cid
         cs <- E.select $ E.from $ \(cubeCard `E.InnerJoin` card) -> do
             E.on $ cubeCard E.^. CubeEntryCard E.==. card E.^. CardId
             E.where_ (E.val cid E.==. cubeCard E.^. CubeEntryCube)
             return (cubeCard E.^. CubeEntryCard, card)
-        return (cname, cs)
+        mrid <- join <$> traverse (\uid -> map entityKey <$> getBy (UniqueRanking uid cid)) muid
+        return (cname, cs, mrid)
     defaultLayout $ do
         setTitle "View Cube List"
         $(widgetFile "view-cubelist")

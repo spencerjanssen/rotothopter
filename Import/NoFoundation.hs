@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-dodgy-imports #-}
+
 module Import.NoFoundation
     ( module Import
     ) where

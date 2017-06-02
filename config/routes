@@ -21,3 +21,7 @@
 !/draft/invite/#InviteHash/join JoinDraftInviteR POST
 !/draft/invite/#InviteHash/launch LaunchDraftInviteR POST
 /draft/#DraftId/participant/#UserId PicksByParticipantR GET
+!/ranking/new/#CubeId NewRankingR GET
+!/ranking/#RankingId RankingR GET DELETE
+!/ranking/#RankingId/choice/#Text/#Text RankingChoiceR POST
+!/ranking/#RankingId/view ViewRankingR GET

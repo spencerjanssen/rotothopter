@@ -62,5 +62,14 @@ Pick
     UniquePick draft number
     created UTCTime
     deriving Show
+Ranking
+    picker UserId
+    cube CubeId
+    UniqueRanking picker cube
+RankingChoice json
+    ranking RankingId
+    better CardId
+    worse CardId
+    UniqueRankingChoice ranking better worse
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

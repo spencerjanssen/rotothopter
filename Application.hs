@@ -55,6 +55,10 @@ import Handler.ViewDraftInvite
 import Handler.JoinDraftInvite
 import Handler.LaunchDraftInvite
 import Handler.PicksByParticipant
+import Handler.NewRanking
+import Handler.Ranking
+import Handler.RankingChoice
+import Handler.ViewRanking
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the

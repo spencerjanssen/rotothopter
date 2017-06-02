@@ -1,0 +1,15 @@
+{
+  "name": "rotothopter-purescript-frontend",
+  "homepage": "https://github.com/spencerjanssen/rotothopter",
+  "authors": [
+    "Spencer Janssen <spencerjanssen@gmail.com>"
+  ],
+  "main": "support/index.js",
+  "license": "BSD3",
+  "dependencies": {
+    "purescript-pux": "^7.0.0",
+    "purescript-pux-devtool": "^4.1.0",
+    "purescript-affjax": "^3.0.2",
+    "purescript-foreign-generic": "^3.0.0"
+  }
+}

@@ -1,6 +1,12 @@
 <h1>#{cname}
 
-<a href=@{NewDraftInviteR cid}>Draft this cube
+<div .btn-group role="group">
+    <a .btn .btn-primary role="button" href=@{NewDraftInviteR cid}>Draft this cube
+    $case mrid
+        $of Nothing
+            <a .btn .btn-success role="button" href=@{NewRankingR cid}>Start ranking this cube
+        $of Just rid
+            <a .btn .btn-info role="button" href=@{ViewRankingR rid}>Resume ranking this cube
 
 <ul>
     $forall (E.Value (CardKey card), _carddetails) <- cs
