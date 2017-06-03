@@ -5,7 +5,7 @@
   "scripts": {
     "install": "npm run build",
     "clean": "rimraf static/dist && rimraf dist && rimraf output",
-    "build": "npm run clean && webpack --config ./webpack.production.config.js --progress --profile --colors",
+    "build": "npm run clean && webpack --config ./webpack.production.config.js --progress --profile --colors --optimize-minimize",
     "watch": "npm run clean && node ./webpack.config.js",
     "serve": "http-server static --cors -p 3000",
     "start": "npm run watch",
