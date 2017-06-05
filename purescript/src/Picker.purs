@@ -15,8 +15,8 @@ import Data.Generic.Rep (class Generic)
 import Data.List (List(..), fromFoldable)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
-import Network.HTTP.Affjax (AJAX, get, post_')
-import Prelude (class Eq, Unit, bind, flip, map, otherwise, pure, show, unit, void, ($), (&&), (+), (<$>), (<<<), (<>), (==), (>>=))
+import Network.HTTP.Affjax (AJAX, delete_, get, post_')
+import Prelude (class Eq, Unit, bind, flip, map, otherwise, pure, show, unit, void, ($), (&&), (+), (<$>), (<<<), (<>), (==), (/=), (>>=))
 import Pux (EffModel, noEffects)
 import Pux.Html (Html, a, div, h3, img, li, ol, p, text, ul)
 import Pux.Html.Attributes (alt, className, href, key, src, style)
@@ -24,6 +24,7 @@ import Pux.Html.Events (onClick)
 
 data Action
   = AddRanking Ranking
+  | DeleteRanking Ranking
   | RankingReceived
 
 newtype RankId = RankId Int
@@ -39,6 +40,7 @@ genericOptions = defaultOptions {unwrapSingleConstructors = true}
 newtype Ranking = Ranking {better :: Card, worse :: Card}
 
 derive instance genericRanking :: Generic Ranking _
+derive instance eqRanking :: Eq Ranking
 
 instance foreignRanking :: IsForeign Ranking where
   read = readGeneric genericOptions
@@ -60,14 +62,24 @@ init (RankId r) = do
     Left e -> throwError $ error $ show e
     Right s -> pure s
 
+rankingUrl :: RankId -> Ranking -> String
+rankingUrl (RankId r) (Ranking {better, worse})= ("/ranking/" <> show r <> "/choice/" <> better <> "/" <> worse)
+
 submitRanking :: forall eff. RankId -> Ranking -> Aff (ajax :: AJAX | eff) Action
-submitRanking (RankId r) (Ranking {better, worse}) = do
-  void $ post_' ("/ranking/" <> show r <> "/choice/" <> better <> "/" <> worse) (Nothing :: Maybe Unit)
+submitRanking rid r = do
+  void $ post_' (rankingUrl rid r) (Nothing :: Maybe Unit)
+  pure RankingReceived
+
+deleteRanking :: forall eff. RankId -> Ranking -> Aff (ajax :: AJAX | eff) Action
+deleteRanking rid r = do
+  void $ delete_ (rankingUrl rid r)
   pure RankingReceived
 
 update :: RankId -> Action -> State -> EffModel State Action _
 update rid (AddRanking r) (State state)
   = {state: State $ state { rankings = Array.snoc state.rankings r }, effects: [submitRanking rid r]}
+update rid (DeleteRanking r) (State state)
+  = {state: State $ state { rankings = Array.filter (_ /= r) state.rankings }, effects: [deleteRanking rid r]}
 update rid RankingReceived state = noEffects state
 
 view :: RankId -> State -> Html Action
@@ -80,6 +92,12 @@ view _ (State state) =
         Just {left, right} ->
           choice false ((applyFact (mkRanker (Ranking {better: left, worse: right})) <$> mt) >>= dropTop >>= firstComp)
           <> choice false ((applyFact (mkRanker (Ranking {better: right, worse: left})) <$> mt) >>= dropTop >>= firstComp)
+    <> case Array.last state.rankings of
+        Nothing -> []
+        Just r@(Ranking {better, worse}) ->
+          [ p []
+            [ text $ "You last picked " <> better <> " over " <> worse <> ". "
+            , a [href "javascript:;", onClick \_ -> DeleteRanking r] [text "Undo."]]]
     <> case best of
         Nil -> [h3 [] [text $ show clicks <> " clicks until your top rated card!"]]
         xs ->

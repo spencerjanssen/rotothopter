@@ -12,8 +12,7 @@ getRankingR :: RankingId -> Handler Value
 getRankingR rankingId = do
     (Ranking _ cid) <- runDB $ get404 rankingId
     cs <- runDB $ map (view cubeEntryCard . entityVal) <$> selectList [CubeEntryCube ==. cid] []
-    rs <- runDB $ map entityVal <$> selectList [RankingChoiceRanking ==. rankingId] []
-    print ("asdf" :: String)
+    rs <- runDB $ map entityVal <$> selectList [RankingChoiceRanking ==. rankingId] [Asc RankingChoiceId]
     returnJson $ GetRankingReturn cs rs
 
 deleteRankingR :: RankingId -> Handler ()
