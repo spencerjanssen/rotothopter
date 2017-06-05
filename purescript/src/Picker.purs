@@ -15,6 +15,7 @@ import Data.Generic.Rep (class Generic)
 import Data.List (List(..), fromFoldable)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
+import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AJAX, delete_, get, post_')
 import Prelude (class Eq, Unit, bind, flip, map, otherwise, pure, show, unit, void, ($), (&&), (+), (<$>), (<<<), (<>), (==), (/=), (>>=))
 import Pux (EffModel, noEffects)
@@ -63,7 +64,7 @@ init (RankId r) = do
     Right s -> pure s
 
 rankingUrl :: RankId -> Ranking -> String
-rankingUrl (RankId r) (Ranking {better, worse})= ("/ranking/" <> show r <> "/choice/" <> better <> "/" <> worse)
+rankingUrl (RankId r) (Ranking {better, worse})= ("/ranking/" <> show r <> "/choice/" <> encodeURIComponent better <> "/" <> encodeURIComponent worse)
 
 submitRanking :: forall eff. RankId -> Ranking -> Aff (ajax :: AJAX | eff) Action
 submitRanking rid r = do
