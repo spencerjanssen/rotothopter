@@ -34,7 +34,8 @@ in
             }
 
             server {
-                listen 80;
+                listen 80 default_server;
+                server_name www.rotothopter.com;
                 location ~ ^/draft/[0-9]+/watch {
                     proxy_pass http://backends;
                     proxy_read_timeout 450;
@@ -51,6 +52,11 @@ in
                 location /wow {
                     alias ${wow}/;
                 }
+            }
+
+            server {
+                server_name rotothopter.com rotothopter.ignorelist.com;
+                return 302 http://www.rotothopter.com$request_uri;
             }
             '';
             networking.firewall.allowedTCPPorts = [ 80 ];
