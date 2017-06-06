@@ -17,9 +17,9 @@ import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
 import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AJAX, delete_, get, post_')
-import Prelude (class Eq, Unit, bind, flip, map, otherwise, pure, show, unit, void, ($), (&&), (+), (<$>), (<<<), (<>), (==), (/=), (>>=))
+import Prelude (class Eq, Unit, bind, flip, map, not, otherwise, pure, show, unit, void, ($), (&&), (+), (<$>), (<<<), (<>), (==), (/=), (>>=))
 import Pux (EffModel, noEffects)
-import Pux.Html (Html, a, div, h3, img, li, ol, p, text, ul)
+import Pux.Html (Html, a, button, div, h3, img, li, ol, span, p, text, ul)
 import Pux.Html.Attributes (alt, className, href, key, src, style)
 import Pux.Html.Events (onClick)
 
@@ -27,6 +27,7 @@ data Action
   = AddRanking Ranking
   | DeleteRanking Ranking
   | RankingReceived
+  | ShowRankings Boolean
 
 newtype RankId = RankId Int
 
@@ -46,22 +47,26 @@ derive instance eqRanking :: Eq Ranking
 instance foreignRanking :: IsForeign Ranking where
   read = readGeneric genericOptions
 
-newtype State = State
-  { cards :: Array String
+type ServerRow =
+  ( cards :: Array String
   , rankings :: Array Ranking
-  }
+  )
 
-derive instance genericState :: Generic State _
+newtype ServerState = ServerState { | ServerRow }
 
-instance foreignState :: IsForeign State where
+derive instance genericServerState :: Generic ServerState _
+
+instance foreignState :: IsForeign ServerState where
   read = readGeneric genericOptions
+
+type State = {showRankings :: Boolean | ServerRow}
 
 init :: RankId -> Aff _ State
 init (RankId r) = do
   res <- get $ "/ranking/" <> show r
   case runExcept $ read res.response of
     Left e -> throwError $ error $ show e
-    Right s -> pure s
+    Right (ServerState {cards, rankings}) -> pure {cards, rankings, showRankings: false}
 
 rankingUrl :: RankId -> Ranking -> String
 rankingUrl (RankId r) (Ranking {better, worse})= ("/ranking/" <> show r <> "/choice/" <> encodeURIComponent better <> "/" <> encodeURIComponent worse)
@@ -77,14 +82,15 @@ deleteRanking rid r = do
   pure RankingReceived
 
 update :: RankId -> Action -> State -> EffModel State Action _
-update rid (AddRanking r) (State state)
-  = {state: State $ state { rankings = Array.snoc state.rankings r }, effects: [submitRanking rid r]}
-update rid (DeleteRanking r) (State state)
-  = {state: State $ state { rankings = Array.filter (_ /= r) state.rankings }, effects: [deleteRanking rid r]}
+update rid (AddRanking r) state
+  = {state: state { rankings = Array.snoc state.rankings r }, effects: [submitRanking rid r]}
+update rid (DeleteRanking r) state
+  = {state: state { rankings = Array.filter (_ /= r) state.rankings }, effects: [deleteRanking rid r]}
 update rid RankingReceived state = noEffects state
+update rid (ShowRankings b) state = noEffects $ state {showRankings = b}
 
 view :: RankId -> State -> Html Action
-view _ (State state) =
+view _ state =
   div [] $
     [ h3 [] [text "Pack 1, pick 1, which do you take?"] ]
     <> choice true mlr
@@ -104,6 +110,19 @@ view _ (State state) =
         xs ->
           [ h3 [] [text $ "Top cards (" <> show clicks <> " clicks until the next rating):"]
           , ol [] (viewCardList xs)]
+    <>
+      [div [className "panel panel-default"] $
+        [ div [className "panel-heading"]
+          [a [href "javascript:;", onClick \_ -> ShowRankings $ not state.showRankings]
+            [ span [className $ "glyphicon glyphicon-" <> if state.showRankings then "minus" else "plus"] []
+            , text "View previous picks"
+            ]
+          ]
+        ]
+        <> if state.showRankings
+            then [div [className "panel-body"] [viewRankings state.rankings]]
+            else []
+      ]
  where
   choice visible (Just {left, right}) =
     [div
@@ -124,6 +143,16 @@ view _ (State state) =
   clicks = maybe 0 clicksTilTop (mt >>= dropTop)
   best = maybe Nil knownTop mt
   mlr = mt >>= dropTop >>= firstComp
+
+viewRankings :: Array Ranking -> Html Action
+viewRankings rankings = ol [] $ rankingLine <$> rankings
+ where
+  rankingLine r@(Ranking {better, worse}) =
+    li []
+      [ button [onClick \_ -> DeleteRanking r, className "btn btn-xs btn-danger", href "javascript:;"] [span [className "glyphicon glyphicon-remove"] []]
+      , text $ better <> " over " <> worse <> " "
+      ]
+
 
 cardImageURL :: String -> String
 cardImageURL c = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&name=" <> c
