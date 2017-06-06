@@ -1,8 +1,8 @@
 let
     rotorepo = (import <nixpkgs> {}).fetchgit {
       url = /home/sjanssen/rotothopter;
-      rev = "737b28a12ce7798f8e9639ca50a846e5c67f31f7";
-      sha256 = "aab3740385b094d416a95e540c85eb517135b60f0af174f1ed0e4a6eb8750303";
+      rev = "aab744c64335edb2f892ef445d2e0284045de030";
+      sha256 = "140lghrf9ph508sx28mhz9wb38h0wddlqky3ylxgk324rpdy8ijp";
       branchName = "master";
     };
     rotostatic = (import "${rotorepo}/release.nix" {  }).rotothopter_static;
@@ -10,7 +10,7 @@ let
     wowrepo = (import <nixpkgs> {}).fetchgit {
         url = /home/sjanssen/randy_soundboard;
         rev = "c54465ba3c23095e63ef47c3e312e55d385fd2a6";
-        sha256 = "1w7pkqfickr88v5cs6g16x6zqldiiwpfjkmg7w7zva1arrz36s9h";
+        sha256 = "08h86grqvq36sacxdn9pkh8nl9ljp2ij3m3nngx96s5zp8hqdagn";
     };
     wow = (import "${wowrepo}/release.nix" {}).randy_soundboard;
 in
@@ -42,7 +42,7 @@ in
                     proxy_buffering off;
                 }
                 location /static/ {
-                    alias ${rotostatic}/share/x86_64-linux-ghc-7.10.2/rotothopter-0.0.1/static/;
+                    alias ${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.1/static/;
                 }
 
                 location / {
@@ -73,14 +73,14 @@ in
                 mkdir -p /var/rotothopter/config
                 '';
                 environment = {
-                    STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-7.10.2/rotothopter-0.0.1/static/'';
+                    STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.1/static/'';
                     PORT = "3000";
                     APPROOT = "http://rotothopter.ignorelist.com";
                     PGUSER = "roto";
                     PGPASS = "roto";
                     PGHOST = "127.0.0.1";
                     PGDATABASE = "rotothopter";
-                    ALLOW_DUMMY_AUTH = "true";
+                    ALLOW_DUMMY_AUTH = "false";
                     GMAIL_PASSWORD = secrets.gmail_password;
                     GMAIL_ADDRESS = secrets.gmail_address;
                     GOOGLE_CLIENT_ID = secrets.google_client_id;
