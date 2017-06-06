@@ -1,16 +1,17 @@
+{ rotothopterRev, rotothopterHash, wowRev, wowHash }:
 let
     rotorepo = (import <nixpkgs> {}).fetchgit {
-      url = /home/sjanssen/rotothopter;
-      rev = "aab744c64335edb2f892ef445d2e0284045de030";
-      sha256 = "140lghrf9ph508sx28mhz9wb38h0wddlqky3ylxgk324rpdy8ijp";
+      url = https://github.com/spencerjanssen/rotothopter.git;
+      rev = rotothopterRev;
+      sha256 = rotothopterHash;
       branchName = "master";
     };
     rotostatic = (import "${rotorepo}/release.nix" {  }).rotothopter_static;
     secrets = (import ./prod-secrets.nix);
     wowrepo = (import <nixpkgs> {}).fetchgit {
         url = /home/sjanssen/randy_soundboard;
-        rev = "c54465ba3c23095e63ef47c3e312e55d385fd2a6";
-        sha256 = "08h86grqvq36sacxdn9pkh8nl9ljp2ij3m3nngx96s5zp8hqdagn";
+        rev = wowRev;
+        sha256 = wowHash;
     };
     wow = (import "${wowrepo}/release.nix" {}).randy_soundboard;
 in
