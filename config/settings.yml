@@ -36,5 +36,5 @@ database:
   database: "_env:PGDATABASE:rotothopter"
   poolsize: "_env:PGPOOLSIZE:10"
 
-copyright: copyright 2015. Spencer Janssen
+copyright: copyright 2015-2017. Spencer Janssen
 analytics: UA-68954918-1
