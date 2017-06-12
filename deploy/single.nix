@@ -82,7 +82,7 @@ in
                 environment = {
                     STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.1/static/'';
                     PORT = "3000";
-                    APPROOT = "http://rotothopter.ignorelist.com";
+                    APPROOT = "http://www.rotothopter.com";
                     PGUSER = "roto";
                     PGPASS = "roto";
                     PGHOST = "127.0.0.1";
