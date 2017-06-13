@@ -5,6 +5,7 @@ import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 import Data.Text (strip)
 import qualified Database.Esqueleto as E
 import Common (bootstrapLabel, textAreaHeight)
+import Handler.PrettyCard (cardListView)
 
 getNewCubeListR :: Handler Html
 getNewCubeListR = do
@@ -35,12 +36,13 @@ getViewCubeListR cid = do
     muid <- maybeAuthId
     (cname, cs, mrid) <- runDB $ do
         Just (Cube _ cname) <- get cid
-        cs <- E.select $ E.from $ \(cubeCard `E.InnerJoin` card) -> do
+        cs <- fmap (map entityVal) $ E.select $ E.from $ \(cubeCard `E.InnerJoin` card) -> do
             E.on $ cubeCard E.^. CubeEntryCard E.==. card E.^. CardId
             E.where_ (E.val cid E.==. cubeCard E.^. CubeEntryCube)
-            return (cubeCard E.^. CubeEntryCard, card)
+            return card
         mrid <- join <$> traverse (\uid -> map entityKey <$> getBy (UniqueRanking uid cid)) muid
         return (cname, cs, mrid)
     defaultLayout $ do
         setTitle "View Cube List"
+        addScript (StaticR js_jquery_hideseek_min_js)
         $(widgetFile "view-cubelist")

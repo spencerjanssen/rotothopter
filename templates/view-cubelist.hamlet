@@ -8,7 +8,7 @@
         $of Just rid
             <a .btn .btn-info role="button" href=@{ViewRankingR rid}>Resume ranking this cube
 
-<ul>
-    $forall (E.Value (CardKey card), _carddetails) <- cs
-        <li>
-            #{card}
+<h3>Cube List
+<span .glyphicon .glyphicon-search>
+<input name=search id=search placeholder=Search type=search data-list=".cards">
+^{cardListView cs "cards" Nothing}
