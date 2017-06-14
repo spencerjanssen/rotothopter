@@ -1,0 +1,1 @@
+window.seedusers = #{toJSON $ map memberJson members}

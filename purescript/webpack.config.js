@@ -83,6 +83,11 @@ if (require.main === module) {
         return require('url').parse(req.originalUrl).path;
       }
     }))
+    .use('/draft/*', require('express-http-proxy')('127.0.0.1:3000', {
+      forwardPath: function(req, res){
+        return require('url').parse(req.originalUrl).path;
+      }
+    }))
     .use(require('connect-history-api-fallback')())
     .use(require("webpack-dev-middleware")(compiler, {
       publicPath: config.output.publicPath,

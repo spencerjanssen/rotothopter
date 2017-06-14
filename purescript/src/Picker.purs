@@ -21,7 +21,7 @@ import Prelude (class Eq, Unit, bind, flip, map, not, otherwise, pure, show, uni
 import Pux (EffModel, noEffects)
 import Pux.Html (Html, a, button, div, h3, img, li, ol, span, p, text, ul)
 import Pux.Html.Attributes (alt, className, href, key, src, style)
-import Pux.Html.Events (onClick)
+import Pux.Html.Events (onClick, onDragOver)
 
 data Action
   = AddRanking Ranking

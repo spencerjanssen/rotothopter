@@ -25,7 +25,5 @@ $nothing
     <p>You have to sign in first to join the draft
 
 $if isCreator && not (null members)
-    <p>
-        <form method=post action=@{LaunchDraftInviteR inviteHash}>
-            <button .btn .btn-primary type=submit>
-                Start Draft
+    <div id=app>
+    <script src="/static/gen/main.js">

@@ -8,6 +8,9 @@ getViewDraftInviteR inviteHash = do
     Entity invId inv <- inviteFromHash inviteHash
     cube <- runDB $ get404 (inv ^. draftInviteCube)
     members <- draftInvitees invId
+    let memberJson (Entity uid u) = object
+            [ ("uid", toJSON uid)
+            , ("name", toJSON $ fromMaybe (_userIdent u) (_userDisplayName u))]
     mauth <- maybeAuth
     let creator = inv ^. draftInviteCreator
         isCreator = maybe False ((creator==) . entityKey) mauth
