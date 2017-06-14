@@ -28,39 +28,44 @@ in
 
             # nginx stuff
             services.nginx.enable = true;
-            services.nginx.httpConfig =
+            services.nginx.appendHttpConfig =
             ''
             upstream backends {
                 server 127.0.0.1:3000;
             }
-
-            server {
-                listen 80 default_server;
-                server_name www.rotothopter.com;
-                location ~ ^/draft/[0-9]+/watch {
-                    proxy_pass http://backends;
+            '';
+            services.nginx.virtualHosts."rotothopter.com" = {
+                serverAliases = ["rotothopter.com" "rotothopter.ignorelist.com"];
+                extraConfig = "return 302 https://www.rotothopter.com$request_uri;";
+            };
+            services.nginx.virtualHosts."www.rotothopter.com" = {
+                default = true;
+                enableACME = true;
+                enableSSL = true;
+                forceSSL = true;
+                locations = {
+                  "~ ^/draft/[0-9]+/watch" = {
+                    extraConfig =
+                    ''
                     proxy_read_timeout 450;
                     chunked_transfer_encoding off;
                     proxy_buffering off;
-                }
-                location /static/ {
-                    alias ${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.1/static/;
-                }
+                    '';
+                    proxyPass = "http://backends";
+                  };
+                  "/static" = {
+                    alias = "${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.1/static/";
+                  };
+                  "/" = {
+                    proxyPass = "http://backends";
+                  };
+                  "/wow" = {
+                    alias = "${wow}/";
+                  };
+                };
+            };
 
-                location / {
-                    proxy_pass http://backends;
-                }
-                location /wow {
-                    alias ${wow}/;
-                }
-            }
-
-            server {
-                server_name rotothopter.com rotothopter.ignorelist.com;
-                return 302 http://www.rotothopter.com$request_uri;
-            }
-            '';
-            networking.firewall.allowedTCPPorts = [ 80 ];
+            networking.firewall.allowedTCPPorts = [ 80 443 ];
             environment.systemPackages = [rotostatic];
 
             # app stuff
@@ -82,7 +87,7 @@ in
                 environment = {
                     STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.1/static/'';
                     PORT = "3000";
-                    APPROOT = "http://www.rotothopter.com";
+                    APPROOT = "https://www.rotothopter.com";
                     PGUSER = "roto";
                     PGPASS = "roto";
                     PGHOST = "127.0.0.1";
@@ -97,6 +102,10 @@ in
             users.extraUsers.rotothopter = {
                 home = "/var/rotothopter";
                 createHome = true;
+            };
+            security.acme.preliminarySelfsigned = true;
+            security.acme.certs."www.rotothopter.com" = {
+                email = "spencerjanssen@gmail.com";
             };
         };
 }
