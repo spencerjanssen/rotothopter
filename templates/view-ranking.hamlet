@@ -1,2 +1,2 @@
 <div #app>
-<script src="/main.js">
+<script src="/static/gen/main.js">
