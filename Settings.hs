@@ -64,8 +64,10 @@ data AppSettings = AppSettings
     -- ^ Copyright text to appear in the footer of the page
     , appAnalytics              :: Maybe Text
     -- ^ Google Analytics code
-    , gmailAddress              :: Maybe Text
-    , gmailPassword             :: Maybe Text
+    , outgoingAddress           :: Maybe Text
+    , sesRegion                 :: Maybe Text
+    , sesAccess                 :: Maybe Text
+    , sesSecret                 :: Maybe Text
     , googleClientId            :: Maybe Text
     , googleClientSecret        :: Maybe Text
     , allowDummyAuth            :: Bool
@@ -95,8 +97,10 @@ instance FromJSON AppSettings where
 
         appCopyright              <- o .: "copyright"
         appAnalytics              <- o .:? "analytics"
-        gmailAddress              <- nothingIfEmpty <$> o .:? "gmail-address"
-        gmailPassword             <- nothingIfEmpty <$> o .:? "gmail-password"
+        outgoingAddress           <- nothingIfEmpty <$> o .:? "outgoing-address"
+        sesRegion                 <- nothingIfEmpty <$> o .:? "ses-region"
+        sesAccess                 <- nothingIfEmpty <$> o .:? "ses-access"
+        sesSecret                 <- nothingIfEmpty <$> o .:? "ses-secret"
         googleClientId            <- nothingIfEmpty <$> o .:? "google-client-id"
         googleClientSecret        <- nothingIfEmpty <$> o .:? "google-client-secret"
         allowDummyAuth            <- o .:? "allow-dummy-auth" .!= False

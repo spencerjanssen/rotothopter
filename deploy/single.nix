@@ -89,7 +89,10 @@ in
                     PGDATABASE = "rotothopter";
                     ALLOW_DUMMY_AUTH = "false";
                     GMAIL_PASSWORD = secrets.gmail_password;
-                    GMAIL_ADDRESS = secrets.gmail_address;
+                    OUTGOING_ADDRESS = secrets.outgoing_address;
+                    SES_REGION = secrets.ses_region;
+                    SES_ACCESS = secrets.ses.access;
+                    SES_SECRET = secrets.ses.SECRET;
                     GOOGLE_CLIENT_ID = secrets.google_client_id;
                     GOOGLE_CLIENT_PASSWORD = secrets.google_client_password;
                 };

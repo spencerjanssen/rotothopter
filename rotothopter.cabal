@@ -133,7 +133,7 @@ library
                  , containers
                  , vector
                  , time
-                 , smtps-gmail
+                 , mime-mail-ses
                  , mime-mail
                  , yesod-eventsource
                  , lens
@@ -190,7 +190,7 @@ executable         rotothopter
                  , containers
                  , vector
                  , time
-                 , smtps-gmail
+                 , mime-mail-ses
                  , mime-mail
                  , yesod-eventsource
                  , lens
