@@ -38,7 +38,7 @@ multiParticipant allowedIds = Field
     { fieldParse = \rawVals _ -> do
         let es = do
                     uids <- mapM readEither rawVals
-                    if sort uids == allowedIds
+                    if sort uids == sort allowedIds
                         then return uids
                         else Left "User list does not match"
         return $ Just <$> es
