@@ -1,2 +1,2 @@
 <div #app>
-<script src="/static/gen/main.js">
+<script src=@{StaticR gen_main_hash_js}>

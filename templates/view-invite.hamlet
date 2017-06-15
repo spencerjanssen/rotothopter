@@ -26,4 +26,4 @@ $nothing
 
 $if isCreator && not (null members)
     <div id=app>
-    <script src="/static/gen/main.js">
+    <script src=@{StaticR gen_main_hash_js}>

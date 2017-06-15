@@ -1,12 +1,13 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ManifestPlugin = require('webpack-manifest-plugin');
 
 module.exports = {
   entry: [ path.join(__dirname, 'support/index.js') ],
   output: {
     path: path.resolve('./static/dist'),
-    filename: '[name]-[hash].min.js',
+    filename: '[name]-[hash].js',
     publicPath: '/dist/'
   },
   module: {
@@ -37,6 +38,7 @@ module.exports = {
       inject: 'body',
       filename: 'index.html'
     }),
+    new ManifestPlugin(),
   ],
   resolveLoader: {
     modules: [

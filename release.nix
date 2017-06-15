@@ -40,7 +40,10 @@ in
         doCheck = false;
         patchPhase = ''
             mkdir -p static/gen
-            cp ${frontend_assets}/main-*.min.js static/gen/main.js
+            rm static/gen/manifest.json
+            rm static/gen/main-dummy.js
+            cp ${frontend_assets}/*.js static/gen/
+            cp ${frontend_assets}/manifest.json static/gen/
         '';
     });
     ps_0_10_7 = ps_0_10_7;
