@@ -96,8 +96,8 @@ in
                     GMAIL_PASSWORD = secrets.gmail_password;
                     OUTGOING_ADDRESS = secrets.outgoing_address;
                     SES_REGION = secrets.ses_region;
-                    SES_ACCESS = secrets.ses.access;
-                    SES_SECRET = secrets.ses.SECRET;
+                    SES_ACCESS = secrets.ses_access;
+                    SES_SECRET = secrets.ses_secret;
                     GOOGLE_CLIENT_ID = secrets.google_client_id;
                     GOOGLE_CLIENT_PASSWORD = secrets.google_client_password;
                 };
