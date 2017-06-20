@@ -17,11 +17,11 @@ import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
 import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AJAX, delete_, get, post_')
-import Prelude (class Eq, Unit, bind, flip, map, not, otherwise, pure, show, unit, void, ($), (&&), (+), (<$>), (<<<), (<>), (==), (/=), (>>=))
+import Prelude (class Eq, Unit, bind, flip, map, not, otherwise, pure, show, void, ($), (&&), (+), (<$>), (<>), (==), (/=), (>>=))
 import Pux (EffModel, noEffects)
-import Pux.Html (Html, a, button, div, h3, img, li, ol, span, p, text, ul)
+import Pux.Html (Html, a, button, div, h3, img, li, ol, span, p, text)
 import Pux.Html.Attributes (alt, className, href, key, src, style)
-import Pux.Html.Events (onClick, onDragOver)
+import Pux.Html.Events (onClick)
 
 data Action
   = AddRanking Ranking
