@@ -15,6 +15,7 @@ getUpdateMtgJsonR = do
 
 -- Possible values: normal, split, flip, double-faced, token, plane, scheme, phenomenon, leveler, vanguard
 data Layout = Split
+            | Aftermath
             | Flip
             | DoubleFaced
             | MehLayout
@@ -36,18 +37,25 @@ instance FromJSON Layout where
     parseJSON (String s) = return $
                             case s of
                                 "split" -> Split
+                                "aftermath" -> Aftermath
                                 "flip" -> Flip
                                 "double-faced" -> DoubleFaced
                                 _ -> MehLayout
     parseJSON _ = mzero
 
+splitLike :: Layout -> Bool
+splitLike Split = True
+splitLike Aftermath = True
+splitLike _ = False
+
 -- | Assume all CardInfo are part of the same split card
 combineCardInfo :: [CardInfo] -> CardInfo
-combineCardInfo xs@(CardInfo {layout = Split, names = Just ns}:_) = CardInfo
+combineCardInfo xs@(CardInfo {layout = l, names = Just ns}:_) | splitLike l
+  = CardInfo
     { ciname = name
     , cicolors = foldMap cicolors xs
     , citypes = foldMap citypes xs
-    , layout = Split
+    , layout = l
     , names = Just ns
     }
  where
