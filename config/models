@@ -62,6 +62,17 @@ Pick
     UniquePick draft number
     created UTCTime
     deriving Show
+PickReservation
+    draft DraftId
+    number Int -- starts at 0, ascends for each pick
+    drafter UserId
+    Primary draft number drafter
+    cube CubeId
+    card CardId
+    Foreign CubeEntry entryfk cube card
+    Foreign DraftParticipant dpfk drafter draft
+    created UTCTime
+    deriving Show
 Ranking
     picker UserId
     cube CubeId

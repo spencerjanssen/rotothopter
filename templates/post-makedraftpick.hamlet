@@ -4,8 +4,13 @@ $maybe card <- mcardinfo
     <img src=#{cardImgUrl card}>
 
 <div #form>
-    <form method=post action=@{MakeDraftPickR draftId cardToPick}>
-        <button .btn .btn-primary type="submit">
-            Confirm pick of #{cardToPick}?
+    $if nextDrafter == uid
+        <form method=post action=@{MakeDraftPickR draftId cardToPick}>
+            <button .btn .btn-primary type="submit">
+                Confirm pick of #{cardToPick}?
+    $else
+        <form method=post action=@{ReserveDraftPickR draftId cardToPick}>
+            <button .btn .btn-primary type="submit">
+                Add #{cardToPick} to your reserved cards?
     <form method=get action=@{ViewDraftR draftId}>
         <button .btn>Cancel

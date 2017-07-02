@@ -17,9 +17,7 @@ getMakeDraftPickR draftId cardToPick = do
     mnext <- getNextDrafter (Entity draftId draft)
     case mnext of
         Nothing -> fail "this draft has completed, you can't make a pick"
-        Just uid'
-            | uid /= uid' -> fail "it isn't your turn to pick yet"
-            | otherwise ->
+        Just nextDrafter ->
                 defaultLayout $ do
                     setTitle "Make a draft pick"
                     $(widgetFile "post-makedraftpick")
@@ -49,6 +47,31 @@ actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
             notifyDraftWatcher thepick
             redirect (ViewDraftR draftId)
         else fail "you can't pick that card"
+
+postReserveDraftPickR :: DraftId -> Text -> Handler ()
+postReserveDraftPickR draftId cardToPick = do
+    uid <- requireAuthId
+    draft <- getDraft draftId
+    now <- liftIO getCurrentTime
+    runDB $ do
+        mres <- selectFirst [PickReservationDrafter ==. uid, PickReservationDraft ==. draftId] [Desc PickReservationNumber]
+        let nextpick = case mres of
+                Nothing -> 0
+                Just (Entity _ res) -> res ^. pickReservationNumber + 1
+            thepick = PickReservation draftId nextpick uid (draft ^. draftCube) (CardKey cardToPick) now
+        _ <- insert thepick
+        return ()
+    redirect (ViewDraftR draftId)
+
+postDeleteReserveDraftPickR :: DraftId -> Text -> Handler ()
+postDeleteReserveDraftPickR draftId card = do
+    userId <- requireAuthId
+    runDB $ deleteWhere
+        [ PickReservationDraft ==. draftId
+        , PickReservationDrafter ==. userId
+        , PickReservationCard ==. CardKey card
+        ]
+    redirect (ViewDraftR draftId)
 
 routeToTextUrl :: Route App -> Handler Text
 routeToTextUrl route = withUrlRenderer $ \f -> f route []

@@ -49,6 +49,18 @@ $if isNextDrafter
                     <span .glyphicon .glyphicon-arrow-down>
                 $else
                     <span .glyphicon .glyphicon-arrow-left>
+$case mreservedCards
+    $of Just reservedCards
+        $if not $ null reservedCards
+            <h3>Reserved Cards
+            <ol>
+                $forall card <- reservedCards
+                    <li>
+                        <form method=POST action=@{DeleteReserveDraftPickR draftId card}>
+                            <button .btn .btn-xs .btn-danger type=submit>
+                                <span .glyphicon .glyphicon-remove>
+                            #{card}
+    $of _
 <h3>Unpicked Cards
 <span .glyphicon .glyphicon-search>
 <input name=search id=search placeholder=Search type=search data-list=".unpicked">

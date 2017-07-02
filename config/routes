@@ -11,6 +11,8 @@
 /draft/all AllDraftsR GET
 /draft/#DraftId/view ViewDraftR GET
 /draft/#DraftId/pick/#Text MakeDraftPickR GET POST
+/draft/#DraftId/reserve/#Text ReserveDraftPickR POST
+/draft/#DraftId/reserve-delete/#Text DeleteReserveDraftPickR POST
 /draft/#DraftId/watch WatchDraftR GET
 /admin AdminConsoleR GET
 /admin/updatemtgjson UpdateMtgJsonR GET POST
