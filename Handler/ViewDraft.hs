@@ -11,6 +11,7 @@ getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
     draft <- runDB $ get404 draftId
     participants <- getParticipants draftId
+    commissioner <- isCommissioner draftId
     mnextdrafter <- getNextDrafter (Entity draftId draft)
     Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCube
     picks <- getPicksAndInfo draftId Nothing

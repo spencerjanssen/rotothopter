@@ -73,6 +73,25 @@ postDeleteReserveDraftPickR draftId card = do
         ]
     redirect (ViewDraftR draftId)
 
+postForceNextReservedPickR :: DraftId -> Handler ()
+postForceNextReservedPickR draftId = do
+    True <- isCommissioner draftId
+    draft <- getDraft draftId
+    mnext <- getNextDrafter (Entity draftId draft)
+    picks <- getPicks draftId
+    allowedCards <- getPickAllowedCards draftId draft
+    case mnext of
+        Nothing -> return ()
+        Just nextUid -> do
+            reserveds <- runDB $ selectList
+                [ PickReservationDrafter ==. nextUid
+                , PickReservationDraft ==. draftId ]
+                [ Asc PickReservationNumber]
+            case filter (`oelem` allowedCards) $ map (unCardKey . _pickReservationCard . entityVal) reserveds of
+                (res:_) -> actualPostMakeDraftPickR draftId nextUid picks draft res
+                _ -> return ()
+    redirect (ViewDraftR draftId)
+
 routeToTextUrl :: Route App -> Handler Text
 routeToTextUrl route = withUrlRenderer $ \f -> f route []
 

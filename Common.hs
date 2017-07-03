@@ -118,3 +118,14 @@ notifyDraftWatcher dp
 subscribeDraftWatcher :: DraftId -> Handler (TChan Pick)
 subscribeDraftWatcher did
  = atomically =<< withDraftWatch did Nothing dupTChan
+
+isCommissioner :: DraftId -> Handler Bool
+isCommissioner draftId = do
+    muid <- maybeAuthId
+    case muid of
+        Nothing -> return False
+        Just uid -> runDB $ do
+            mdraft <- get draftId
+            case mdraft of
+                Nothing -> return False
+                Just draft -> return $ _draftCreator draft == uid

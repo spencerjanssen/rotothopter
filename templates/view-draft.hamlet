@@ -49,6 +49,13 @@ $if isNextDrafter
                     <span .glyphicon .glyphicon-arrow-down>
                 $else
                     <span .glyphicon .glyphicon-arrow-left>
+
+$if commissioner
+    <h3>Commissioner tools
+    <form method=POST action=@{ForceNextReservedPickR draftId}>
+        <button .btn .btn-warning type=submit>
+            Automatically make the next draft pick from reserved cards
+
 $case mreservedCards
     $of Just reservedCards
         $if not $ null reservedCards
