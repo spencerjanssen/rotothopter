@@ -66,7 +66,11 @@ $case mreservedCards
                         <form method=POST action=@{DeleteReserveDraftPickR draftId card}>
                             <button .btn .btn-xs .btn-danger type=submit>
                                 <span .glyphicon .glyphicon-remove>
-                            #{card}
+                            $if elem card (map _cardCard allowedCards)
+                                #{card}
+                            $else
+                                <s>
+                                    #{card}
     $of _
 <h3>Unpicked Cards
 <span .glyphicon .glyphicon-search>
