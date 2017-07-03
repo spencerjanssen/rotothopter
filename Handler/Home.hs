@@ -1,16 +1,45 @@
 module Handler.Home where
 
-import Import
+import Import hiding (on, from, (^.), (==.), (||.))
+import Database.Esqueleto
 
--- This is a handler function for the GET request method on the HomeR
--- resource pattern. All of your resource patterns are defined in
--- config/routes
---
--- The majority of the code you will write in Yesod lives in these handler
--- functions. You can spread them across multiple files if you are so
--- inclined, or create a single monolithic file.
 getHomeR :: Handler Html
-getHomeR =
+getHomeR = do
+    muid <- maybeAuthId
+    muserInfo <- traverse (runDB . loggedInInfo) muid
     defaultLayout $ do
         setTitle "Welcome To rotothopter!"
         $(widgetFile "homepage")
+
+loggedInInfo :: UserId -> ReaderT SqlBackend Handler ([(DraftId, Text)], [(InviteHash, Text)], [(RankingId, Text)])
+loggedInInfo userId = (,,) <$> userDrafts userId <*> userInvites userId <*> userRankings userId
+
+userDrafts :: UserId -> ReaderT SqlBackend Handler [(DraftId, Text)]
+userDrafts userId = map munge <$> query
+ where
+    munge (draft, cube) = (entityKey draft, _cubeName $ entityVal cube)
+    query = select $ from $ \(draft `InnerJoin` draftParticipant `InnerJoin` cube) -> do
+        on $ draft ^. DraftId ==. draftParticipant ^. DraftParticipantDraft
+        on $ draft ^. DraftCube ==. cube ^. CubeId
+        where_ $ draftParticipant ^. DraftParticipantDrafter ==. val userId
+        return (draft, cube)
+
+userInvites :: UserId -> ReaderT SqlBackend Handler [(InviteHash, Text)]
+userInvites userId = map munge <$> query
+ where
+    munge (draftInvite, cube) = (_draftInviteHash $ entityVal draftInvite, _cubeName $ entityVal cube)
+    query = select $ distinct $ from $ \(draftInvite `InnerJoin` draftInvitee `InnerJoin` cube) -> do
+        on $ draftInvite ^. DraftInviteId ==. draftInvitee ^. DraftInviteeDraftInvite
+        on $ draftInvite ^. DraftInviteCube ==. cube ^. CubeId
+        where_ $ draftInvitee ^. DraftInviteeDrafter ==. val userId
+            ||. draftInvite ^. DraftInviteCreator ==. val userId
+        return (draftInvite, cube)
+
+userRankings :: UserId -> ReaderT SqlBackend Handler [(RankingId, Text)]
+userRankings userId = map munge <$> query
+ where
+    munge (ranking, cube) = (entityKey ranking, _cubeName $ entityVal cube)
+    query = select $ from $ \(ranking `InnerJoin` cube) -> do
+        on $ ranking ^. RankingCube ==. cube ^. CubeId
+        where_ $ ranking ^. RankingPicker ==. val userId
+        return (ranking, cube)

@@ -1,1 +1,48 @@
-<h1>Welcome to rotothopter
+<div .jumbotron>
+    $maybe _ <- muid
+        <h1>Welcome back to Rotothopter!
+        <p>Visit one of your rotisserie drafts, or maybe try making a pick order.
+    $nothing
+        <h1>Welcome to Rotothopter!
+        <p>
+            You can use Rotothopter to host Magic rotisserie drafts.
+            We also offer an application that can help you make a pick order of your favorite cube.
+        <p>
+            Rotothopter is much more useful when you're signed in with Google.
+            Don't worry, we will never share your account information and won't send you spam.
+        <p>
+            <a .btn .btn-primary .btn-lg role=button href=@{AuthR LoginR}>
+                Get started!
+
+<div .row>
+    $maybe (drafts, invites, rankings) <- muserInfo
+        $if not (null drafts)
+            <div .col-md-4>
+                <div .panel .panel-default>
+                    <div .panel-heading>Open drafts
+                    <div>
+                        <ul>
+                            $forall (draftId, cubeName) <- drafts
+                                <li>
+                                    <a href=@{ViewDraftR draftId}>
+                                        #{cubeName}
+        $if not (null invites)
+            <div .col-md-4>
+                <div .panel .panel-default>
+                    <div .panel-heading>Drafts waiting to start
+                    <div>
+                        <ul>
+                            $forall (inviteHash, cubeName) <- invites
+                                <li>
+                                    <a href=@{ViewDraftInviteR inviteHash}>
+                                        #{cubeName}
+        $if not (null rankings)
+            <div .col-md-4>
+                <div .panel .panel-default>
+                    <div .panel-heading>Continue your pick orders
+                    <div>
+                        <ul>
+                            $forall (ranking, cubeName) <- rankings
+                                <li>
+                                    <a href=@{ViewRankingR ranking}>
+                                        #{cubeName}
