@@ -19,8 +19,8 @@ userDrafts userId = map munge <$> query
  where
     munge (draft, cube) = (entityKey draft, _cubeName $ entityVal cube)
     query = select $ from $ \(draft `InnerJoin` draftParticipant `InnerJoin` cube) -> do
-        on $ draft ^. DraftId ==. draftParticipant ^. DraftParticipantDraft
         on $ draft ^. DraftCube ==. cube ^. CubeId
+        on $ draft ^. DraftId ==. draftParticipant ^. DraftParticipantDraft
         where_ $ draftParticipant ^. DraftParticipantDrafter ==. val userId
         return (draft, cube)
 
@@ -29,8 +29,8 @@ userInvites userId = map munge <$> query
  where
     munge (draftInvite, cube) = (_draftInviteHash $ entityVal draftInvite, _cubeName $ entityVal cube)
     query = select $ distinct $ from $ \(draftInvite `InnerJoin` draftInvitee `InnerJoin` cube) -> do
-        on $ draftInvite ^. DraftInviteId ==. draftInvitee ^. DraftInviteeDraftInvite
         on $ draftInvite ^. DraftInviteCube ==. cube ^. CubeId
+        on $ draftInvite ^. DraftInviteId ==. draftInvitee ^. DraftInviteeDraftInvite
         where_ $ draftInvitee ^. DraftInviteeDrafter ==. val userId
             ||. draftInvite ^. DraftInviteCreator ==. val userId
         return (draftInvite, cube)
