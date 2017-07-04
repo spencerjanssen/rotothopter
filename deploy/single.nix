@@ -14,6 +14,24 @@ let
         sha256 = wowHash;
     };
     wow = (import "${wowrepo}/release.nix" {}).randy_soundboard;
+    pkgs = (import <nixpkgs> {});
+    wal_e = pkgs.python34Packages.buildPythonApplication rec {
+        name = "wal-e-${version}";
+        version = "1.1.0b1";
+        namePrefix = "";
+        src = pkgs.fetchurl {
+            url = "https://github.com/wal-e/wal-e/archive/v${version}.tar.gz";
+            sha256 = "0hrs1m7qqm1spr2n64ygq1car89afx3nj7zzldihc91wwkkzmd9a";
+        };
+        doCheck = false;
+        propagatedBuildInputs = [
+            pkgs.python34Packages.boto
+            pkgs.python34Packages.gevent
+            pkgs.postgresql
+            pkgs.lzop
+            pkgs.pv
+        ];
+    };
 in
 {
     network.description = "Rotothopter Single AWS";
@@ -25,6 +43,13 @@ in
             services.postgresql.enable = true;
             services.postgresql.enableTCPIP = false;
             services.postgresql.initialScript = ./sqlsettings.sql;
+            services.postgresql.extraConfig = ''
+                wal_level = archive
+                archive_mode = on
+                archive_command = '/usr/bin/env AWS_REGION=us-west-2 ${wal_e}/bin/wal-e --aws-instance-profile --s3-prefix=s3://rotothopter-backups/ wal-push %p'
+                archive_timeout = 3600
+                checkpoint_timeout = 3600
+            '';
 
             # nginx stuff
             services.nginx.enable = true;
@@ -66,7 +91,7 @@ in
             };
 
             networking.firewall.allowedTCPPorts = [ 80 443 ];
-            environment.systemPackages = [rotostatic];
+            environment.systemPackages = [rotostatic wal_e];
 
             # app stuff
             systemd.services.rotothopter = {
