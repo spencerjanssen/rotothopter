@@ -107,7 +107,7 @@ checkSendEmail draftId draft olduid = do
                 (rnd, _) = pickNumToRC draft (length picks + 1)
             url <- routeToTextUrl (ViewDraftR draftId)
             Just lastpicker <- runDB $ get (lastpick ^. pickDrafter)
-            sendEmail user ("Time for draft round " ++ pack (show rnd)) $ [st|
+            sendEmail user ("Time for draft round " ++ pack (show $ succ rnd)) $ [st|
 #{pseudonym lastpicker} just drafted #{unCardKey (lastpick ^. pickCard)}.
 
 It is time to make your pick.
