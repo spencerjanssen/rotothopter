@@ -89,6 +89,7 @@ instance Yesod App where
     isAuthorized AdminConsoleR _ = isAdmin
     isAuthorized UpdateMtgJsonR _ = isAdmin
     isAuthorized AdminAddUserR _ = isAdmin
+    isAuthorized (AdminFeatureCubeR {}) _ = isAdmin
     -- Default to Authorized for now.
     isAuthorized _ _ = return Authorized
 

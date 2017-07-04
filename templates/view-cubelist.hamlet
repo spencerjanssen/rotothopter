@@ -1,5 +1,10 @@
 <h1>#{cname}
 
+$if admin
+    <form method=post action=@{AdminFeatureCubeR cid True}>
+        <button .btn .btn-success type=submit>Feature this cube
+    <form method=post action=@{AdminFeatureCubeR cid False}>
+        <button .btn .btn-danger type=submit>Unfeature this cube
 <div .btn-group role="group">
     <a .btn .btn-primary role="button" href=@{NewDraftInviteR cid}>Draft this cube
     $case mrid

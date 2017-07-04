@@ -18,6 +18,7 @@
 /admin AdminConsoleR GET
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /admin/user/add AdminAddUserR GET POST
+/admin/feature-cube/#CubeId/#Bool AdminFeatureCubeR POST
 /user/profile UserProfileR GET POST
 /draft/invite/new/#CubeId NewDraftInviteR GET POST
 !/draft/invite/#InviteHash ViewDraftInviteR GET

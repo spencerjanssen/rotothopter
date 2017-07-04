@@ -15,6 +15,15 @@
                 Get started!
 
 <div .row>
+    $if not (null featured)
+        <div .col-md-4>
+            <div .panel .panel-default>
+                <div .panel-heading>Featured Cubes
+                <div>
+                    <ul>
+                        $forall cube <- featured
+                            <li>
+                                <a href=@{ViewCubeListR $ entityKey cube}>#{_cubeName $ entityVal cube}
     $maybe (drafts, invites, rankings) <- muserInfo
         $if not (null drafts)
             <div .col-md-4>

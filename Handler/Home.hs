@@ -7,6 +7,7 @@ getHomeR :: Handler Html
 getHomeR = do
     muid <- maybeAuthId
     muserInfo <- traverse (runDB . loggedInInfo) muid
+    featured <- runDB featuredCubes
     defaultLayout $ do
         setTitle "Welcome To rotothopter!"
         $(widgetFile "homepage")
@@ -43,3 +44,9 @@ userRankings userId = map munge <$> query
         on $ ranking ^. RankingCube ==. cube ^. CubeId
         where_ $ ranking ^. RankingPicker ==. val userId
         return (ranking, cube)
+
+featuredCubes :: ReaderT SqlBackend Handler [Entity Cube]
+featuredCubes = select $ from $ \(featuredCube `InnerJoin` cube) -> do
+    on $ featuredCube ^. FeaturedCubeCube ==. cube ^. CubeId
+    orderBy [desc $ featuredCube ^. FeaturedCubeCreated]
+    return cube

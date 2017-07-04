@@ -69,6 +69,7 @@ library
                      Handler.Ranking
                      Handler.RankingChoice
                      Handler.ViewRanking
+                     Handler.AdminFeatureCube
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

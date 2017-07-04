@@ -34,6 +34,7 @@ cubeForm = renderBootstrap3 BootstrapBasicForm $ (,)
 getViewCubeListR :: CubeId -> Handler Html
 getViewCubeListR cid = do
     muid <- maybeAuthId
+    admin <- maybe False _userAdmin <$> getUserInfo
     (cname, cs, mrid) <- runDB $ do
         Just (Cube _ cname) <- get cid
         cs <- fmap (map entityVal) $ E.select $ E.from $ \(cubeCard `E.InnerJoin` card) -> do

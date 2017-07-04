@@ -10,6 +10,11 @@ Cube
     name Text
     UniqueCubeName name
     deriving Show
+FeaturedCube
+    Primary cube
+    UniqueFeaturedCube cube
+    cube CubeId
+    created UTCTime
 CubeEntry
     cube CubeId
     card CardId
