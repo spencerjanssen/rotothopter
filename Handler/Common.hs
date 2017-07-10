@@ -8,7 +8,7 @@ import Import
 -- runtime dependency, and for efficiency.
 
 getFaviconR :: Handler TypedContent
-getFaviconR = return $ TypedContent "image/x-icon"
+getFaviconR = return $ TypedContent "image/png"
                      $ toContent $(embedFile "config/favicon.png")
 
 getRobotsR :: Handler TypedContent
