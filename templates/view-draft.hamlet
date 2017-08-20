@@ -56,22 +56,10 @@ $if commissioner
         <button .btn .btn-warning type=submit>
             Automatically make the next draft pick from reserved cards
 
-$case mreservedCards
-    $of Just reservedCards
-        $if not $ null reservedCards
-            <h3>Reserved Cards
-            <ol>
-                $forall card <- reservedCards
-                    <li>
-                        <form method=POST action=@{DeleteReserveDraftPickR draftId card}>
-                            <button .btn .btn-xs .btn-danger type=submit>
-                                <span .glyphicon .glyphicon-remove>
-                            $if elem card (map _cardCard allowedCards)
-                                #{card}
-                            $else
-                                <s>
-                                    #{card}
-    $of _
+$if isParticipant
+    <div id=app>
+    <script src=@{StaticR gen_main_hash_js}>
+
 <h3>Unpicked Cards
 <span .glyphicon .glyphicon-search>
 <input name=search id=search placeholder=Search type=search data-list=".unpicked">

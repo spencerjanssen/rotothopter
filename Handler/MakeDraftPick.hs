@@ -52,16 +52,25 @@ postReserveDraftPickR :: DraftId -> Text -> Handler ()
 postReserveDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
-    now <- liftIO getCurrentTime
     runDB $ do
         mres <- selectFirst [PickReservationDrafter ==. uid, PickReservationDraft ==. draftId] [Desc PickReservationNumber]
         let nextpick = case mres of
                 Nothing -> 0
                 Just (Entity _ res) -> res ^. pickReservationNumber + 1
-            thepick = PickReservation draftId nextpick uid (draft ^. draftCube) (CardKey cardToPick) now
+            thepick = PickReservation draftId nextpick uid (draft ^. draftCube) (CardKey cardToPick)
         _ <- insert thepick
         return ()
     redirect (ViewDraftR draftId)
+
+postReservedCardsR :: DraftId -> Handler ()
+postReservedCardsR draftId = do
+    userId <- requireAuthId
+    cards <- requireJsonBody
+    runDB $ do
+        cubeId <- _draftCube <$> get404 draftId
+        deleteWhere [PickReservationDraft ==. draftId, PickReservationDrafter ==. userId]
+        let row i card = PickReservation draftId i userId cubeId card
+        insertMany_ $ zipWith row [0 ..] cards
 
 postDeleteReserveDraftPickR :: DraftId -> Text -> Handler ()
 postDeleteReserveDraftPickR draftId card = do

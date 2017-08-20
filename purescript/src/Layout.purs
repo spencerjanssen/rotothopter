@@ -3,7 +3,8 @@ module App.Layout where
 import App.NotFound as NotFound
 import App.Picker as Picker
 import App.LaunchDraft as LaunchDraft
-import App.Routes (Route(NotFoundR, PickerR, LaunchDraftR), None(..))
+import App.ViewDraft as ViewDraft
+import App.Routes (Route(NotFoundR, PickerR, LaunchDraftR, ViewDraftR), None(..))
 import DOM (DOM)
 import Network.HTTP.Affjax (AJAX)
 import Prelude (map, ($), (<$>), (==))
@@ -17,6 +18,8 @@ data Action
   | PickerLoaded Picker.RankId Picker.State
   | LaunchDraft LaunchDraft.InviteId LaunchDraft.Action
   | LaunchDraftLoaded LaunchDraft.InviteId LaunchDraft.State
+  | ViewDraft ViewDraft.DraftId ViewDraft.Action
+  | ViewDraftLoaded ViewDraft.DraftId ViewDraft.State
 
 data Loading a = Loading | Loaded a
 
@@ -31,6 +34,7 @@ routeInit :: Route None -> EffModel (Route Loading) Action (ajax :: AJAX, dom ::
 routeInit NotFoundR = noEffects NotFoundR
 routeInit (PickerR n None) = {state: PickerR n Loading, effects: [PickerLoaded n <$> Picker.init n]}
 routeInit (LaunchDraftR d None) = {state: LaunchDraftR d Loading, effects: [LaunchDraftLoaded d <$> LaunchDraft.init d]}
+routeInit (ViewDraftR d None) = {state: ViewDraftR d Loading, effects: [ViewDraftLoaded d <$> ViewDraft.init d]}
 
 update :: Action -> State -> EffModel State Action (ajax :: AJAX, dom :: DOM )
 update (PageView route) state = mapState (\route' -> state { route = route' }) $ routeInit route
@@ -49,6 +53,15 @@ update (LaunchDraft draftId lda) state = noEffects case state.route of
 update (LaunchDraftLoaded draftId lds) state = noEffects case state.route of
   LaunchDraftR draftId' Loading | draftId == draftId' -> state {route = LaunchDraftR draftId (Loaded lds)}
   _ -> state
+update (ViewDraft draftId vda) state = case state.route of
+  ViewDraftR draftId' (Loaded vds) | draftId == draftId' ->
+    mapEffects (ViewDraft draftId)
+    $ mapState (\s' -> state {route = ViewDraftR draftId (Loaded s')})
+    $ ViewDraft.update draftId vda vds
+  _ -> noEffects state
+update (ViewDraftLoaded draftId vds) state = noEffects case state.route of
+  ViewDraftR draftId' Loading | draftId == draftId' -> state {route = ViewDraftR draftId (Loaded vds)}
+  _ -> state
 
 view :: State -> Html Action
 view state =
@@ -59,5 +72,7 @@ view state =
         PickerR _ Loading -> p [] [text "Loading..."]
         LaunchDraftR _ Loading -> p [] [text "Loading..."]
         LaunchDraftR draftId (Loaded dstate) -> LaunchDraft draftId <$> LaunchDraft.view draftId dstate
+        ViewDraftR _ Loading -> p [] [text "Loading reserved picks..."]
+        ViewDraftR draftId (Loaded dstate) -> ViewDraft draftId <$> ViewDraft.view draftId dstate
         NotFoundR -> NotFound.view state
     ]

@@ -76,7 +76,7 @@ PickReservation
     card CardId
     Foreign CubeEntry entryfk cube card
     Foreign DraftParticipant dpfk drafter draft
-    created UTCTime
+    UniquePickReservation draft drafter card
     deriving Show
 Ranking
     picker UserId

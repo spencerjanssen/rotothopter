@@ -16,7 +16,6 @@ getViewDraftR draftId = do
     Just (Cube _ cubename) <- runDB $ get $ draft ^. draftCube
     picks <- getPicksAndInfo draftId Nothing
     muid <- maybeAuthId
-    mreservedCards <- traverse (getReservedCards draftId) muid
     allowedCards <- getAllowedCards draftId (draft ^. draftCube)
     let pickmap = Map.fromList $ map (\p -> (p ^. _1.pickNumber, p)) picks
         picksOnly = map fst picks
@@ -47,6 +46,7 @@ getViewDraftR draftId = do
                     [whamlet|
                     <a href=@{MakeDraftPickR draftId cname}>#{cname}
                     |]
+        isParticipant = maybe False (`elem` map entityKey participants) muid
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     defaultLayout $ do
         setTitle $ if isNextDrafter
@@ -88,6 +88,9 @@ prettyTimeDiff t = pref ++ concat
     pref | posneg < 0 = "-"
          | otherwise = ""
 
-getReservedCards :: DraftId -> UserId -> Handler [Text]
-getReservedCards draftId userId = runDB $ do
-    map (unCardKey . _pickReservationCard . entityVal) <$> selectList [PickReservationDrafter ==. userId, PickReservationDraft ==. draftId] [Asc PickReservationNumber]
+getReservedCardsR :: DraftId -> Handler Value
+getReservedCardsR draftId = do
+    userId <- requireAuthId
+    res <- runDB $
+        map (unCardKey . _pickReservationCard . entityVal) <$> selectList [PickReservationDrafter ==. userId, PickReservationDraft ==. draftId] [Asc PickReservationNumber]
+    returnJson res
