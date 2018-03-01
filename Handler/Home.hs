@@ -1,6 +1,6 @@
 module Handler.Home where
 
-import Import hiding (on, from, (^.), (==.), (||.))
+import Import hiding (on, from, (^.), (==.), (||.), (<.))
 import Database.Esqueleto
 
 getHomeR :: Handler Html
@@ -22,7 +22,12 @@ userDrafts userId = map munge <$> query
     query = select $ from $ \(draft `InnerJoin` draftParticipant `InnerJoin` cube) -> do
         on $ draft ^. DraftCube ==. cube ^. CubeId
         on $ draft ^. DraftId ==. draftParticipant ^. DraftParticipantDraft
+        let pickCount = sub_select $ from $ \pick -> do
+                where_ $ (draft ^. DraftId) ==. pick ^. PickDraft
+                return countRows
+            maxPicks = draft ^. DraftRounds *. draft ^. DraftParticipants
         where_ $ draftParticipant ^. DraftParticipantDrafter ==. val userId
+            &&. pickCount <. maxPicks
         return (draft, cube)
 
 userInvites :: UserId -> ReaderT SqlBackend Handler [(InviteHash, Text)]
