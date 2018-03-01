@@ -66,7 +66,6 @@ in
             services.nginx.virtualHosts."www.rotothopter.com" = {
                 default = true;
                 enableACME = true;
-                enableSSL = true;
                 forceSSL = true;
                 locations = {
                   "~ ^/draft/[0-9]+/watch" = {
