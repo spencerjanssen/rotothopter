@@ -15,7 +15,7 @@
 /draft/#DraftId/reserve/#Text ReserveDraftPickR POST
 /draft/#DraftId/reserve-delete/#Text DeleteReserveDraftPickR POST
 /draft/#DraftId/force-next-pick ForceNextReservedPickR POST
-/draft/#DraftId/watch WatchDraftR GET
+/draft/#DraftId/watch/#Int WatchDraftR GET
 /admin AdminConsoleR GET
 /admin/updatemtgjson UpdateMtgJsonR GET POST
 /admin/user/add AdminAddUserR GET POST

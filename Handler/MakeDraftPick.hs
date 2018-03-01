@@ -44,7 +44,7 @@ actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
             let thepick = Pick draftId (length picks) (draft ^. draftCube) (CardKey cardToPick) uid t
             _ <- runDB $ insert $ thepick
             checkSendEmail draftId draft uid
-            notifyDraftWatcher thepick
+            void $ getDraftWatcher draftId
             redirect (ViewDraftR draftId)
         else fail "you can't pick that card"
 

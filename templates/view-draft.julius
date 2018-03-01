@@ -6,7 +6,7 @@ jQuery(document).ready(function() {
         return moment(s).format();
     });
 
-    ev = new EventSource("@{WatchDraftR draftId}");
+    ev = new EventSource("@{WatchDraftR draftId (length picks)}");
 
     ev.addEventListener('observe_pick', function(dat){
         document.location.reload();

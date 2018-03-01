@@ -140,6 +140,7 @@ library
                  , lens
                  , esqueleto
                  , uuid
+                 , stm-delay
 
 executable         rotothopter
     if flag(library-only)
@@ -197,6 +198,7 @@ executable         rotothopter
                  , lens
                  , esqueleto
                  , uuid
+                 , stm-delay
 
     extensions: TemplateHaskell
                 QuasiQuotes

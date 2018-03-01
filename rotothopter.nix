@@ -4,10 +4,10 @@
 , hjsmin, hspec, http-conduit, lens, mime-mail, mime-mail-ses
 , monad-control, monad-logger, persistent, persistent-postgresql
 , persistent-sqlite, persistent-template, resourcet, safe
-, shakespeare, stdenv, template-haskell, text, time, transformers
-, unordered-containers, uuid, vector, wai-extra, wai-logger, warp
-, yaml, yesod, yesod-auth, yesod-core, yesod-eventsource
-, yesod-form, yesod-static, yesod-test
+, shakespeare, stdenv, stm-delay, template-haskell, text, time
+, transformers, unordered-containers, uuid, vector, wai-extra
+, wai-logger, warp, yaml, yesod, yesod-auth, yesod-core
+, yesod-eventsource, yesod-form, yesod-static, yesod-test
 }:
 mkDerivation {
   pname = "rotothopter";
@@ -21,9 +21,10 @@ mkDerivation {
     esqueleto fast-logger file-embed hjsmin http-conduit lens mime-mail
     mime-mail-ses monad-control monad-logger persistent
     persistent-postgresql persistent-sqlite persistent-template safe
-    shakespeare template-haskell text time unordered-containers uuid
-    vector wai-extra wai-logger warp yaml yesod yesod-auth yesod-core
-    yesod-eventsource yesod-form yesod-static
+    shakespeare stm-delay template-haskell text time
+    unordered-containers uuid vector wai-extra wai-logger warp yaml
+    yesod yesod-auth yesod-core yesod-eventsource yesod-form
+    yesod-static
   ];
   executableHaskellDepends = [
     aeson base bytestring classy-prelude classy-prelude-conduit
@@ -31,9 +32,10 @@ mkDerivation {
     esqueleto fast-logger file-embed hjsmin http-conduit lens mime-mail
     mime-mail-ses monad-control monad-logger persistent
     persistent-postgresql persistent-sqlite persistent-template safe
-    shakespeare template-haskell text time unordered-containers uuid
-    vector wai-extra wai-logger warp yaml yesod yesod-auth yesod-core
-    yesod-eventsource yesod-form yesod-static
+    shakespeare stm-delay template-haskell text time
+    unordered-containers uuid vector wai-extra wai-logger warp yaml
+    yesod yesod-auth yesod-core yesod-eventsource yesod-form
+    yesod-static
   ];
   testHaskellDepends = [
     base classy-prelude classy-prelude-yesod esqueleto hspec lens

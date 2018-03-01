@@ -94,30 +94,34 @@ getPickAllowedCards did draft = do
     picks <- map (unCardKey . view pickCard) <$> getPicks did
     return (Set.toList (Set.fromList cubeCards Set.\\ Set.fromList picks))
 
-withDraftWatch :: DraftId -> Maybe (STM a) -> (TChan Pick -> STM a) -> Handler (STM a)
-withDraftWatch did readFail f = do
-    tmp <- appDraftWatchers <$> ask
-    return $ do
-        mp <- readTVar tmp
-        case Map.lookup did mp of
-            Just x -> f x
-            Nothing -> case readFail of
-                Nothing -> do
-                    x <- newBroadcastTChan
-                    writeTVar tmp (Map.insert did x mp)
-                    f x
-                Just act -> act
+maybeLast :: [a] -> Maybe a
+maybeLast [] = Nothing
+maybeLast [x] = Just x
+maybeLast (_:xs) = maybeLast xs
 
-notifyDraftWatcher :: Pick -> Handler ()
-notifyDraftWatcher dp
- = atomically =<< withDraftWatch
-                    (dp ^. pickDraft)
-                    (Just $ return ())
-                    (`writeTChan` dp)
+getDraftWatcher :: DraftId -> Handler (TVar (Maybe Pick))
+getDraftWatcher did = do
+    mlast <- maybeLast <$> getPicks did
+    watchers <- appDraftWatchers <$> ask
+    atomically $ do
+        mwatcher <- Map.lookup did <$> readTVar watchers
+        case mwatcher of
+            Nothing -> do
+                watcher <- newTVar mlast
+                modifyTVar watchers (Map.insert did watcher)
+                return watcher
+            Just watcher -> do
+                moldPick <- readTVar watcher
+                when ((_pickNumber <$> moldPick) <= (_pickNumber <$> mlast)) $
+                    writeTVar watcher mlast
+                return watcher
 
-subscribeDraftWatcher :: DraftId -> Handler (TChan Pick)
-subscribeDraftWatcher did
- = atomically =<< withDraftWatch did Nothing dupTChan
+waitForPick :: TVar (Maybe Pick) -> Int -> STM Int
+waitForPick watcher seenPicks = do
+    savedPicks <- maybe 0 (succ . _pickNumber) <$> readTVar watcher
+    if savedPicks > seenPicks
+        then return savedPicks
+        else mzero
 
 isCommissioner :: DraftId -> Handler Bool
 isCommissioner draftId = do
