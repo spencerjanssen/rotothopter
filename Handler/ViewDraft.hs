@@ -48,10 +48,12 @@ getViewDraftR draftId = do
                     |]
         isParticipant = maybe False (`elem` map entityKey participants) muid
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
+    let prefix = if isNextDrafter then "***" else ""
+        title = case mnextdrafter >>= \nextId -> find (\d -> entityKey d == nextId) participants of
+            Nothing -> toHtml cubename ++ " draft completed!"
+            Just next -> prefix ++ "Pick " ++ toHtml (succ lastRow) ++ ", " ++ toHtml (pseudonym $ entityVal next) ++ " drafting " ++ toHtml cubename
     defaultLayout $ do
-        setTitle $ if isNextDrafter
-                    then "***Your turn to pick!"
-                    else "View Cube Draft"
+        setTitle title
         addScript (StaticR js_jquery_timeago_js)
         addScript (StaticR js_moment_min_js)
         addScript (StaticR js_jquery_hideseek_min_js)
