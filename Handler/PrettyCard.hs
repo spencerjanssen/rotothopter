@@ -38,8 +38,9 @@ colorBadge card = StaticR $ case Map.lookup (card ^. cardColors) colorBadgeMap o
                                                     else img_mana_15_0_png
             | otherwise -> img_mana_15_snow_png
 
-prettyCard :: Card -> WidgetT App IO ()
-prettyCard card = $(widgetFile "inline-card")
+prettyCard :: Card -> Maybe Text -> WidgetT App IO ()
+prettyCard card mlinkClass = $(widgetFile "inline-card")
+ where linkClass = fromMaybe "" mlinkClass
 
 data CardCategory
     = Unknown

@@ -33,7 +33,7 @@ $if isNextDrafter
             $forall col <- zipWith const (enumFrom 0) participants
                 <td>
                     $maybe (pick, details) <- Map.lookup (rcToPickNum draft (row, col)) pickmap
-                        ^{prettyCard details}
+                        ^{prettyPick pick details}
                         $if timestamp
                             <br>
                             <date .convlocale>#{utcTo8601 $ pick ^. pickCreated}

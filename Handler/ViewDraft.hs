@@ -49,6 +49,10 @@ getViewDraftR draftId = do
                     <a href=@{MakeDraftPickR draftId cname} :isReserved cname:.bg-success>#{cname}
                     |]
         isParticipant = maybe False (`elem` map entityKey participants) muid
+        prettyPick pick details =
+            let pclass | Just (_pickDrafter pick) /= muid && isReserved (_cardCard details) = Just "bg-danger"
+                       | otherwise = Nothing
+            in prettyCard details pclass
     timestamp <- (elem "timestamp" . map fst . reqGetParams) <$> getRequest
     let prefix = if isNextDrafter then "***" else ""
         title = case mnextdrafter >>= \nextId -> find (\d -> entityKey d == nextId) participants of

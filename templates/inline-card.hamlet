@@ -1,2 +1,2 @@
 <img src=@{colorBadge card} width=15 height=15>
-<a href=#{cardImgUrl card} target=_blank>#{card ^. cardCard}
+<a href=#{cardImgUrl card} target=_blank .#{linkClass}>#{card ^. cardCard}
