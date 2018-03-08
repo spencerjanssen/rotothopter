@@ -78,7 +78,7 @@ in
                     proxyPass = "http://backends";
                   };
                   "/static" = {
-                    alias = "${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.2/static/";
+                    alias = "${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.3/static/";
                   };
                   "/" = {
                     proxyPass = "http://backends";
@@ -109,7 +109,7 @@ in
                 mkdir -p /var/rotothopter/config
                 '';
                 environment = {
-                    STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.2/static/'';
+                    STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-8.0.2/rotothopter-0.0.3/static/'';
                     PORT = "3000";
                     APPROOT = "https://www.rotothopter.com";
                     PGUSER = "roto";
