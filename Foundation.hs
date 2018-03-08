@@ -85,6 +85,7 @@ instance Yesod App where
     -- Routes not requiring authentication.
     isAuthorized (AuthR _) _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
+    isAuthorized FaviconAttnR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized AdminConsoleR _ = isAdmin
     isAuthorized UpdateMtgJsonR _ = isAdmin

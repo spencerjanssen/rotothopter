@@ -2,6 +2,7 @@
 /auth   AuthR   Auth   getAuth
 
 /favicon.png FaviconR GET
+/favicon-attn.png FaviconAttnR GET
 /robots.txt RobotsR GET
 
 / HomeR GET

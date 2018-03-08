@@ -21,3 +21,7 @@ jQuery(document).ready(function() {
     $('#search').hideseek();
     $('#draft-table').stickyTableHeaders();
 });
+
+if(#{toJSON isNextDrafter}) {
+    $("#favicon").attr("href", "@{FaviconAttnR}")
+}
