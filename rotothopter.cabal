@@ -14,6 +14,7 @@ data-files:
     static/fonts/*.woff
     static/img/mana/15/*.png
     static/img/mana/40/*.png
+    static/img/google/*.png
     static/js/bootstrap.min.js
     static/js/jquery.hideseek.min.js
     static/js/jquery.min.js
