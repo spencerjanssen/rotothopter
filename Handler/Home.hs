@@ -1,6 +1,6 @@
-module Handler.Home where
+module Handler.Home (getHomeR) where
 
-import Import hiding (on, from, (^.), (==.), (||.), (<.))
+import Import hiding (on, from, (^.), (==.), (||.), (<.), (>=.))
 import Database.Esqueleto
 
 getHomeR :: Handler Html
@@ -12,12 +12,28 @@ getHomeR = do
         setTitle "Welcome To rotothopter!"
         $(widgetFile "homepage")
 
-loggedInInfo :: UserId -> ReaderT SqlBackend Handler ([(DraftId, Text)], [(InviteHash, Text)], [(RankingId, Text)])
-loggedInInfo userId = (,,) <$> userDrafts userId <*> userInvites userId <*> userRankings userId
+data LoggedInInfo = LoggedInInfo
+    { openDrafts :: [(DraftId, Text)]
+    , completedDrafts :: [(DraftId, Text)]
+    , draftInvites :: [(InviteHash, Text)]
+    , rankings :: [(RankingId, Text)]
+    }
 
-userDrafts :: UserId -> ReaderT SqlBackend Handler [(DraftId, Text)]
-userDrafts userId = map munge <$> query
+loggedInInfo :: UserId -> ReaderT SqlBackend Handler LoggedInInfo
+loggedInInfo userId = LoggedInInfo
+    <$> userDrafts userId Open
+    <*> userDrafts userId Completed
+    <*> userInvites userId
+    <*> userRankings userId
+
+data DraftStatus = Open | Completed
+
+userDrafts :: UserId -> DraftStatus -> ReaderT SqlBackend Handler [(DraftId, Text)]
+userDrafts userId draftStatus = map munge <$> query
  where
+    countCompare = case draftStatus of
+        Open -> (<.)
+        Completed -> (>=.)
     munge (draft, cube) = (entityKey draft, _cubeName $ entityVal cube)
     query = select $ from $ \(draft `InnerJoin` draftParticipant `InnerJoin` cube) -> do
         on $ draft ^. DraftCube ==. cube ^. CubeId
@@ -27,7 +43,7 @@ userDrafts userId = map munge <$> query
                 return countRows
             maxPicks = draft ^. DraftRounds *. draft ^. DraftParticipants
         where_ $ draftParticipant ^. DraftParticipantDrafter ==. val userId
-            &&. pickCount <. maxPicks
+            &&. pickCount `countCompare` maxPicks
         return (draft, cube)
 
 userInvites :: UserId -> ReaderT SqlBackend Handler [(InviteHash, Text)]

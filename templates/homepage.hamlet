@@ -24,34 +24,44 @@
                         $forall cube <- featured
                             <li>
                                 <a href=@{ViewCubeListR $ entityKey cube}>#{_cubeName $ entityVal cube}
-    $maybe (drafts, invites, rankings) <- muserInfo
-        $if not (null drafts)
+    $maybe userInfo <- muserInfo
+        $if not (null (openDrafts userInfo))
             <div .col-md-4>
                 <div .panel .panel-default>
                     <div .panel-heading>Open drafts
                     <div>
                         <ul>
-                            $forall (draftId, cubeName) <- drafts
+                            $forall (draftId, cubeName) <- openDrafts userInfo
                                 <li>
                                     <a href=@{ViewDraftR draftId}>
                                         #{cubeName}
-        $if not (null invites)
+        $if not (null (completedDrafts userInfo))
+            <div .col-md-4>
+                <div .panel .panel-default>
+                    <div .panel-heading>Completed drafts
+                    <div>
+                        <ul>
+                            $forall (draftId, cubeName) <- completedDrafts userInfo
+                                <li>
+                                    <a href=@{ViewDraftR draftId}>
+                                        #{cubeName}
+        $if not (null (draftInvites userInfo))
             <div .col-md-4>
                 <div .panel .panel-default>
                     <div .panel-heading>Drafts waiting to start
                     <div>
                         <ul>
-                            $forall (inviteHash, cubeName) <- invites
+                            $forall (inviteHash, cubeName) <- draftInvites userInfo
                                 <li>
                                     <a href=@{ViewDraftInviteR inviteHash}>
                                         #{cubeName}
-        $if not (null rankings)
+        $if not (null (rankings userInfo))
             <div .col-md-4>
                 <div .panel .panel-default>
                     <div .panel-heading>Continue your pick orders
                     <div>
                         <ul>
-                            $forall (ranking, cubeName) <- rankings
+                            $forall (ranking, cubeName) <- rankings userInfo
                                 <li>
                                     <a href=@{ViewRankingR ranking}>
                                         #{cubeName}
