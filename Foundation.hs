@@ -7,7 +7,7 @@ import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Text.Hamlet          (hamletFile)
 -- import Text.Jasmine         (minifym)
 import Yesod.Auth.Dummy     (authDummy)
-import Yesod.Auth.GoogleEmail2 (authGoogleEmail)
+import Yesod.Auth.GoogleEmail2 (authGoogleEmail, forwardUrl)
 -- import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
@@ -180,10 +180,15 @@ instance YesodAuth App where
         dauth | allowDummyAuth appSettings = [authDummy]
               | otherwise                  = []
         gauth = case (googleClientId appSettings, googleClientSecret appSettings) of
-            (Just gci, Just gcs) -> [authGoogleEmail gci gcs]
+            (Just gci, Just gcs) -> [customGoogleAuth gci gcs]
             _ -> []
 
     authHttpManager = getHttpManager
+
+customGoogleAuth :: Text -> Text -> AuthPlugin App
+customGoogleAuth gci gcs = (authGoogleEmail gci gcs) { apLogin = loginFragment }
+ where
+    loginFragment tm = $(widgetFile "google-login")
 
 instance YesodAuthPersist App
 

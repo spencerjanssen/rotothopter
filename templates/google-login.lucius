@@ -1,0 +1,13 @@
+#google-signin-button {
+    width: 191px;
+    height: 46px;
+    background: url(@{StaticR img_google_btn_google_signin_dark_normal_web_png});
+}
+
+#google-signin-button:hover {
+    background: url(@{StaticR img_google_btn_google_signin_dark_focus_web_png});
+}
+
+#google-signin-button:active {
+    background: url(@{StaticR img_google_btn_google_signin_dark_pressed_web_png});
+}

@@ -1,0 +1,8 @@
+<div .jumbotron>
+    <h1>Sign in to Rotothopter
+    <p>
+        Rotothopter is much more useful when you're signed in with Google.
+        Don't worry, we will never share your account information and won't send you spam.
+    <a href=@{tm forwardUrl}>
+        <div #google-signin-button>
+        <span .sr-only .sr-only-focusable>Sign in with Google
