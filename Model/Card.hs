@@ -14,21 +14,31 @@ instance Monoid ColorSet where
 instance FromJSON ColorSet where
     parseJSON x = toColors <$> parseJSON x
 
+instance ToJSON ColorSet where
+    toJSON = toJSON . fromColors
+
 colorless, white, blue, black, red, green :: ColorSet
 (colorless, white, blue, black, red, green) = (CS 0, p 0, p 1, p 2, p 3, p 4)
  where p = CS . setBit 0
 
 toColor :: Text -> ColorSet
-toColor x = case x of
-    "White" -> white
-    "Blue" -> blue
-    "Black" -> black
-    "Red" -> red
-    "Green" -> green
-    _ -> colorless
+toColor x = fromMaybe colorless $ lookup x colorMap
+
+colorMap :: [(Text, ColorSet)]
+colorMap =
+        [ ("Colorless", colorless)
+        , ("White", white)
+        , ("Blue", blue)
+        , ("Black", black)
+        , ("Red", red)
+        , ("Green", green)
+        ]
 
 toColors :: [Text] -> ColorSet
 toColors = mconcat . map toColor
+
+fromColors :: ColorSet -> [Text]
+fromColors (CS x) = [color | (color, CS y) <- colorMap, x .&. y /= 0]
 
 newtype TypeSet = TS Word32
     deriving (Eq, Ord, Show, PersistField, PersistFieldSql)
@@ -40,6 +50,9 @@ instance Monoid TypeSet where
 instance FromJSON TypeSet where
     parseJSON x = toTypes <$> parseJSON x
 
+instance ToJSON TypeSet where
+    toJSON = toJSON . fromTypes
+
 artifact, conspiracy, creature, enchantment, instant, land, phenomenon, plane,
  planeswalker, scheme, sorcery, tribal, vanguard :: TypeSet
 (artifact, conspiracy, creature, enchantment, instant, land, phenomenon, plane,
@@ -48,24 +61,30 @@ artifact, conspiracy, creature, enchantment, instant, land, phenomenon, plane,
  where p = TS . setBit 0
 
 toType :: Text -> TypeSet
-toType x = case x of
-    "Artifact" -> artifact
-    "Conspiracy" -> conspiracy
-    "Creature" -> creature
-    "Enchantment" -> enchantment
-    "Instant" -> instant
-    "Land" -> land
-    "Phenomenon" -> phenomenon
-    "Plane" -> plane
-    "Planeswalker" -> planeswalker
-    "Scheme" -> scheme
-    "Sorcery" -> sorcery
-    "Tribal" -> tribal
-    "Vanguard" -> vanguard
-    _ -> mempty
+toType x = fromMaybe mempty $ lookup x typeMap
+
+typeMap :: [(Text, TypeSet)]
+typeMap = 
+    [ ("Artifact", artifact)
+    , ("Conspiracy", conspiracy)
+    , ("Creature", creature)
+    , ("Enchantment", enchantment)
+    , ("Instant", instant)
+    , ("Land", land)
+    , ("Phenomenon", phenomenon)
+    , ("Plane", plane)
+    , ("Planeswalker", planeswalker)
+    , ("Scheme", scheme)
+    , ("Sorcery", sorcery)
+    , ("Tribal", tribal)
+    , ("Vanguard", vanguard)
+    ]
 
 toTypes :: [Text] -> TypeSet
 toTypes = mconcat . map toType
 
 typeSubset :: TypeSet -> TypeSet -> Bool
 typeSubset (TS x) (TS y) = (x .&. y) == x
+
+fromTypes :: TypeSet -> [Text]
+fromTypes ts = [typeName | (typeName, tm) <- typeMap, typeSubset tm ts]
