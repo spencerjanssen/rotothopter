@@ -1,4 +1,4 @@
-module Handler.ViewDraft where
+module Handler.ViewDraft (getViewDraftR, getReservedCardsR, getDraftInfoR) where
 
 import Import
 import Common
@@ -6,6 +6,7 @@ import Handler.PrettyCard
 import Data.Time
 import qualified Data.Map as Map
 import qualified Database.Esqueleto as E
+import Data.Aeson.TH (deriveJSON, defaultOptions)
 
 getViewDraftR :: DraftId -> Handler Html
 getViewDraftR draftId = do
@@ -17,7 +18,7 @@ getViewDraftR draftId = do
     picks <- getPicksAndInfo draftId Nothing
     muid <- maybeAuthId
     allowedCards <- getAllowedCards draftId (draft ^. draftCube)
-    reserved <- fromMaybe [] <$> traverse (\uid -> getReservedCardNames uid draftId) muid
+    reserved <- fromMaybe [] <$> traverse (\uid -> map unCardKey <$> getReservedCards uid draftId) muid
     let pickmap = Map.fromList $ map (\p -> (p ^. _1.pickNumber, p)) picks
         picksOnly = map fst picks
         lastRow = min (fromIntegral $ view draftRounds draft-1) . fst
@@ -96,11 +97,28 @@ prettyTimeDiff t = pref ++ concat
     pref | posneg < 0 = "-"
          | otherwise = ""
 
-getReservedCardNames :: UserId -> DraftId -> Handler [Text]
-getReservedCardNames userId draftId =
-    runDB $ map (unCardKey . _pickReservationCard . entityVal) <$> selectList [PickReservationDrafter ==. userId, PickReservationDraft ==. draftId] [Asc PickReservationNumber]
+getReservedCards :: UserId -> DraftId -> Handler [CardId]
+getReservedCards userId draftId =
+    runDB $ map (_pickReservationCard . entityVal) <$> selectList [PickReservationDrafter ==. userId, PickReservationDraft ==. draftId] [Asc PickReservationNumber]
+
+data DraftInfo = DraftInfo
+    { picks :: [Pick]
+    , reservedCards :: [CardId]
+    , userId :: UserId
+    }
+$(deriveJSON defaultOptions ''DraftInfo)
+
+getDraftInfo :: DraftId -> Handler DraftInfo
+getDraftInfo draftId = do
+    userId <- requireAuthId
+    picks <- getPicks draftId
+    reservedCards <- getReservedCards userId draftId
+    return $ DraftInfo {..}
+
+getDraftInfoR :: DraftId -> Handler Value
+getDraftInfoR draftId = getDraftInfo draftId >>= returnJson
 
 getReservedCardsR :: DraftId -> Handler Value
 getReservedCardsR draftId = do
     userId <- requireAuthId
-    returnJson =<< getReservedCardNames userId draftId
+    returnJson =<< getReservedCards userId draftId

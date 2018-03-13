@@ -11,6 +11,7 @@
 /cube/all AllCubesR GET
 /draft/all AllDraftsR GET
 /draft/#DraftId/view ViewDraftR GET
+/draft/#DraftId/info DraftInfoR GET
 /draft/#DraftId/pick/#Text MakeDraftPickR GET POST
 /draft/#DraftId/reserved ReservedCardsR GET POST
 /draft/#DraftId/reserve/#Text ReserveDraftPickR POST

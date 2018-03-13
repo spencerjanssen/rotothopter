@@ -20,7 +20,7 @@ CubeEntry
     card CardId
     Primary cube card
     deriving Show
-Card
+Card json
     Primary card
     card Text
     colors ColorSet
@@ -55,7 +55,7 @@ DraftParticipant
     seat Word
     Primary drafter draft
     UniqueDraftSeat draft seat
-Pick
+Pick json
     draft DraftId
     number Int -- starts at 0, ascends for each pick
     Primary draft number
