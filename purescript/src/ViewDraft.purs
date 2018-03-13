@@ -1,6 +1,6 @@
 module App.ViewDraft where
 
-import Prelude (class Eq, bind, eq, id, not, otherwise, pure, show, void, ($), (<>), (==), (<<<))
+import Prelude (class Eq, bind, eq, not, otherwise, pure, show, void, ($), (<>), (==))
 import Pux (EffModel, noEffects)
 import Pux.Html (Html, a, div, h3, li, ol, span, text)
 import Pux.Html.Attributes (className, href)
@@ -91,6 +91,9 @@ reservedUrl (DraftId d) = "/draft/" <> show d <> "/reserved"
 draftInfoUrl :: DraftId -> String
 draftInfoUrl (DraftId d) = "/draft/" <> show d <> "/info"
 
+pickUrl :: DraftId -> String -> String
+pickUrl (DraftId d) card = "/draft/" <> show d <> "/pick/" <> card
+
 init :: forall eff. DraftId -> Aff (ajax :: AJAX | eff) State
 init draftId = do
   res <- get $ draftInfoUrl draftId
@@ -118,25 +121,28 @@ update draftId (Move d i) state = updateCards draftId state (swap state.cards i 
 update draftId (Delete i) state = updateCards draftId state $ fromMaybe state.cards $ deleteAt i state.cards
 
 view :: DraftId -> State -> Html Action
-view (DraftId _) {cards, picks, userId} | not (null cards) =
+view draftId {cards, picks, userId} | not (null cards) =
     div [] $
         [ h3 [] [text "Reserved Cards"]
-        , ol [] $ mapIndex (viewCard picks userId) cards]
+        , ol [] $ mapIndex (viewCard draftId picks userId) cards]
 view _ _ = div [] []
 
-viewCard :: Array Pick -> UserId -> Int -> String -> Html Action
-viewCard picks userId i card =
+viewCard :: DraftId -> Array Pick -> UserId -> Int -> String -> Html Action
+viewCard draftId picks userId i card =
   li []
     [ dirButton Decrease
     , dirButton Increase
     , deleteButton
-    , highlight $ text card]
+    , a
+        [ href $ pickUrl draftId card
+        , className highlight ]
+        [text card]]
  where
     highlight = case find (\(Pick pick) -> pick.card == card) picks of
-      Nothing -> id
+      Nothing -> ""
       Just (Pick {drafter})
-        | drafter == userId -> span [className "bg-success"] <<< pure
-        | otherwise         -> span [className "bg-danger"] <<< pure
+        | drafter == userId -> "bg-success"
+        | otherwise         -> "bg-danger"
     dirButton d = 
         a
             [href "javascript:;", onClick \_ -> Move d i]
