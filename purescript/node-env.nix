@@ -243,6 +243,7 @@ let
         cd "${packageName}"
         runHook preRebuild
         npm --registry http://www.example.com --nodedir=${nodeSources} ${npmFlags} ${stdenv.lib.optionalString production "--production"} rebuild
+        patchShebangs .
 
         if [ "$dontNpmInstall" != "1" ]
         then
