@@ -102,7 +102,7 @@ maybeLast (_:xs) = maybeLast xs
 getDraftWatcher :: DraftId -> Handler (TVar (Maybe Pick))
 getDraftWatcher did = do
     mlast <- maybeLast <$> getPicks did
-    watchers <- appDraftWatchers <$> ask
+    watchers <- appDraftWatchers <$> getYesod
     atomically $ do
         mwatcher <- Map.lookup did <$> readTVar watchers
         case mwatcher of

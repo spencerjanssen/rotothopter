@@ -7,6 +7,9 @@ import Database.Persist.Sql
 newtype ColorSet = CS Word8
     deriving (Eq, Ord, Show, PersistField, PersistFieldSql)
 
+instance Semigroup ColorSet where
+    (<>) = mappend
+
 instance Monoid ColorSet where
     mempty = colorless
     mappend (CS x) (CS y) = CS (x .|. y)
@@ -42,6 +45,9 @@ fromColors (CS x) = [color | (color, CS y) <- colorMap, x .&. y /= 0]
 
 newtype TypeSet = TS Word32
     deriving (Eq, Ord, Show, PersistField, PersistFieldSql)
+
+instance Semigroup TypeSet where
+    (<>) = mappend
 
 instance Monoid TypeSet where
     mempty = TS 0

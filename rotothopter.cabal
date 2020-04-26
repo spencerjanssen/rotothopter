@@ -142,6 +142,8 @@ library
                  , esqueleto
                  , uuid
                  , stm-delay
+                 , exceptions
+                 , http-client
 
 executable         rotothopter
     if flag(library-only)
@@ -200,6 +202,8 @@ executable         rotothopter
                  , esqueleto
                  , uuid
                  , stm-delay
+                 , exceptions
+                 , http-client
 
     extensions: TemplateHaskell
                 QuasiQuotes
@@ -258,5 +262,7 @@ test-suite test
                  , classy-prelude-yesod
                  , lens
                  , esqueleto
+                 , exceptions
+                 , http-client
     if flag(executable-only)
         buildable: False

@@ -11,6 +11,8 @@ import Yesod.Auth.GoogleEmail2 (authGoogleEmail, forwardUrl)
 -- import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
+import Control.Monad.Fail (MonadFail(..))
+import Control.Monad.Catch (throwM)
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -118,7 +120,7 @@ instance Yesod App where
 
     -- What messages should be logged. The following includes all messages when
     -- in development, and warnings and errors in production.
-    shouldLog app _source level =
+    shouldLogIO app _source level = return $
         appShouldLogAll (appSettings app)
             || level == LevelWarn
             || level == LevelError
@@ -167,7 +169,7 @@ instance YesodAuth App where
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer _ = True
 
-    authenticate creds = runDB $ do
+    authenticate creds = liftHandler $ runDB $ do
         x <- getBy $ UniqueUser $ credsIdent creds
         uid <- case x of
             Just (Entity uid _) -> return uid
@@ -183,7 +185,10 @@ instance YesodAuth App where
             (Just gci, Just gcs) -> [customGoogleAuth gci gcs]
             _ -> []
 
-    authHttpManager = getHttpManager
+    authHttpManager = getHttpManager <$> getYesod
+
+instance MonadFail Handler where
+    fail = throwM . userError
 
 customGoogleAuth :: Text -> Text -> AuthPlugin App
 customGoogleAuth gci gcs = (authGoogleEmail gci gcs) { apLogin = loginFragment }

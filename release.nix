@@ -1,7 +1,8 @@
 { }:
-let pkgs = import ./pinned-nixpkgs.nix ;
+let pkgs = import (import ./nix/sources.nix).nixpkgs {} ;
+    oldPkgs = import (import ./nix/sources.nix).old-nixpkgs {} ;
     roto = f: pkgs.haskell.lib.overrideCabal (import ./default.nix {}) f;
-    pspkgs = pkgs.haskell.packages.ghc802.override {
+    pspkgs = oldPkgs.haskell.packages.ghc802.override {
         overrides = self: super: {
             purescript = (self.callPackage ./purescript-0.10.7.nix {}).overrideScope (self: super: {
                 aeson = self.aeson_0_11_3_0;
@@ -12,13 +13,13 @@ let pkgs = import ./pinned-nixpkgs.nix ;
                 });
         };
     };
-    bower_components = pkgs.buildBowerComponents {
+    bower_components = oldPkgs.buildBowerComponents {
         name = "rotothopter-purescript-frontend-bower";
         generated = ./purescript/bower-generated.nix;
         src = ./purescript;
     };
     ps_0_10_7 = pspkgs.purescript;
-    frontend_assets = (import ./purescript/default.nix {inherit pkgs;}).package.overrideAttrs (oldAttrs: {
+    frontend_assets = (import ./purescript/default.nix {pkgs = oldPkgs;}).package.overrideAttrs (oldAttrs: {
             # dontNpmInstall = true;
             buildInputs = oldAttrs.buildInputs ++ [ps_0_10_7 bower_components];
             preRebuild = ''

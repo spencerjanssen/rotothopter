@@ -1,8 +1,9 @@
 module Handler.UpdateMtgJson where
 
-import Import
+import Import hiding (httpLbs)
 import Data.Aeson
 import qualified Data.Map as Map
+import Network.HTTP.Client (httpLbs)
 
 getUpdateMtgJsonR :: Handler Html
 getUpdateMtgJsonR = do
@@ -78,7 +79,8 @@ massage cs' = [Card (ciname ci) (cicolors ci) (citypes ci)
 postUpdateMtgJsonR :: Handler Html
 postUpdateMtgJsonR = do
     req <- parseUrlThrow url
-    js <- responseBody <$> httpLbs req
+    manager <- getHttpManager <$> getYesod
+    js <- responseBody <$> liftIO (httpLbs req manager)
     case massage <$> eitherDecode js of
         Left err -> fail err
         Right cs -> do

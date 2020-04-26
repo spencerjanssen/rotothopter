@@ -32,7 +32,9 @@ sendEmail user subj msg = forkHandler excs $ do
                     , sesTo = [encodeUtf8 $ user ^. userIdent]
                     , sesAccessKey = access
                     , sesSecretKey = secret
-                    , sesRegion = region }
+                    , sesRegion = region
+                    , sesSessionToken = Nothing
+                    }
             SES.renderSendMailSES manager ses mail
         _ -> $(logWarn) "asked to send email but there are no gmail credentials"
  where
