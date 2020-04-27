@@ -77,13 +77,13 @@ in
                     '';
                     proxyPass = "http://backends";
                   };
-                  "/static" = {
+                  "/static/" = {
                     alias = "${rotostatic}/share/x86_64-linux-ghc-8.6.5/rotothopter-0.0.4/static/";
                   };
                   "/" = {
                     proxyPass = "http://backends";
                   };
-                  "/wow" = {
+                  "/wow/" = {
                     alias = "${wow}/";
                   };
                 };
