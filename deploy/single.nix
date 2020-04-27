@@ -14,22 +14,22 @@ let
         sha256 = wowHash;
     };
     wow = (import "${wowrepo}/release.nix" {}).randy_soundboard;
-    pkgs = (import <nixpkgs> {});
-    wal_e = pkgs.python34Packages.buildPythonApplication rec {
+    oldPkgs = import (import ../nix/sources.nix).nixpkgs-system-environment {};
+    wal_e = oldPkgs.python34Packages.buildPythonApplication rec {
         name = "wal-e-${version}";
         version = "1.1.0b1";
         namePrefix = "";
-        src = pkgs.fetchurl {
+        src = oldPkgs.fetchurl {
             url = "https://github.com/wal-e/wal-e/archive/v${version}.tar.gz";
             sha256 = "0hrs1m7qqm1spr2n64ygq1car89afx3nj7zzldihc91wwkkzmd9a";
         };
         doCheck = false;
         propagatedBuildInputs = [
-            pkgs.python34Packages.boto
-            pkgs.python34Packages.gevent
-            pkgs.postgresql
-            pkgs.lzop
-            pkgs.pv
+            oldPkgs.python34Packages.boto
+            oldPkgs.python34Packages.gevent
+            oldPkgs.postgresql
+            oldPkgs.lzop
+            oldPkgs.pv
         ];
     };
 in
@@ -43,6 +43,8 @@ in
             services.postgresql.enable = true;
             services.postgresql.enableTCPIP = false;
             services.postgresql.initialScript = ./sqlsettings.sql;
+            services.postgresql.package = pkgs.postgresql96;
+            services.postgresql.superUser = "postgres";
             services.postgresql.extraConfig = ''
                 wal_level = archive
                 archive_mode = on
@@ -50,6 +52,7 @@ in
                 archive_timeout = 3600
                 checkpoint_timeout = 3600
             '';
+            services.postgresql.dataDir = "/var/db/postgresql-9.6";
 
             # nginx stuff
             services.nginx.enable = true;
@@ -130,6 +133,7 @@ in
                 home = "/var/rotothopter";
                 createHome = true;
             };
+            security.acme.acceptTerms = true;
             security.acme.preliminarySelfsigned = true;
             security.acme.certs."www.rotothopter.com" = {
                 email = "spencerjanssen@gmail.com";
