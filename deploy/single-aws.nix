@@ -30,7 +30,7 @@ in {
                 {
                   "Effect": "Allow",
                   "Action": ["s3:*"],
-                  "Resource": ["arn:aws:s3:::rotothopter-backups/*"]
+                  "Resource": ["arn:aws:s3:::rotothopter-backups*"]
                 }
               ]
         }
