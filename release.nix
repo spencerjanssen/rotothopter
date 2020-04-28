@@ -38,6 +38,7 @@ in
         enableSharedExecutables = false;
         configureFlags = [ "-f executable-only" ];
         isLibrary = false;
+        enableSeparateDataOutput = false;
         doCheck = false;
         patchPhase = ''
             mkdir -p static/gen

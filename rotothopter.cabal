@@ -98,6 +98,7 @@ library
                 ViewPatterns
                 TupleSections
                 RecordWildCards
+                DeriveGeneric
 
     build-depends: base
                  , yesod
@@ -144,6 +145,8 @@ library
                  , stm-delay
                  , exceptions
                  , http-client
+                 , yesod-auth-oauth2
+                 , foreign-store
 
 executable         rotothopter
     if flag(library-only)
@@ -158,6 +161,40 @@ executable         rotothopter
         build-depends: rotothopter, base
 
     ghc-options:       -threaded -O2 -rtsopts -with-rtsopts=-N
+    other-modules: Application
+                   Foundation
+                   Import
+                   Import.NoFoundation
+                   Import.Mail
+                   Model
+                   Model.Card
+                   Model.InviteHash
+                   Common
+                   Settings
+                   Settings.StaticFiles
+                   Handler.Common
+                   Handler.Home
+                   Handler.CubeList
+                   Handler.UpdateMtgJson
+                   Handler.ViewDraft
+                   Handler.MakeDraftPick
+                   Handler.AdminAddUser
+                   Handler.PrettyCard
+                   Handler.WatchDraft
+                   Handler.AdminConsole
+                   Handler.AllCubes
+                   Handler.AllDrafts
+                   Handler.UserProfile
+                   Handler.NewDraftInvite
+                   Handler.ViewDraftInvite
+                   Handler.JoinDraftInvite
+                   Handler.LaunchDraftInvite
+                   Handler.PicksByParticipant
+                   Handler.NewRanking
+                   Handler.Ranking
+                   Handler.RankingChoice
+                   Handler.ViewRanking
+                   Handler.AdminFeatureCube
 
     build-depends: base
                  , yesod
@@ -204,6 +241,8 @@ executable         rotothopter
                  , stm-delay
                  , exceptions
                  , http-client
+                 , yesod-auth-oauth2
+                 , foreign-store
 
     extensions: TemplateHaskell
                 QuasiQuotes
@@ -222,6 +261,7 @@ executable         rotothopter
                 ViewPatterns
                 TupleSections
                 RecordWildCards
+                DeriveGeneric
 
 test-suite test
     type:              exitcode-stdio-1.0

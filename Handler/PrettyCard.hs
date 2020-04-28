@@ -38,7 +38,7 @@ colorBadge card = StaticR $ case Map.lookup (card ^. cardColors) colorBadgeMap o
                                                     else img_mana_15_0_png
             | otherwise -> img_mana_15_snow_png
 
-prettyCard :: Card -> Maybe Text -> WidgetT App IO ()
+prettyCard :: Card -> Maybe Text -> WidgetFor App ()
 prettyCard card mlinkClass = $(widgetFile "inline-card")
  where linkClass = fromMaybe "" mlinkClass
 
@@ -82,7 +82,7 @@ categorize card
 categorizeCardList :: [Card] -> [(CardCategory, [Card])]
 categorizeCardList cs = Map.toList $ Map.fromListWith (flip (++)) [(categorize c, [c]) | c <- cs]
 
-cardListView :: [Card] -> Text -> Maybe (Text -> WidgetT App IO ()) -> WidgetT App IO ()
+cardListView :: [Card] -> Text -> Maybe (Text -> WidgetFor App ()) -> WidgetFor App ()
 cardListView cs clss mtrans = do
     let catcards = map (sortBy (comparing _cardCard)) <$> categorizeCardList cs
     $(widgetFile "card-list")

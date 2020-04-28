@@ -65,7 +65,7 @@ postReserveDraftPickR draftId cardToPick = do
 postReservedCardsR :: DraftId -> Handler ()
 postReservedCardsR draftId = do
     userId <- requireAuthId
-    cards <- requireJsonBody
+    cards <- requireCheckJsonBody
     runDB $ do
         cubeId <- _draftCube <$> get404 draftId
         deleteWhere [PickReservationDraft ==. draftId, PickReservationDrafter ==. userId]

@@ -7,12 +7,14 @@ import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Text.Hamlet          (hamletFile)
 -- import Text.Jasmine         (minifym)
 import Yesod.Auth.Dummy     (authDummy)
-import Yesod.Auth.GoogleEmail2 (authGoogleEmail, forwardUrl)
+import Yesod.Auth.OAuth2 (oauth2Url, getUserResponseJSON)
+import Yesod.Auth.OAuth2.Google (oauth2GoogleScoped)
 -- import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 import Control.Monad.Fail (MonadFail(..))
 import Control.Monad.Catch (throwM)
+import Data.Aeson (withObject)
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -44,7 +46,7 @@ instance HasHttpManager App where
 mkYesodData "App" $(parseRoutesFile "config/routes")
 
 -- | A convenient synonym for creating forms.
-type Form x = Html -> MForm (HandlerT App IO) (FormResult x, Widget)
+type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
@@ -159,6 +161,11 @@ instance YesodPersist App where
 instance YesodPersistRunner App where
     getDBRunner = defaultGetDBRunner appConnPool
 
+data GoogleUser = GoogleUser {googleUserEmail :: Text} deriving Generic
+
+instance FromJSON GoogleUser where
+    parseJSON = withObject "GoogleUserEmail" $ \o -> GoogleUser <$> o .: "email"
+
 instance YesodAuth App where
     type AuthId App = UserId
 
@@ -169,12 +176,19 @@ instance YesodAuth App where
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer _ = True
 
-    authenticate creds = liftHandler $ runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
-        uid <- case x of
-            Just (Entity uid _) -> return uid
-            Nothing -> insert $ User (credsIdent creds) False Nothing
-        return $ Authenticated uid
+    authenticate creds = do
+        mident <- case credsPlugin creds of
+            "google" -> return $ googleUserEmail <$> getUserResponseJSON creds
+            _ -> return $ Right $ credsIdent creds
+        case mident of
+            Left msg -> do
+                return $ ServerError $ pack $ show (msg, show creds)
+            Right ident -> liftHandler $ runDB $ do
+                x <- getBy $ UniqueUser ident
+                uid <- case x of
+                    Just (Entity uid _) -> return uid
+                    Nothing -> insert $ User ident False Nothing
+                return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
     authPlugins (App {appSettings}) = gauth ++ dauth
@@ -191,7 +205,7 @@ instance MonadFail Handler where
     fail = throwM . userError
 
 customGoogleAuth :: Text -> Text -> AuthPlugin App
-customGoogleAuth gci gcs = (authGoogleEmail gci gcs) { apLogin = loginFragment }
+customGoogleAuth gci gcs = (oauth2GoogleScoped ["email", "profile"] gci gcs) { apLogin = loginFragment }
  where
     loginFragment tm = $(widgetFile "google-login")
 
