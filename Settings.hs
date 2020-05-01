@@ -18,6 +18,7 @@ import Network.Wai.Handler.Warp    (HostPreference)
 import Yesod.Default.Config2       (applyEnvValue, configSettingsYml)
 import Yesod.Default.Util          (WidgetFileSettings, widgetFileNoReload,
                                     widgetFileReload)
+import Control.Monad.Fail          (MonadFail(..))
 
 data SqlBackendConf = Sqlite SqliteConf
                     | Postgres PostgresConf

@@ -27,14 +27,6 @@ Flag dev
     Description:   Turn on development settings, like auto-reload templates.
     Default:       False
 
-Flag library-only
-    Description:   Build for use with "yesod devel"
-    Default:       False
-
-Flag executable-only
-    Description: only build the executable
-    Default: False
-
 library
     hs-source-dirs: ., app
     exposed-modules: Application
@@ -72,14 +64,11 @@ library
                      Handler.ViewRanking
                      Handler.AdminFeatureCube
 
-    if flag(dev) || flag(library-only)
+    if flag(dev)
         cpp-options:   -DDEVELOPMENT
         ghc-options:   -Wall -fwarn-tabs -O0 -Werror
     else
         ghc-options:   -Wall -fwarn-tabs -O2
-
-    if flag(executable-only)
-        Buildable: False
 
     extensions: TemplateHaskell
                 QuasiQuotes
@@ -149,119 +138,12 @@ library
                  , foreign-store
 
 executable         rotothopter
-    if flag(library-only)
-        Buildable: False
-
     main-is:           main.hs
-    if flag(executable-only)
-        hs-source-dirs:    app, .
-    else
-        hs-source-dirs:    app
-    if ! flag(executable-only)
-        build-depends: rotothopter, base
+    hs-source-dirs:    app
 
     ghc-options:       -threaded -O2 -rtsopts -with-rtsopts=-N
-    other-modules: Application
-                   Foundation
-                   Import
-                   Import.NoFoundation
-                   Import.Mail
-                   Model
-                   Model.Card
-                   Model.InviteHash
-                   Common
-                   Settings
-                   Settings.StaticFiles
-                   Handler.Common
-                   Handler.Home
-                   Handler.CubeList
-                   Handler.UpdateMtgJson
-                   Handler.ViewDraft
-                   Handler.MakeDraftPick
-                   Handler.AdminAddUser
-                   Handler.PrettyCard
-                   Handler.WatchDraft
-                   Handler.AdminConsole
-                   Handler.AllCubes
-                   Handler.AllDrafts
-                   Handler.UserProfile
-                   Handler.NewDraftInvite
-                   Handler.ViewDraftInvite
-                   Handler.JoinDraftInvite
-                   Handler.LaunchDraftInvite
-                   Handler.PicksByParticipant
-                   Handler.NewRanking
-                   Handler.Ranking
-                   Handler.RankingChoice
-                   Handler.ViewRanking
-                   Handler.AdminFeatureCube
-
     build-depends: base
-                 , yesod
-                 , yesod-core
-                 , yesod-auth
-                 , yesod-static
-                 , yesod-form
-                 , classy-prelude
-                 , classy-prelude-conduit
-                 , classy-prelude-yesod
-                 , bytestring
-                 , text
-                 , persistent
-                 , persistent-sqlite
-                 , persistent-postgresql
-                 , persistent-template
-                 , template-haskell
-                 , shakespeare
-                 , hjsmin
-                 , monad-control
-                 , wai-extra
-                 , yaml
-                 , http-conduit
-                 , directory
-                 , warp
-                 , data-default
-                 , aeson
-                 , conduit
-                 , monad-logger
-                 , fast-logger
-                 , wai-logger
-                 , file-embed
-                 , safe
-                 , unordered-containers
-                 , containers
-                 , vector
-                 , time
-                 , mime-mail-ses
-                 , mime-mail
-                 , yesod-eventsource
-                 , lens
-                 , esqueleto
-                 , uuid
-                 , stm-delay
-                 , exceptions
-                 , http-client
-                 , yesod-auth-oauth2
-                 , foreign-store
-
-    extensions: TemplateHaskell
-                QuasiQuotes
-                OverloadedStrings
-                NoImplicitPrelude
-                CPP
-                MultiParamTypeClasses
-                TypeFamilies
-                GADTs
-                GeneralizedNewtypeDeriving
-                FlexibleContexts
-                FlexibleInstances
-                EmptyDataDecls
-                NoMonomorphismRestriction
-                DeriveDataTypeable
-                ViewPatterns
-                TupleSections
-                RecordWildCards
-                DeriveGeneric
+                 , rotothopter
 
 test-suite test
     type:              exitcode-stdio-1.0
@@ -286,6 +168,7 @@ test-suite test
                 ViewPatterns
                 TupleSections
 
+    build-tool-depends: hspec-discover:hspec-discover
     build-depends: base
                  , rotothopter
                  , yesod-test >= 1.4.3
@@ -304,5 +187,3 @@ test-suite test
                  , esqueleto
                  , exceptions
                  , http-client
-    if flag(executable-only)
-        buildable: False
