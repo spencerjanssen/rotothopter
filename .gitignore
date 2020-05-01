@@ -20,6 +20,7 @@ cabal.sandbox.config
 *.keter
 config/secret.yml
 result
+result-*
 deploy/prod-secrets.nix
 purescript/bower_components
 purescript/node_modules

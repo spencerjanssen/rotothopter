@@ -26,3 +26,4 @@ import Yesod.Default.Config2 as Import
 import Control.Lens as Import hiding ((<|))
 import Model.Card as Import
 import Model.InviteHash as Import
+import Control.Monad.Fail as Import

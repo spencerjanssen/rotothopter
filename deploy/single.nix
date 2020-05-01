@@ -6,7 +6,7 @@ let
       sha256 = rotothopterHash;
       branchName = "master";
     };
-    rotostatic = (import "${rotorepo}/release.nix" {  }).rotothopter_static;
+    rotothopter = (import "${rotorepo}/release.nix" {  }).rotothopter;
     secrets = (import ./prod-secrets.nix);
     wowrepo = (import <nixpkgs> {}).fetchgit {
         url = /home/sjanssen/randy_soundboard;
@@ -81,7 +81,7 @@ in
                     proxyPass = "http://backends";
                   };
                   "/static/" = {
-                    alias = "${rotostatic}/share/x86_64-linux-ghc-8.6.5/rotothopter-0.0.4/static/";
+                    alias = "${rotothopter}/share/x86_64-linux-ghc-8.8.2/rotothopter-0.0.4/static/";
                   };
                   "/" = {
                     proxyPass = "http://backends";
@@ -93,18 +93,18 @@ in
             };
 
             networking.firewall.allowedTCPPorts = [ 80 443 ];
-            environment.systemPackages = [rotostatic wal_e];
+            environment.systemPackages = [rotothopter wal_e];
 
             # app stuff
             systemd.services.rotothopter = {
-                path = [ rotostatic ];
+                path = [ rotothopter ];
                 after = [ "network.target" "local-fs.target" ];
                 requires = [ "postgresql.service" ];
                 wantedBy = [ "multi-user.target" "nginx.service" ];
                 serviceConfig = {
                     Type = "simple";
                     User = "rotothopter";
-                    ExecStart = ''${rotostatic}/bin/rotothopter'';
+                    ExecStart = ''${rotothopter}/bin/rotothopter'';
                     WorkingDirectory = "/var/rotothopter";
                 };
                 preStart =
@@ -112,7 +112,7 @@ in
                 mkdir -p /var/rotothopter/config
                 '';
                 environment = {
-                    STATIC_DIR = ''${rotostatic}/share/x86_64-linux-ghc-8.6.5/rotothopter-0.0.4/static/'';
+                    STATIC_DIR = ''${rotothopter}/share/x86_64-linux-ghc-8.8.2/rotothopter-0.0.4/static/'';
                     PORT = "3000";
                     APPROOT = "https://www.rotothopter.com";
                     PGUSER = "roto";
