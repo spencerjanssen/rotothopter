@@ -36,10 +36,24 @@ let pkgs = import sources.nixpkgs (import sources."haskell.nix" {}).nixpkgsArgs;
       "nix/"
       ".github/"
     ];
+    addFrontendAssets = ''
+      mkdir -p static/gen
+      rm static/gen/manifest.json
+      rm static/gen/main-dummy.js
+      cp ${frontend_assets}/*.js static/gen/
+      cp ${frontend_assets}/manifest.json static/gen/
+    '';
     hsPkgs = pkgs.haskell-nix.cabalProject {
       src = pkgs.nix-gitignore.gitignoreSource nixIgnores ../.;
       ghc = pkgs.buildPackages.pkgs.haskell-nix.compiler.${haskellCompiler};
       name = "rotothopter";
+      modules = [
+        {
+          packages.rotothopter.components.all.preBuild = pkgs.lib.mkForce addFrontendAssets;
+          packages.rotothopter.components.library.preBuild = pkgs.lib.mkForce addFrontendAssets;
+          packages.rotothopter.components.exes.rotothopter.preBuild = pkgs.lib.mkForce addFrontendAssets;
+        }
+      ];
     };
     nivPkgs = (import sources.niv {});
     hies = (import sources.all-hies {}).selection {
