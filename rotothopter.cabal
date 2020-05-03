@@ -67,6 +67,7 @@ library
     if flag(dev)
         cpp-options:   -DDEVELOPMENT
         ghc-options:   -Wall -fwarn-tabs -O0 -Werror
+        exposed-modules: DevelMain
     else
         ghc-options:   -Wall -fwarn-tabs -O2
 

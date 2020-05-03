@@ -12,7 +12,6 @@ import Yesod.Auth.OAuth2.Google (oauth2GoogleScoped)
 -- import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
-import Control.Monad.Fail (MonadFail(..))
 import Control.Monad.Catch (throwM)
 import Data.Aeson (withObject)
 
@@ -94,7 +93,7 @@ instance Yesod App where
     isAuthorized AdminConsoleR _ = isAdmin
     isAuthorized UpdateMtgJsonR _ = isAdmin
     isAuthorized AdminAddUserR _ = isAdmin
-    isAuthorized (AdminFeatureCubeR {}) _ = isAdmin
+    isAuthorized AdminFeatureCubeR {} _ = isAdmin
     -- Default to Authorized for now.
     isAuthorized _ _ = return Authorized
 

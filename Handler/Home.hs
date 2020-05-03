@@ -38,9 +38,9 @@ userDrafts userId draftStatus = map munge <$> query
     query = select $ from $ \(draft `InnerJoin` draftParticipant `InnerJoin` cube) -> do
         on $ draft ^. DraftCube ==. cube ^. CubeId
         on $ draft ^. DraftId ==. draftParticipant ^. DraftParticipantDraft
-        let pickCount = sub_select $ from $ \pick -> do
+        let pickCount = subSelectCount $ from $ \pick -> do
                 where_ $ (draft ^. DraftId) ==. pick ^. PickDraft
-                return countRows
+                return ()
             maxPicks = draft ^. DraftRounds *. draft ^. DraftParticipants
         where_ $ draftParticipant ^. DraftParticipantDrafter ==. val userId
             &&. pickCount `countCompare` maxPicks
