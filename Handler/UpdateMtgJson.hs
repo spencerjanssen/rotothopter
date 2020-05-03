@@ -31,7 +31,10 @@ instance FromJSON CardInfo where
                             <*> v .:? "colors" .!= mempty
                             <*> v .:? "types" .!= mempty
                             <*> v .: "layout"
-                            <*> v .:? "names" .!= Nothing
+                            <*> ((nullIsNothing =<<) <$> v .:? "names" .!= Nothing)
+     where
+        nullIsNothing [] = Nothing
+        nullIsNothing xs = Just xs
     parseJSON _ = mzero
 
 instance FromJSON Layout where
@@ -81,16 +84,22 @@ postUpdateMtgJsonR = do
     req <- parseUrlThrow url
     manager <- getHttpManager <$> getYesod
     js <- responseBody <$> liftIO (httpLbs req manager)
-    case massage <$> eitherDecode js of
+    case (force . massage) <$> eitherDecode js of
         Left err -> fail err
         Right cs -> do
-            runDB $
-                forM_ cs $ \c -> void $ upsert c (cardToUpdates c)
+            forM_ (batches 1000 cs) $ \cs' ->
+                runDB $ forM_ cs' $ \c -> 
+                    void $ upsert c (cardToUpdates c)
             defaultLayout [whamlet|
                 <p>Successfully loaded #{length cs} cards
             |]
  where
     url = "http://mtgjson.com/json/AllCards.json"
+
+batches :: Int -> [a] -> [[a]]
+batches _ [] = []
+batches n xs = case splitAt n xs of
+    (ls, rs) -> ls : batches n rs
 
 cardToUpdates :: Card -> [Update Card]
 cardToUpdates c =

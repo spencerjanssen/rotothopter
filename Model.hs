@@ -2,6 +2,7 @@
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE DeriveAnyClass #-}
 module Model where
 
 import ClassyPrelude.Yesod
@@ -15,3 +16,6 @@ import Model.InviteHash
 -- http://www.yesodweb.com/book/persistent/
 share [mkPersist sqlSettings {mpsGenerateLenses = True}, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models")
+
+deriving instance Generic Card
+deriving instance NFData Card

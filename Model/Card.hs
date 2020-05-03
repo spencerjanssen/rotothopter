@@ -5,7 +5,7 @@ import Data.Bits
 import Database.Persist.Sql
 
 newtype ColorSet = CS Word8
-    deriving (Eq, Ord, Show, PersistField, PersistFieldSql)
+    deriving (Eq, Ord, Show, PersistField, PersistFieldSql, Generic, NFData)
 
 instance Semigroup ColorSet where
     (<>) = mappend
@@ -44,7 +44,7 @@ fromColors :: ColorSet -> [Text]
 fromColors (CS x) = [color | (color, CS y) <- colorMap, x .&. y /= 0]
 
 newtype TypeSet = TS Word32
-    deriving (Eq, Ord, Show, PersistField, PersistFieldSql)
+    deriving (Eq, Ord, Show, PersistField, PersistFieldSql, Generic, NFData)
 
 instance Semigroup TypeSet where
     (<>) = mappend
