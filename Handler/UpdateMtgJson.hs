@@ -2,7 +2,7 @@ module Handler.UpdateMtgJson where
 
 import Import hiding (httpLbs)
 import Data.Aeson
-import qualified Data.Map as Map
+import qualified Data.HashMap.Strict as Map
 import Network.HTTP.Client (httpLbs)
 
 getUpdateMtgJsonR :: Handler Html
@@ -68,7 +68,7 @@ combineCardInfo xs@(CardInfo {names = Just (n:_)}:_) = prime
  where (prime:_) = [x | x <- xs, ciname x == n]
 combineCardInfo xs = error $ "called with bad argument: " ++ show xs
 
-massage :: Map Text CardInfo -> [Card]
+massage :: HashMap Text CardInfo -> [Card]
 massage cs' = [Card (ciname ci) (cicolors ci) (citypes ci)
                 | ci <- singlenames ++ massagedMultinames]
  where
@@ -77,24 +77,27 @@ massage cs' = [Card (ciname ci) (cicolors ci) (citypes ci)
     multinames = Map.elems $ Map.fromListWith (++)
                     [(ns, [c]) | c@(CardInfo {names = Just ns}) <- cs ]
     massagedMultinames = map combineCardInfo multinames
--- map (\(n, i) -> Card n (cicolors i) (citypes i)) . Map.toList
+
+fetchAllCards :: Handler (Either String (HashMap Text CardInfo))
+fetchAllCards = do
+    req <- parseUrlThrow url
+    manager <- getHttpManager <$> getYesod
+    eitherDecode . responseBody <$> liftIO (httpLbs req manager)
+ where
+    url = "http://mtgjson.com/json/AllCards.json"
 
 postUpdateMtgJsonR :: Handler Html
 postUpdateMtgJsonR = do
-    req <- parseUrlThrow url
-    manager <- getHttpManager <$> getYesod
-    js <- responseBody <$> liftIO (httpLbs req manager)
-    case (force . massage) <$> eitherDecode js of
+    allCards <- fetchAllCards
+    case massage <$> allCards of
         Left err -> fail err
         Right cs -> do
-            forM_ (batches 1000 cs) $ \cs' ->
+            forM_ (batches 100 cs) $ \cs' ->
                 runDB $ forM_ cs' $ \c -> 
                     void $ upsert c (cardToUpdates c)
             defaultLayout [whamlet|
                 <p>Successfully loaded #{length cs} cards
             |]
- where
-    url = "http://mtgjson.com/json/AllCards.json"
 
 batches :: Int -> [a] -> [[a]]
 batches _ [] = []
