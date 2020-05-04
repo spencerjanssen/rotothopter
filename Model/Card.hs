@@ -30,11 +30,11 @@ toColor x = fromMaybe colorless $ lookup x colorMap
 colorMap :: [(Text, ColorSet)]
 colorMap =
         [ ("Colorless", colorless)
-        , ("White", white)
-        , ("Blue", blue)
-        , ("Black", black)
-        , ("Red", red)
-        , ("Green", green)
+        , ("W", white)
+        , ("U", blue)
+        , ("B", black)
+        , ("R", red)
+        , ("G", green)
         ]
 
 toColors :: [Text] -> ColorSet
