@@ -4,7 +4,6 @@ import TestImport
 
 spec :: Spec
 spec = withApp $ do
-
     describe "postLaunchDraftInviteR" $ do
         it "starts the draft" $ do
             postCube testLargeCubeName testLargeCube

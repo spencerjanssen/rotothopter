@@ -1,0 +1,6 @@
+{
+    "haskell.formattingProvider": "fourmolu",
+    "[haskell]": {
+        "editor.formatOnSave": true
+    }
+}

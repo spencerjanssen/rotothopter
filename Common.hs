@@ -1,17 +1,17 @@
 module Common where
 
-import Import
-import qualified Data.Set as Set
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import qualified Database.Esqueleto as E
+import Import
 import Yesod.Form.Bootstrap3 (bfs)
 
 bootstrapLabel :: Text -> FieldSettings site
 bootstrapLabel x = bfs (x :: Text)
 
 textAreaHeight :: Int -> FieldSettings site -> FieldSettings site
-textAreaHeight n s = s {fsAttrs = ("style", css) : fsAttrs s}
- where
+textAreaHeight n s = s{fsAttrs = ("style", css) : fsAttrs s}
+  where
     css = "height: " ++ pack (show n) ++ "em"
 
 getCubeCards :: CubeId -> Handler [Text]
@@ -20,24 +20,27 @@ getCubeCards cuid = do
     return $ map (unCardKey . view cubeEntryCard . entityVal) cs
 
 getPicks :: DraftId -> Handler [Pick]
-getPicks draftId = runDB $
-    map entityVal <$> selectList [PickDraft ==. draftId] [Asc PickNumber]
+getPicks draftId =
+    runDB $
+        map entityVal <$> selectList [PickDraft ==. draftId] [Asc PickNumber]
 
 getDraft :: DraftId -> Handler Draft
 getDraft did = do
     Just draft <- runDB $ get did
     return draft
 
-type PicksInfoConstraint
-    =  E.SqlExpr (Entity Pick)
-    -> E.SqlExpr (Entity Card)
-    -> E.SqlExpr (E.Value Bool)
+type PicksInfoConstraint =
+    E.SqlExpr (Entity Pick) ->
+    E.SqlExpr (Entity Card) ->
+    E.SqlExpr (E.Value Bool)
 
 getPicksAndInfo :: DraftId -> Maybe PicksInfoConstraint -> Handler [(Pick, Card)]
 getPicksAndInfo did mbconst = map munge <$> runDB query
- where
+  where
     munge (x, y) = (entityVal x, entityVal y)
-    query = E.select $ E.distinct $ E.from $ \(pick `E.InnerJoin` cubeEntry `E.InnerJoin` card) -> do
+    query = E.select $
+        E.distinct $
+            E.from $ \(pick `E.InnerJoin` cubeEntry `E.InnerJoin` card) -> do
                 E.on $ cubeEntry E.^. CubeEntryCard E.==. card E.^. CardId
                 E.on $ cubeEntry E.^. CubeEntryCard E.==. pick E.^. PickCard
                 E.where_ $ pick E.^. PickDraft E.==. E.val did
@@ -62,31 +65,34 @@ getNextDrafter (Entity did d) =
 
 pickNumToRC :: Draft -> Int -> (Int, Int)
 pickNumToRC draft i = (r, c)
- where
+  where
     n = fromIntegral $ draft ^. draftParticipants
     r = i `div` n
-    dir | isLeftToRightRow draft r = id
-        | otherwise                = (pred n -)
+    dir
+        | isLeftToRightRow draft r = id
+        | otherwise = (pred n -)
     c = dir (i `mod` n)
 
 rcToPickNum :: Draft -> (Int, Int) -> Int
 rcToPickNum draft (r, c) = r * n + dir c
- where
+  where
     n = fromIntegral $ draft ^. draftParticipants
-    dir | isLeftToRightRow draft r = id
-        | otherwise                = flip subtract (pred n)
+    dir
+        | isLeftToRightRow draft r = id
+        | otherwise = flip subtract (pred n)
 
 isLeftToRightRow :: Draft -> Int -> Bool
 isLeftToRightRow = const even
 
 getParticipants :: DraftId -> Handler [Entity User]
 getParticipants did = runDB query
- where
-    query = E.select $ E.from $ \(dp `E.InnerJoin` user) -> do
-                E.on $ dp E.^. DraftParticipantDrafter E.==. user E.^. UserId
-                E.where_ $ dp E.^. DraftParticipantDraft E.==. E.val did
-                E.orderBy [E.asc (dp E.^. DraftParticipantSeat)]
-                return user
+  where
+    query = E.select $
+        E.from $ \(dp `E.InnerJoin` user) -> do
+            E.on $ dp E.^. DraftParticipantDrafter E.==. user E.^. UserId
+            E.where_ $ dp E.^. DraftParticipantDraft E.==. E.val did
+            E.orderBy [E.asc (dp E.^. DraftParticipantSeat)]
+            return user
 
 getPickAllowedCards :: DraftId -> Draft -> Handler [Text]
 getPickAllowedCards did draft = do
@@ -97,7 +103,7 @@ getPickAllowedCards did draft = do
 maybeLast :: [a] -> Maybe a
 maybeLast [] = Nothing
 maybeLast [x] = Just x
-maybeLast (_:xs) = maybeLast xs
+maybeLast (_ : xs) = maybeLast xs
 
 getDraftWatcher :: DraftId -> Handler (TVar (Maybe Pick))
 getDraftWatcher did = do

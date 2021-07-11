@@ -22,20 +22,21 @@ instance ToJSON ColorSet where
 
 colorless, white, blue, black, red, green :: ColorSet
 (colorless, white, blue, black, red, green) = (CS 0, p 0, p 1, p 2, p 3, p 4)
- where p = CS . setBit 0
+  where
+    p = CS . setBit 0
 
 toColor :: Text -> ColorSet
 toColor x = fromMaybe colorless $ lookup x colorMap
 
 colorMap :: [(Text, ColorSet)]
 colorMap =
-        [ ("Colorless", colorless)
-        , ("W", white)
-        , ("U", blue)
-        , ("B", black)
-        , ("R", red)
-        , ("G", green)
-        ]
+    [ ("Colorless", colorless)
+    , ("W", white)
+    , ("U", blue)
+    , ("B", black)
+    , ("R", red)
+    , ("G", green)
+    ]
 
 toColors :: [Text] -> ColorSet
 toColors = mconcat . map toColor
@@ -59,18 +60,43 @@ instance FromJSON TypeSet where
 instance ToJSON TypeSet where
     toJSON = toJSON . fromTypes
 
-artifact, conspiracy, creature, enchantment, instant, land, phenomenon, plane,
- planeswalker, scheme, sorcery, tribal, vanguard :: TypeSet
-(artifact, conspiracy, creature, enchantment, instant, land, phenomenon, plane,
- planeswalker, scheme, sorcery, tribal, vanguard)
- = (p 0, p 1, p 2, p 3, p 4, p 5, p 6, p 7, p 8, p 9, p 10, p 11, p 12)
- where p = TS . setBit 0
+artifact
+    , conspiracy
+    , creature
+    , enchantment
+    , instant
+    , land
+    , phenomenon
+    , plane
+    , planeswalker
+    , scheme
+    , sorcery
+    , tribal
+    , vanguard ::
+        TypeSet
+( artifact
+    , conspiracy
+    , creature
+    , enchantment
+    , instant
+    , land
+    , phenomenon
+    , plane
+    , planeswalker
+    , scheme
+    , sorcery
+    , tribal
+    , vanguard
+    ) =
+        (p 0, p 1, p 2, p 3, p 4, p 5, p 6, p 7, p 8, p 9, p 10, p 11, p 12)
+      where
+        p = TS . setBit 0
 
 toType :: Text -> TypeSet
 toType x = fromMaybe mempty $ lookup x typeMap
 
 typeMap :: [(Text, TypeSet)]
-typeMap = 
+typeMap =
     [ ("Artifact", artifact)
     , ("Conspiracy", conspiracy)
     , ("Creature", creature)

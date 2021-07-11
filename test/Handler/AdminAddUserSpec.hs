@@ -22,5 +22,5 @@ spec = withApp $ do
             Just (Entity _ usr) <- runDB $ getBy $ UniqueUser x
             assertEqual "userIdent" x (usr ^. userIdent)
             assertEqual "userDisplayName" (Just xname) (usr ^. userDisplayName)
- where
+  where
     (x, xname) = ("x@test.com", "Xavier")

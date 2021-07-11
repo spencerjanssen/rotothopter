@@ -1,8 +1,8 @@
 module Handler.NewDraftInvite where
 
+import Common (bootstrapLabel)
 import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
-import Common (bootstrapLabel)
 
 getNewDraftInviteR :: CubeId -> Handler Html
 getNewDraftInviteR cubeId = do
@@ -23,7 +23,9 @@ postNewDraftInviteR cubeId = do
     redirect (ViewDraftInviteR h)
 
 inviteForm :: UserId -> CubeId -> Form (InviteHash -> UTCTime -> DraftInvite)
-inviteForm uid cid = renderBootstrap3 BootstrapBasicForm $ mk
-    <$> areq intField (bootstrapLabel "Rounds") (Just 45)
- where
+inviteForm uid cid =
+    renderBootstrap3 BootstrapBasicForm $
+        mk
+            <$> areq intField (bootstrapLabel "Rounds") (Just 45)
+  where
     mk rds = DraftInvite uid cid rds

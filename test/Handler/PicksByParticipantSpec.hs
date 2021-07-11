@@ -4,7 +4,6 @@ import TestImport
 
 spec :: Spec
 spec = withApp $ do
-
     describe "getPicksByParticipantR" $ do
         it "loads the page" $ do
             postCube testLargeCubeName testLargeCube

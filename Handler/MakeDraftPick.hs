@@ -1,26 +1,26 @@
 module Handler.MakeDraftPick where
 
+import Common
+import Handler.PrettyCard
 import Import
 import Import.Mail
-import Common
 import Text.Shakespeare.Text
 import qualified Prelude (last)
-import Handler.PrettyCard
 
 getMakeDraftPickR :: DraftId -> Text -> Handler Html
 getMakeDraftPickR draftId cardToPick = do
     uid <- requireAuthId
     draft <- getDraft draftId
     drafters <- map entityKey <$> getParticipants draftId
-    when (uid `onotElem` drafters ) $ fail "you are not in this draft"
+    when (uid `onotElem` drafters) $ fail "you are not in this draft"
     mcardinfo <- maybeCardInfo cardToPick
     mnext <- getNextDrafter (Entity draftId draft)
     case mnext of
         Nothing -> fail "this draft has completed, you can't make a pick"
         Just nextDrafter ->
-                defaultLayout $ do
-                    setTitle "Make a draft pick"
-                    $(widgetFile "post-makedraftpick")
+            defaultLayout $ do
+                setTitle "Make a draft pick"
+                $(widgetFile "post-makedraftpick")
 
 postMakeDraftPickR :: DraftId -> Text -> Handler Html
 postMakeDraftPickR draftId cardToPick = do
@@ -32,8 +32,9 @@ postMakeDraftPickR draftId cardToPick = do
     mnext <- getNextDrafter (Entity draftId draft)
     case mnext of
         Nothing -> fail "this draft has completed, you can't make a pick"
-        Just uid' | uid /= uid' -> fail "it isn't your turn to pick yet"
-                  | otherwise -> actualPostMakeDraftPickR draftId uid picks draft cardToPick
+        Just uid'
+            | uid /= uid' -> fail "it isn't your turn to pick yet"
+            | otherwise -> actualPostMakeDraftPickR draftId uid picks draft cardToPick
 
 actualPostMakeDraftPickR :: DraftId -> Key User -> [Pick] -> Draft -> Text -> Handler b
 actualPostMakeDraftPickR draftId uid picks draft cardToPick = do
@@ -75,11 +76,12 @@ postReservedCardsR draftId = do
 postDeleteReserveDraftPickR :: DraftId -> Text -> Handler ()
 postDeleteReserveDraftPickR draftId card = do
     userId <- requireAuthId
-    runDB $ deleteWhere
-        [ PickReservationDraft ==. draftId
-        , PickReservationDrafter ==. userId
-        , PickReservationCard ==. CardKey card
-        ]
+    runDB $
+        deleteWhere
+            [ PickReservationDraft ==. draftId
+            , PickReservationDrafter ==. userId
+            , PickReservationCard ==. CardKey card
+            ]
     redirect (ViewDraftR draftId)
 
 postForceNextReservedPickR :: DraftId -> Handler ()
@@ -92,12 +94,15 @@ postForceNextReservedPickR draftId = do
     case mnext of
         Nothing -> return ()
         Just nextUid -> do
-            reserveds <- runDB $ selectList
-                [ PickReservationDrafter ==. nextUid
-                , PickReservationDraft ==. draftId ]
-                [ Asc PickReservationNumber]
+            reserveds <-
+                runDB $
+                    selectList
+                        [ PickReservationDrafter ==. nextUid
+                        , PickReservationDraft ==. draftId
+                        ]
+                        [Asc PickReservationNumber]
             case filter (`oelem` allowedCards) $ map (unCardKey . _pickReservationCard . entityVal) reserveds of
-                (res:_) -> actualPostMakeDraftPickR draftId nextUid picks draft res
+                (res : _) -> actualPostMakeDraftPickR draftId nextUid picks draft res
                 _ -> return ()
     redirect (ViewDraftR draftId)
 
@@ -116,7 +121,8 @@ checkSendEmail draftId draft olduid = do
                 (rnd, _) = pickNumToRC draft (length picks + 1)
             url <- routeToTextUrl (ViewDraftR draftId)
             Just lastpicker <- runDB $ get (lastpick ^. pickDrafter)
-            sendEmail user ("Time for draft round " ++ pack (show $ succ rnd)) $ [st|
+            sendEmail user ("Time for draft round " ++ pack (show $ succ rnd)) $
+                [st|
 #{pseudonym lastpicker} just drafted #{unCardKey (lastpick ^. pickCard)}.
 
 It is time to make your pick.

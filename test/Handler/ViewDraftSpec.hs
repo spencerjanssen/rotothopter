@@ -12,5 +12,6 @@ spec = withApp $
             get $ ViewDraftR did
             statusIs 200
             htmlCount "th" (length testParticipants + 2)
-    -- TODO better tests that verify display of the draft table, available
-    -- cards and which participant is ready to draft
+
+-- TODO better tests that verify display of the draft table, available
+-- cards and which participant is ready to draft

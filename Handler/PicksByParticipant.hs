@@ -1,9 +1,9 @@
 module Handler.PicksByParticipant where
 
-import Import
 import Common
 import qualified Database.Esqueleto as E
 import Handler.PrettyCard
+import Import
 
 -- TODO, links to download list as txt/mtgo deck/etc?
 getPicksByParticipantR :: DraftId -> UserId -> Handler Html
@@ -16,5 +16,5 @@ getPicksByParticipantR draftId userId = do
 
 getParticipantPicks :: DraftId -> UserId -> Handler [Card]
 getParticipantPicks did uid = map snd <$> getPicksAndInfo did (Just expr)
- where
+  where
     expr pick _ = pick E.^. PickDrafter E.==. E.val uid

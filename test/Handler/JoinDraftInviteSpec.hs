@@ -4,7 +4,6 @@ import TestImport
 
 spec :: Spec
 spec = withApp $ do
-
     describe "postJoinDraftInviteR" $ do
         it "lets the user join a draft" $ do
             postCube testLargeCubeName testLargeCube

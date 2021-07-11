@@ -4,7 +4,7 @@
 static-dir:     "_env:STATIC_DIR:static"
 host:           "_env:HOST:*4" # any IPv4 host
 port:           "_env:PORT:3000"
-approot:        "_env:APPROOT:http://127.0.0.1:3000"
+approot:        "_env:APPROOT:http://ungoliant.lan:3000"
 ip-from-header: "_env:IP_FROM_HEADER:false"
 outgoing-address: "_env:OUTGOING_ADDRESS:null"
 ses-region: "_env:SES_REGION:null"
@@ -12,7 +12,7 @@ ses-access: "_env:SES_ACCESS:null"
 ses-secret: "_env:SES_SECRET:null"
 google-client-id: "_env:GOOGLE_CLIENT_ID:"
 google-client-secret: "_env:GOOGLE_CLIENT_PASSWORD:"
-allow-dummy-auth: "_env:ALLOW_DUMMY_AUTH:false"
+allow-dummy-auth: "_env:ALLOW_DUMMY_AUTH:true"
 
 # Optional values with the following production defaults.
 # In development, they default to the inverse.
@@ -24,19 +24,19 @@ allow-dummy-auth: "_env:ALLOW_DUMMY_AUTH:false"
 # mutable-static: false
 # skip-combining: false
 
-# database:
-#   backend: "_env:DB_BACKEND:sqlite"
-#   database: "_env:SQLITE_DATABASE:rotothopter.sqlite3"
-#   poolsize: "_env:SQLITE_POOLSIZE:10"
-
 database:
-  backend: "_env:DB_BACKEND:postgres"
-  user:     "_env:PGUSER:sjanssen"
-  password: "_env:PGPASS:_"
-  host:     "_env:PGHOST:localhost"
-  port:     "_env:PGPORT:5432"
-  database: "_env:PGDATABASE:rotothopter"
-  poolsize: "_env:PGPOOLSIZE:10"
+  backend: "_env:DB_BACKEND:sqlite"
+  database: "_env:SQLITE_DATABASE:rotothopter.sqlite3"
+  poolsize: "_env:SQLITE_POOLSIZE:10"
+
+# database:
+#   backend: "_env:DB_BACKEND:postgres"
+#   user:     "_env:PGUSER:sjanssen"
+#   password: "_env:PGPASS:_"
+#   host:     "_env:PGHOST:localhost"
+#   port:     "_env:PGPORT:5432"
+#   database: "_env:PGDATABASE:rotothopter"
+#   poolsize: "_env:PGPOOLSIZE:10"
 
 copyright:
  - 'The information presented on this site about Magic: The Gathering, both literal and graphical, is copyrighted by Wizards of the Coast.'

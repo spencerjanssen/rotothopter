@@ -1,9 +1,9 @@
 module Model.InviteHash (InviteHash, newInviteHash) where
 
 import ClassyPrelude.Yesod
-import Database.Persist.Sql
 import Data.UUID (toText)
 import Data.UUID.V4 (nextRandom)
+import Database.Persist.Sql
 
 newtype InviteHash = IH Text
     deriving (Eq, Ord, Show, Read, PersistField, PersistFieldSql)

@@ -1,21 +1,21 @@
 module Handler.WatchDraft (getWatchDraftR) where
 
-import Import
 import Common
+import Import
 
-import Yesod.EventSource
-import Network.Wai.EventSource
-import Data.ByteString.Builder
 import Control.Concurrent.STM.Delay
+import Data.ByteString.Builder
+import Network.Wai.EventSource
+import Yesod.EventSource
 
 getWatchDraftR :: DraftId -> Int -> Handler TypedContent
 getWatchDraftR draftId seenPicks = pollingEventSource Nothing pollFn
- where
+  where
     mesg_name = Just "observe_pick"
-    waitMicroseconds = 18 * 10^(7 :: Int) -- 3 minutes
+    waitMicroseconds = 18 * 10 ^ (7 :: Int) -- 3 minutes
     pollFn _ Nothing = do
         watcher <- getDraftWatcher draftId
-        return ([ServerEvent (Just "initialized") Nothing ["initialized"]], Just (watcher, seenPicks));
+        return ([ServerEvent (Just "initialized") Nothing ["initialized"]], Just (watcher, seenPicks))
     pollFn _ (Just (watcher, lastCount)) = do
         delay <- liftIO $ newDelay waitMicroseconds
         let tryPick = Right <$> waitForPick watcher lastCount

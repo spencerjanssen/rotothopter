@@ -1,11 +1,12 @@
 module Handler.Ranking where
 
+import Data.Aeson.TH (defaultOptions, deriveJSON)
 import Import
-import Data.Aeson.TH (deriveJSON, defaultOptions)
 
 data GetRankingReturn = GetRankingReturn
     { cards :: [Key Card]
-    , rankings :: [RankingChoice] }
+    , rankings :: [RankingChoice]
+    }
 $(deriveJSON defaultOptions ''GetRankingReturn)
 
 getRankingR :: RankingId -> Handler Value

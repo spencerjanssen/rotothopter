@@ -1,38 +1,39 @@
-module TestImport
-    ( module TestImport
-    , module X
-    ) where
+module TestImport (
+    module TestImport,
+    module X,
+) where
 
-import qualified Prelude (id)
-import Application           (makeFoundation)
-import ClassyPrelude         as X hiding
-    ( Index
-    , Handler
-    , index
-    , uncons
-    , unsnoc
-    , cons
-    , snoc
-    , (<.>)
-    , (<|)
-    , delete
-    , deleteBy
-    )
-import Database.Persist      as X hiding (get, (<.))
-import Database.Persist.Sql  (SqlPersistM, SqlBackend, runSqlPersistMPool, rawExecute, rawSql, unSingle, connEscapeName)
-import Foundation            as X
-import Model                 as X
-import Test.Hspec            as X
+import Application (makeFoundation)
+import ClassyPrelude as X hiding (
+    Handler,
+    Index,
+    cons,
+    delete,
+    deleteBy,
+    index,
+    snoc,
+    uncons,
+    unsnoc,
+    (<.>),
+    (<|),
+ )
+import Control.Lens as X
+import Database.Persist as X hiding (get, (<.))
+import Database.Persist.Sql (SqlBackend, SqlPersistM, connEscapeName, rawExecute, rawSql, runSqlPersistMPool, unSingle)
+import Foundation as X
+import Model as X
+import Test.Hspec as X
 import Text.Shakespeare.Text (st)
 import Yesod.Default.Config2 (ignoreEnv, loadAppSettings)
-import Yesod.Test            as X
-import Control.Lens as X
+import Yesod.Test as X
+import qualified Prelude (id)
 
 -- Wiping the database
-import Database.Persist.Sqlite              (sqlDatabase, wrapConnection, createSqlPool)
+
+import Control.Monad.Logger (runLoggingT)
+import Database.Persist.Sqlite (createSqlPool, sqlDatabase, wrapConnection)
 import qualified Database.Sqlite as Sqlite
-import Control.Monad.Logger                 (runLoggingT)
-import Settings (appDatabaseConf, appRoot, SqlBackendConf(Sqlite))
+import Settings (SqlBackendConf (Sqlite), appDatabaseConf, appRoot)
 import Yesod.Core (messageLoggerSource)
 
 runDB :: SqlPersistM a -> YesodExample App a
@@ -42,10 +43,11 @@ runDB query = do
 
 withApp :: SpecWith (App, a -> a) -> Spec
 withApp = before $ do
-    settings <- loadAppSettings
-        ["config/test-settings.yml", "config/settings.yml"]
-        []
-        ignoreEnv
+    settings <-
+        loadAppSettings
+            ["config/test-settings.yml", "config/settings.yml"]
+            []
+            ignoreEnv
     foundation <- makeFoundation settings
     wipeDB foundation
     return (foundation, Prelude.id)
@@ -89,7 +91,7 @@ getTables = do
     return (fmap unSingle tables)
 
 authenticateAs email = do
-    root <- appRoot . appSettings  <$> getTestYesod
+    root <- appRoot . appSettings <$> getTestYesod
     request $ do
         setMethod "POST"
         addPostParam "ident" email
@@ -98,7 +100,8 @@ authenticateAs email = do
 authenticateAdmin = do
     runDB $ insert $ User ident True Nothing
     authenticateAs ident
- where ident = "admin@test.com"
+  where
+    ident = "admin@test.com"
 
 authenticateA = authenticateAs "a@test.com"
 
@@ -126,7 +129,7 @@ checkRequiresAdmin route = do
         statusIs 200
 
 testCubeName = "Test Cube"
-testCubeList = ["Life", "Death" , "Life // Death", "Lightning Bolt"]
+testCubeList = ["Life", "Death", "Life // Death", "Lightning Bolt"]
 
 postCube name list = do
     authenticateA
@@ -144,7 +147,7 @@ testLargeCubeName :: Text
 testLargeCubeName = "Large Cube"
 
 testLargeCube :: [Text]
-testLargeCube = ["Card_" ++  pack (show i) | i <- [1 :: Int .. 360]]
+testLargeCube = ["Card_" ++ pack (show i) | i <- [1 :: Int .. 360]]
 
 testParticipants :: [Text]
 testParticipants = [cons c "@test.com" | c <- take 6 ['a' ..]]

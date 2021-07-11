@@ -2,29 +2,34 @@
 
 module Foundation where
 
-import Import.NoFoundation
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
-import Text.Hamlet          (hamletFile)
+import Import.NoFoundation
+import Text.Hamlet (hamletFile)
+
 -- import Text.Jasmine         (minifym)
-import Yesod.Auth.Dummy     (authDummy)
-import Yesod.Auth.OAuth2 (oauth2Url, getUserResponseJSON)
+import Yesod.Auth.Dummy (authDummy)
+import Yesod.Auth.OAuth2 (getUserResponseJSON, oauth2Url)
 import Yesod.Auth.OAuth2.Google (oauth2GoogleScoped)
+
 -- import Yesod.Default.Util   (addStaticContentExternal)
-import Yesod.Core.Types     (Logger)
-import qualified Yesod.Core.Unsafe as Unsafe
+
 import Control.Monad.Catch (throwM)
 import Data.Aeson (withObject)
+import Yesod.Core.Types (Logger)
+import qualified Yesod.Core.Unsafe as Unsafe
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
 -- starts running, such as database connections. Every handler will have
 -- access to the data present here.
 data App = App
-    { appSettings    :: AppSettings
-    , appStatic      :: Static -- ^ Settings for static file serving.
-    , appConnPool    :: ConnectionPool -- ^ Database connection pool.
+    { appSettings :: AppSettings
+    , -- | Settings for static file serving.
+      appStatic :: Static
+    , -- | Database connection pool.
+      appConnPool :: ConnectionPool
     , appHttpManager :: Manager
-    , appLogger      :: Logger
+    , appLogger :: Logger
     , appDraftWatchers :: TVar (Map DraftId (TVar (Maybe Pick)))
     }
 
@@ -56,10 +61,13 @@ instance Yesod App where
 
     -- Store session data on the client in encrypted cookies,
     -- default session idle timeout is 120 minutes
-    makeSessionBackend _ = Just <$> defaultClientSessionBackend
-        sevenDaysInMinutes -- timeout in minutes
-        "config/client_session_key.aes"
-     where sevenDaysInMinutes = 7*24*60
+    makeSessionBackend _ =
+        Just
+            <$> defaultClientSessionBackend
+                sevenDaysInMinutes -- timeout in minutes
+                "config/client_session_key.aes"
+      where
+        sevenDaysInMinutes = 7 * 24 * 60
 
     defaultLayout widget = do
         master <- getYesod
@@ -73,8 +81,9 @@ instance Yesod App where
         -- value passed to hamletToRepHtml cannot be a widget, this allows
         -- you to use normal widget features in default-layout.
 
-        nav <- widgetToPageContent $
-            $(widgetFile "navbar")
+        nav <-
+            widgetToPageContent $
+                $(widgetFile "navbar")
         pc <- widgetToPageContent $ do
             addStylesheet (StaticR css_bootstrap_css)
             addScript (StaticR js_jquery_min_js)
@@ -93,7 +102,7 @@ instance Yesod App where
     isAuthorized AdminConsoleR _ = isAdmin
     isAuthorized UpdateMtgJsonR _ = isAdmin
     isAuthorized AdminAddUserR _ = isAdmin
-    isAuthorized AdminFeatureCubeR {} _ = isAdmin
+    isAuthorized AdminFeatureCubeR{} _ = isAdmin
     -- Default to Authorized for now.
     isAuthorized _ _ = return Authorized
 
@@ -102,7 +111,8 @@ instance Yesod App where
     -- expiration dates to be set far in the future without worry of
     -- users receiving stale content.
     addStaticContent _ _ _ = return Nothing
-        {-
+
+    {-
     addStaticContent ext mime content = return Nothing
         master <- getYesod
         let staticDir = appStaticDir $ appSettings master
@@ -121,10 +131,11 @@ instance Yesod App where
 
     -- What messages should be logged. The following includes all messages when
     -- in development, and warnings and errors in production.
-    shouldLogIO app _source level = return $
-        appShouldLogAll (appSettings app)
-            || level == LevelWarn
-            || level == LevelError
+    shouldLogIO app _source level =
+        return $
+            appShouldLogAll (appSettings app)
+                || level == LevelWarn
+                || level == LevelError
 
     makeLogger = return . appLogger
 
@@ -160,7 +171,7 @@ instance YesodPersist App where
 instance YesodPersistRunner App where
     getDBRunner = defaultGetDBRunner appConnPool
 
-data GoogleUser = GoogleUser {googleUserEmail :: Text} deriving Generic
+data GoogleUser = GoogleUser {googleUserEmail :: Text} deriving (Generic)
 
 instance FromJSON GoogleUser where
     parseJSON = withObject "GoogleUserEmail" $ \o -> GoogleUser <$> o .: "email"
@@ -170,8 +181,10 @@ instance YesodAuth App where
 
     -- Where to send a user after successful login
     loginDest _ = HomeR
+
     -- Where to send a user after logout
     logoutDest _ = HomeR
+
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer _ = True
 
@@ -182,18 +195,20 @@ instance YesodAuth App where
         case mident of
             Left msg -> do
                 return $ ServerError $ pack $ show (msg, show creds)
-            Right ident -> liftHandler $ runDB $ do
-                x <- getBy $ UniqueUser ident
-                uid <- case x of
-                    Just (Entity uid _) -> return uid
-                    Nothing -> insert $ User ident False Nothing
-                return $ Authenticated uid
+            Right ident -> liftHandler $
+                runDB $ do
+                    x <- getBy $ UniqueUser ident
+                    uid <- case x of
+                        Just (Entity uid _) -> return uid
+                        Nothing -> insert $ User ident False Nothing
+                    return $ Authenticated uid
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins (App {appSettings}) = gauth ++ dauth
-     where
-        dauth | allowDummyAuth appSettings = [authDummy]
-              | otherwise                  = []
+    authPlugins (App{appSettings}) = gauth ++ dauth
+      where
+        dauth
+            | allowDummyAuth appSettings = [authDummy]
+            | otherwise = []
         gauth = case (googleClientId appSettings, googleClientSecret appSettings) of
             (Just gci, Just gcs) -> [customGoogleAuth gci gcs]
             _ -> []
@@ -204,8 +219,8 @@ instance MonadFail Handler where
     fail = throwM . userError
 
 customGoogleAuth :: Text -> Text -> AuthPlugin App
-customGoogleAuth gci gcs = (oauth2GoogleScoped ["email", "profile"] gci gcs) { apLogin = loginFragment }
- where
+customGoogleAuth gci gcs = (oauth2GoogleScoped ["email", "profile"] gci gcs){apLogin = loginFragment}
+  where
     loginFragment tm = $(widgetFile "google-login")
 
 instance YesodAuthPersist App

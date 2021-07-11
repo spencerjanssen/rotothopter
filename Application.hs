@@ -1,65 +1,89 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module Application
-    ( getApplicationDev
-    , appMain
-    , develMain
-    , makeFoundation
-    -- * for DevelMain
-    , getApplicationRepl
-    , shutdownApp
-    -- * for GHCI
-    , handler
-    , db
-#if DEVELOPMENT
-    , testUsers
-    , seedTestUsers
-    , mkAdmin
-    , fillDraft
-#endif
-    ) where
 
-import Control.Monad.Logger                 (liftLoc, runLoggingT)
-import Database.Persist.Sqlite              (createSqlitePool, runSqlPool,
-                                             sqlDatabase, sqlPoolSize)
-import Database.Persist.Postgresql          (createPostgresqlPool,
-                                             pgConnStr, pgPoolSize)
+module Application (
+    getApplicationDev,
+    appMain,
+    develMain,
+    makeFoundation,
+
+    -- * for DevelMain
+    getApplicationRepl,
+    shutdownApp,
+
+    -- * for GHCI
+    handler,
+    db,
+#if DEVELOPMENT
+    testUsers,
+    seedTestUsers,
+    mkAdmin,
+    fillDraft,
+#endif
+) where
+
+import Control.Monad.Logger (liftLoc, runLoggingT)
+import Database.Persist.Postgresql (
+    createPostgresqlPool,
+    pgConnStr,
+    pgPoolSize,
+ )
+import Database.Persist.Sqlite (
+    createSqlitePool,
+    runSqlPool,
+    sqlDatabase,
+    sqlPoolSize,
+ )
 import Import
-import Language.Haskell.TH.Syntax           (qLocation)
-import Network.Wai.Handler.Warp             (Settings, defaultSettings,
-                                             defaultShouldDisplayException,
-                                             runSettings, setHost,
-                                             setOnException, setPort, getPort)
-import Network.Wai.Middleware.RequestLogger (Destination (Logger),
-                                             IPAddrSource (..),
-                                             OutputFormat (..), destination,
-                                             mkRequestLogger, outputFormat)
-import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
-                                             toLogStr)
+import Language.Haskell.TH.Syntax (qLocation)
+import Network.Wai.Handler.Warp (
+    Settings,
+    defaultSettings,
+    defaultShouldDisplayException,
+    getPort,
+    runSettings,
+    setHost,
+    setOnException,
+    setPort,
+ )
+import Network.Wai.Middleware.RequestLogger (
+    Destination (Logger),
+    IPAddrSource (..),
+    OutputFormat (..),
+    destination,
+    mkRequestLogger,
+    outputFormat,
+ )
+import System.Log.FastLogger (
+    defaultBufSize,
+    newStdoutLoggerSet,
+    toLogStr,
+ )
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
-import Handler.Common
-import Handler.Home
-import Handler.CubeList
-import Handler.UpdateMtgJson
-import Handler.ViewDraft
-import Handler.MakeDraftPick
+
 import Handler.AdminAddUser
-import Handler.WatchDraft
 import Handler.AdminConsole
+import Handler.AdminFeatureCube
 import Handler.AllCubes
 import Handler.AllDrafts
-import Handler.UserProfile
-import Handler.NewDraftInvite
-import Handler.ViewDraftInvite
+import Handler.Common
+import Handler.CubeList
+import Handler.Home
 import Handler.JoinDraftInvite
 import Handler.LaunchDraftInvite
-import Handler.PicksByParticipant
+import Handler.MakeDraftPick
+import Handler.NewDraftInvite
 import Handler.NewRanking
+import Handler.PicksByParticipant
 import Handler.Ranking
 import Handler.RankingChoice
+import Handler.UpdateMtgJson
+import Handler.UserProfile
+import Handler.ViewDraft
+import Handler.ViewDraftInvite
 import Handler.ViewRanking
-import Handler.AdminFeatureCube
+import Handler.WatchDraft
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
@@ -78,7 +102,7 @@ makeFoundation appSettings = do
     appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
     appStatic <-
         (if appMutableStatic appSettings then staticDevel else static)
-        (appStaticDir appSettings)
+            (appStaticDir appSettings)
     appDraftWatchers <- newTVarIO mempty
 
     -- We need a log function to create a connection pool. We need a connection
@@ -86,7 +110,7 @@ makeFoundation appSettings = do
     -- logging function. To get out of this loop, we initially create a
     -- temporary foundation without a real connection pool, get a log function
     -- from there, and then create the real foundation.
-    let mkFoundation appConnPool = App {..}
+    let mkFoundation appConnPool = App{..}
         -- The App {..} syntax is an example of record wild cards. For more
         -- information, see:
         -- https://ocharles.org.uk/blog/posts/2014-12-04-record-wildcards.html
@@ -108,16 +132,20 @@ makeFoundation appSettings = do
 -- applying some additional middlewares.
 makeApplication :: App -> IO Application
 makeApplication foundation = do
-    logWare <- mkRequestLogger def
-        { outputFormat =
-            if appDetailedRequestLogging $ appSettings foundation
-                then Detailed True
-                else Apache
-                        (if appIpFromHeader $ appSettings foundation
-                            then FromFallback
-                            else FromSocket)
-        , destination = Logger $ loggerSet $ appLogger foundation
-        }
+    logWare <-
+        mkRequestLogger
+            def
+                { outputFormat =
+                    if appDetailedRequestLogging $ appSettings foundation
+                        then Detailed True
+                        else
+                            Apache
+                                ( if appIpFromHeader $ appSettings foundation
+                                    then FromFallback
+                                    else FromSocket
+                                )
+                , destination = Logger $ loggerSet $ appLogger foundation
+                }
 
     -- Create the WAI application and apply middlewares
     appPlain <- toWaiAppPlain foundation
@@ -126,17 +154,20 @@ makeApplication foundation = do
 -- | Warp settings for the given foundation value.
 warpSettings :: App -> Settings
 warpSettings foundation =
-      setPort (appPort $ appSettings foundation)
-    $ setHost (appHost $ appSettings foundation)
-    $ setOnException (\_req e ->
-        when (defaultShouldDisplayException e) $ messageLoggerSource
-            foundation
-            (appLogger foundation)
-            $(qLocation >>= liftLoc)
-            "yesod"
-            LevelError
-            (toLogStr $ "Exception from Warp: " ++ show e))
-      defaultSettings
+    setPort (appPort $ appSettings foundation) $
+        setHost (appHost $ appSettings foundation) $
+            setOnException
+                ( \_req e ->
+                    when (defaultShouldDisplayException e) $
+                        messageLoggerSource
+                            foundation
+                            (appLogger foundation)
+                            $(qLocation >>= liftLoc)
+                            "yesod"
+                            LevelError
+                            (toLogStr $ "Exception from Warp: " ++ show e)
+                )
+                defaultSettings
 
 -- | For yesod devel, return the Warp settings and WAI Application.
 getApplicationDev :: IO (Settings, Application)
@@ -158,12 +189,12 @@ develMain = develMainHelper getApplicationDev
 appMain :: IO ()
 appMain = do
     -- Get the settings from all relevant sources
-    settings <- loadYamlSettingsArgs
-        -- fall back to compile-time values, set to [] to require values at runtime
-        [configSettingsYmlValue]
-
-        -- allow environment variables to override
-        useEnv
+    settings <-
+        loadYamlSettingsArgs
+            -- fall back to compile-time values, set to [] to require values at runtime
+            [configSettingsYmlValue]
+            -- allow environment variables to override
+            useEnv
 
     -- Generate the foundation from the settings
     foundation <- makeFoundation settings
@@ -173,7 +204,6 @@ appMain = do
 
     -- Run the application with Warp
     runSettings (warpSettings foundation) app
-
 
 --------------------------------------------------------------
 -- Functions for DevelMain.hs (a way to run the app from GHCi)
@@ -188,7 +218,6 @@ getApplicationRepl = do
 
 shutdownApp :: App -> IO ()
 shutdownApp _ = return ()
-
 
 ---------------------------------------------
 -- Functions for use in development with GHCi

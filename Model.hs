@@ -1,8 +1,9 @@
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Model where
 
 import ClassyPrelude.Yesod
@@ -14,7 +15,8 @@ import Model.InviteHash
 -- You can find more information on persistent and how to declare entities
 -- at:
 -- http://www.yesodweb.com/book/persistent/
-share [mkPersist sqlSettings {mpsGenerateLenses = True}, mkMigrate "migrateAll"]
+share
+    [mkPersist sqlSettings{mpsGenerateLenses = True}, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models")
 
 deriving instance Generic Card
