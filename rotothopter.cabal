@@ -146,6 +146,14 @@ executable         rotothopter
     build-depends: base
                  , rotothopter
 
+executable         rotothopter-card-import
+    main-is:           card-import.hs
+    hs-source-dirs:    card-import
+
+    ghc-options:       -threaded -O2 -rtsopts -with-rtsopts=-N
+    build-depends: base
+                 , rotothopter
+
 test-suite test
     type:              exitcode-stdio-1.0
     main-is:           Spec.hs
