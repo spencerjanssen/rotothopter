@@ -3,8 +3,7 @@ module Handler.UpdateMtgJson where
 import Data.Aeson
 import qualified Data.HashMap.Strict as Map
 import qualified Data.List.NonEmpty as NE
-import Import hiding (httpLbs)
-import Network.HTTP.Client (httpLbs)
+import Import
 
 getUpdateMtgJsonR :: Handler Html
 getUpdateMtgJsonR = do
@@ -30,7 +29,7 @@ data Layout
     | MehLayout
     deriving (Show)
 
-data CardInfo = CardInfo {ciname :: Text, cifacename :: Maybe Text, cicolors :: ColorSet, citypes :: TypeSet, layout :: Layout}
+data CardInfo = CardInfo {ciname :: !Text, cifacename :: !(Maybe Text), cicolors :: !ColorSet, citypes :: !TypeSet, layout :: !Layout}
     deriving (Show)
 
 instance FromJSON CardInfo where
@@ -76,13 +75,8 @@ flattenNameGroup groupName cis@(prime NE.:| _)
             , _cardTypes = citypes prime
             }
 
-fetchAllCards :: Handler (Either String AtomicCards)
-fetchAllCards = do
-    req <- parseUrlThrow url
-    manager <- getHttpManager <$> getYesod
-    eitherDecode . responseBody <$> liftIO (httpLbs req manager)
-  where
-    url = "https://mtgjson.com/api/v5/AtomicCards.json"
+fetchAllCards :: MonadIO m => m (Either String AtomicCards)
+fetchAllCards = liftIO $ eitherDecodeFileStrict "AtomicCards.min.json"
 
 postUpdateMtgJsonR :: Handler Html
 postUpdateMtgJsonR = do
