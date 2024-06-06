@@ -71,6 +71,8 @@ let pkgs = import sources.nixpkgs (import sources."haskell.nix" {}).nixpkgsArgs;
         nivPkgs.niv
         hies
         ps_0_10_7 
+        pkgs.nixops
+        pkgs.ghcid
       ];
     };
 in

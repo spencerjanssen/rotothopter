@@ -2,6 +2,7 @@ module Handler.UpdateMtgJson where
 
 import Data.Aeson
 import qualified Data.HashMap.Strict as Map
+import qualified Data.List.NonEmpty as NE
 import Import hiding (httpLbs)
 import Network.HTTP.Client (httpLbs)
 
@@ -14,6 +15,12 @@ getUpdateMtgJsonR = do
                     Reload mtgjson.com data
         |]
 
+newtype AtomicCards = AtomicCards (HashMap Text (NE.NonEmpty CardInfo))
+    deriving (Show)
+
+instance FromJSON AtomicCards where
+    parseJSON = withObject "AtomicCards" $ \v -> AtomicCards <$> v .: "data"
+
 -- Possible values: normal, split, flip, double-faced, token, plane, scheme, phenomenon, leveler, vanguard
 data Layout
     = Split
@@ -23,20 +30,17 @@ data Layout
     | MehLayout
     deriving (Show)
 
-data CardInfo = CardInfo {ciname :: Text, cicolors :: ColorSet, citypes :: TypeSet, layout :: Layout, names :: Maybe [Text]}
+data CardInfo = CardInfo {ciname :: Text, cifacename :: Maybe Text, cicolors :: ColorSet, citypes :: TypeSet, layout :: Layout}
     deriving (Show)
 
 instance FromJSON CardInfo where
     parseJSON (Object v) =
         CardInfo
             <$> v .: "name"
+            <*> v .:? "faceName"
             <*> v .:? "colors" .!= mempty
             <*> v .:? "types" .!= mempty
             <*> v .: "layout"
-            <*> ((nullIsNothing =<<) <$> v .:? "names" .!= Nothing)
-      where
-        nullIsNothing [] = Nothing
-        nullIsNothing xs = Just xs
     parseJSON _ = mzero
 
 instance FromJSON Layout where
@@ -54,51 +58,36 @@ splitLike Split = True
 splitLike Aftermath = True
 splitLike _ = False
 
--- | Assume all CardInfo are part of the same split card
-combineCardInfo :: [CardInfo] -> CardInfo
-combineCardInfo xs@(CardInfo{layout = l, names = Just ns} : _)
-    | splitLike l =
-        CardInfo
-            { ciname = name
-            , cicolors = foldMap cicolors xs
-            , citypes = foldMap citypes xs
-            , layout = l
-            , names = Just ns
+flattenAtomicCards :: AtomicCards -> [Card]
+flattenAtomicCards (AtomicCards cs) = map (uncurry flattenNameGroup) $ Map.toList cs
+
+flattenNameGroup :: Text -> NE.NonEmpty CardInfo -> Card
+flattenNameGroup groupName cis@(prime NE.:| _)
+    | splitLike $ layout prime = 
+        Card
+            { _cardCard = groupName
+            , _cardColors = foldMap cicolors cis
+            , _cardTypes = foldMap citypes cis
             }
-  where
-    name = intercalate " // " ns
-combineCardInfo xs@(CardInfo{names = Just (n : _)} : _) = prime
-  where
-    (prime : _) = [x | x <- xs, ciname x == n]
-combineCardInfo xs = error $ "called with bad argument: " ++ show xs
+    | otherwise = 
+        Card
+            { _cardCard = fromMaybe (ciname prime) $ cifacename prime
+            , _cardColors = cicolors prime
+            , _cardTypes = citypes prime
+            }
 
-massage :: HashMap Text CardInfo -> [Card]
-massage cs' =
-    [ Card (ciname ci) (cicolors ci) (citypes ci)
-    | ci <- singlenames ++ massagedMultinames
-    ]
-  where
-    cs = Map.elems cs'
-    singlenames = [c | c@(CardInfo{names = Nothing}) <- cs]
-    multinames =
-        Map.elems $
-            Map.fromListWith
-                (++)
-                [(ns, [c]) | c@(CardInfo{names = Just ns}) <- cs]
-    massagedMultinames = map combineCardInfo multinames
-
-fetchAllCards :: Handler (Either String (HashMap Text CardInfo))
+fetchAllCards :: Handler (Either String AtomicCards)
 fetchAllCards = do
     req <- parseUrlThrow url
     manager <- getHttpManager <$> getYesod
     eitherDecode . responseBody <$> liftIO (httpLbs req manager)
   where
-    url = "http://mtgjson.com/json/AllCards.json"
+    url = "https://mtgjson.com/api/v5/AtomicCards.json"
 
 postUpdateMtgJsonR :: Handler Html
 postUpdateMtgJsonR = do
     allCards <- fetchAllCards
-    case massage <$> allCards of
+    case flattenAtomicCards <$> allCards of
         Left err -> fail err
         Right cs -> do
             forM_ (batches 100 cs) $ \cs' ->
